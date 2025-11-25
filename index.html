@@ -5,20 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Juan Felipe Rivera Gonzalez - Full Stack Developer with 7+ years of experience in scalable web applications, microservices, and cloud infrastructure.">
   <meta name="keywords" content="Full Stack Developer, PHP, Laravel, Vue.js, AWS, GCP, Node.js, Software Engineer">
+  <!-- Open Graph -->
   <meta property="og:title" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
   <meta property="og:description" content="Seasoned Full Stack Developer with 7+ years specializing in scalable web applications and cloud infrastructure.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="img/profile-picture.webp">
+  <meta property="og:url" content="https://jjuanrivvera.com">
+  <meta property="og:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta property="og:image:width" content="500">
+  <meta property="og:image:height" content="500">
+  <meta property="og:image:alt" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Juan Felipe Rivera Portfolio">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
+  <meta name="twitter:description" content="Seasoned Full Stack Developer with 7+ years specializing in scalable web applications and cloud infrastructure.">
+  <meta name="twitter:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta name="twitter:image:alt" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://jjuanrivvera.com">
+
   <title>Juan Felipe Rivera Gonzalez | Full Stack Developer</title>
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <meta name="theme-color" content="#6366f1">
 
-  <!-- Google Fonts -->
+  <!-- Preload LCP image for faster rendering -->
+  <link rel="preload" href="img/profile-picture.webp" as="image" type="image/webp">
+
+  <!-- Google Fonts (reduced weights for performance) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- AOS - Animate on Scroll -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- AOS - Animate on Scroll (async loaded to prevent render blocking) -->
+  <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
 
   <style>
     /* CSS Reset */
@@ -138,7 +161,7 @@
 
     .nav-links a {
       color: var(--text-secondary);
-      font-weight: 500;
+      font-weight: 600;
       font-size: 0.9rem;
       transition: color var(--transition-fast);
     }
@@ -184,7 +207,7 @@
       display: block;
       padding: 0.75rem 0;
       color: var(--text-secondary);
-      font-weight: 500;
+      font-weight: 600;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
@@ -421,12 +444,13 @@
       font-size: 1.125rem;
       font-weight: 700;
       color: var(--text-primary);
+      margin: 0;
     }
 
     .timeline-date {
       font-size: 0.875rem;
       color: var(--accent-secondary);
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .timeline-role {
@@ -477,7 +501,7 @@
       color: var(--accent-secondary);
       border-radius: var(--radius-full);
       font-size: 0.75rem;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     /* Skills Section */
@@ -705,7 +729,7 @@
     }
 
     .footer-copyright {
-      color: var(--text-tertiary);
+      color: var(--text-secondary); /* Changed from tertiary for better contrast */
       font-size: 0.85rem;
     }
 
@@ -769,6 +793,60 @@
       }
     }
   </style>
+
+  <!-- Structured Data (Schema.org) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Juan Felipe Rivera Gonzalez",
+    "jobTitle": "Full Stack Developer",
+    "description": "Seasoned Full Stack Developer with 7+ years of experience specializing in scalable web applications, microservices architecture, and cloud infrastructure.",
+    "url": "https://jjuanrivvera.com",
+    "image": "https://jjuanrivvera.com/img/profile-picture.webp",
+    "email": "jjuanrivvera@gmail.com",
+    "telephone": "+573167290759",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cali",
+      "addressRegion": "Valle del Cauca",
+      "addressCountry": "CO"
+    },
+    "sameAs": [
+      "https://linkedin.com/in/jjuanrivvera99",
+      "https://github.com/jjuanrivvera99"
+    ],
+    "knowsAbout": [
+      "PHP",
+      "Laravel",
+      "Vue.js",
+      "Node.js",
+      "JavaScript",
+      "TypeScript",
+      "Python",
+      "AWS",
+      "GCP",
+      "Docker",
+      "Microservices",
+      "RESTful APIs",
+      "PostgreSQL",
+      "MySQL"
+    ],
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "SERVICIO NACIONAL DE APRENDIZAJE (SENA)"
+    },
+    "worksFor": {
+      "@type": "Organization",
+      "name": "ACUE",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "New York",
+        "addressCountry": "US"
+      }
+    }
+  }
+  </script>
 </head>
 <body>
   <!-- Navigation -->
@@ -804,7 +882,10 @@
     <div class="hero-content">
       <img
         src="img/profile-picture.webp"
-        alt="Juan Felipe Rivera Gonzalez"
+        alt="Juan Felipe Rivera Gonzalez - Full Stack Developer specializing in PHP, Laravel, Vue.js, AWS, and GCP"
+        width="200"
+        height="200"
+        loading="eager"
         class="profile-image"
         data-aos="fade-up"
         data-aos-duration="800"
@@ -851,7 +932,7 @@
         <div class="timeline-item" data-aos="fade-up">
           <div class="timeline-card">
             <div class="timeline-header">
-              <span class="timeline-company">ACUE</span>
+              <h3 class="timeline-company">ACUE</h3>
               <span class="timeline-date">Jan 2023 - Present</span>
             </div>
             <p class="timeline-role">Full Stack Developer</p>
@@ -877,7 +958,7 @@
         <div class="timeline-item" data-aos="fade-up">
           <div class="timeline-card">
             <div class="timeline-header">
-              <span class="timeline-company">HelloBUILD</span>
+              <h3 class="timeline-company">HelloBUILD</h3>
               <span class="timeline-date">Feb 2022 - Dec 2022</span>
             </div>
             <p class="timeline-role">Full Stack Developer</p>
@@ -902,7 +983,7 @@
         <div class="timeline-item" data-aos="fade-up">
           <div class="timeline-card">
             <div class="timeline-header">
-              <span class="timeline-company">Alegra</span>
+              <h3 class="timeline-company">Alegra</h3>
               <span class="timeline-date">Oct 2019 - Feb 2022</span>
             </div>
             <p class="timeline-role">Full Stack Developer</p>
@@ -928,7 +1009,7 @@
         <div class="timeline-item" data-aos="fade-up">
           <div class="timeline-card">
             <div class="timeline-header">
-              <span class="timeline-company">Universidad Santiago de Cali</span>
+              <h3 class="timeline-company">Universidad Santiago de Cali</h3>
               <span class="timeline-date">Jul 2018 - Sep 2019</span>
             </div>
             <p class="timeline-role">Developer</p>
@@ -1178,11 +1259,11 @@
         <div class="contact-info">
           <div class="contact-item">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <span>jjuanrivvera@gmail.com</span>
+            <a href="mailto:jjuanrivvera@gmail.com">jjuanrivvera@gmail.com</a>
           </div>
           <div class="contact-item">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>+57 316 729 0759</span>
+            <a href="tel:+573167290759">+57 316 729 0759</a>
           </div>
           <div class="contact-item">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>

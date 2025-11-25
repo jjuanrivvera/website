@@ -1,2 +1,4 @@
 .claude
 .playwright-mcp
+# Local Netlify folder
+.netlify

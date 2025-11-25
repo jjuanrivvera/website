@@ -197,6 +197,10 @@
       backdrop-filter: blur(10px);
       padding: 1.5rem;
       border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+      z-index: 1200;
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .mobile-menu.active {
@@ -822,6 +826,10 @@
       transform: none !important;
       transition: none !important;
     }
+
+    body.menu-open {
+      overflow: hidden;
+    }
   </style>
 
   <!-- Structured Data (Schema.org) -->
@@ -1365,14 +1373,19 @@
     const navToggle = document.getElementById('navToggle');
     const mobileMenu = document.getElementById('mobileMenu');
 
-    navToggle.addEventListener('click', function() {
-      const isOpen = mobileMenu.classList.toggle('active');
-      navToggle.setAttribute('aria-expanded', isOpen);
-    });
+    if (navToggle && mobileMenu) {
+      navToggle.addEventListener('click', function() {
+        const isOpen = mobileMenu.classList.toggle('active');
+        navToggle.setAttribute('aria-expanded', isOpen);
+        document.body.classList.toggle('menu-open', isOpen);
+      });
+    }
 
     function closeMobileMenu() {
+      if (!mobileMenu || !navToggle) return;
       mobileMenu.classList.remove('active');
       navToggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
     }
 
     document.addEventListener('keydown', (event) => {
@@ -1401,6 +1414,9 @@
             behavior: reduceMotion() ? 'auto' : 'smooth',
             block: 'start'
           });
+        }
+        if (this.closest('.mobile-menu')) {
+          closeMobileMenu();
         }
       });
     });

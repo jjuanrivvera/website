@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Juan Felipe Rivera Gonzalez - Full Stack Developer with 7+ years of experience in scalable web applications, microservices, and cloud infrastructure.">
+  <meta name="keywords" content="Full Stack Developer, PHP, Laravel, Vue.js, AWS, GCP, Node.js, Software Engineer">
+  <meta property="og:title" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
+  <meta property="og:description" content="Seasoned Full Stack Developer with 7+ years specializing in scalable web applications and cloud infrastructure.">
+  <meta property="og:type" content="website">
+  <title>Juan Felipe Rivera Gonzalez | Full Stack Developer</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- AOS - Animate on Scroll -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* CSS Custom Properties */
+    :root {
+      /* Dark Background Colors */
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+
+      /* Vibrant Accent Colors */
+      --accent-primary: #6366f1;
+      --accent-secondary: #22d3ee;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #22d3ee);
+
+      /* Text Colors */
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+
+      /* Effects */
+      --glow-primary: 0 0 20px rgba(99, 102, 241, 0.4);
+      --glow-secondary: 0 0 30px rgba(99, 102, 241, 0.6);
+      --border-glow: 1px solid rgba(99, 102, 241, 0.3);
+
+      /* Spacing */
+      --section-padding: 5rem 1.5rem;
+      --container-max: 1200px;
+
+      /* Transitions */
+      --transition-fast: 0.2s ease;
+      --transition-medium: 0.3s ease;
+
+      /* Border Radius */
+      --radius-sm: 0.5rem;
+      --radius-md: 1rem;
+      --radius-lg: 1.5rem;
+      --radius-full: 9999px;
+    }
+
+    /* Base Styles */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    a:hover {
+      color: var(--accent-primary);
+    }
+
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1rem 1.5rem;
+      backdrop-filter: blur(10px);
+      background: rgba(10, 10, 15, 0.8);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+      transition: all var(--transition-medium);
+    }
+
+    .navbar.scrolled {
+      padding: 0.75rem 1.5rem;
+      background: rgba(10, 10, 15, 0.95);
+    }
+
+    .nav-container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: none;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .nav-toggle span {
+      width: 24px;
+      height: 2px;
+      background: var(--text-primary);
+      transition: all var(--transition-fast);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 15, 0.98);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .mobile-menu.active {
+      display: block;
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 0.75rem 0;
+      color: var(--text-secondary);
+      font-weight: 500;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mobile-menu a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem 4rem;
+      background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .profile-image {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid transparent;
+      background: linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+                  var(--accent-gradient) border-box;
+      animation: glow-pulse 3s ease-in-out infinite;
+      margin-bottom: 2rem;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-description {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all var(--transition-medium);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow-primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .social-link {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      transition: all var(--transition-medium);
+    }
+
+    .social-link:hover {
+      background: var(--accent-primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Section Styles */
+    section {
+      padding: var(--section-padding);
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    /* Experience Section */
+    .experience {
+      background: var(--bg-secondary);
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--accent-gradient);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -5px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      border: 3px solid var(--bg-secondary);
+    }
+
+    .timeline-card {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      transition: all var(--transition-medium);
+    }
+
+    .timeline-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateX(4px);
+      box-shadow: var(--glow-primary);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .timeline-company {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .timeline-date {
+      font-size: 0.875rem;
+      color: var(--accent-secondary);
+      font-weight: 500;
+    }
+
+    .timeline-role {
+      font-size: 1rem;
+      color: var(--accent-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .timeline-location {
+      font-size: 0.875rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1rem;
+    }
+
+    .timeline-highlights {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+
+    .timeline-highlights li {
+      position: relative;
+      padding-left: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .timeline-highlights li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.5em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .tech-tag {
+      padding: 0.25rem 0.75rem;
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--accent-secondary);
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Skills Section */
+    .skills {
+      background: var(--bg-primary);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .skill-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      transition: all var(--transition-medium);
+    }
+
+    .skill-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+      box-shadow: var(--glow-primary);
+    }
+
+    .skill-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .skill-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-sm);
+      color: white;
+    }
+
+    .skill-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-item {
+      padding: 0.375rem 0.875rem;
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      transition: all var(--transition-fast);
+    }
+
+    .skill-item:hover {
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--text-primary);
+    }
+
+    /* Projects Section */
+    .projects {
+      background: var(--bg-secondary);
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .project-card {
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      transition: all var(--transition-medium);
+    }
+
+    .project-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+      box-shadow: var(--glow-primary);
+    }
+
+    .project-card.featured {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(99, 102, 241, 0.05) 100%);
+    }
+
+    .project-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .project-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    /* Education Section */
+    .education {
+      background: var(--bg-primary);
+    }
+
+    .education-card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      border: 1px solid rgba(99, 102, 241, 0.1);
+      text-align: center;
+    }
+
+    .education-icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-gradient);
+      border-radius: 50%;
+      color: white;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+    }
+
+    .education-school {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .education-degree {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .education-date {
+      color: var(--accent-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Contact Section */
+    .contact {
+      background: var(--bg-secondary);
+    }
+
+    .contact-card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      text-align: center;
+    }
+
+    .contact-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .contact-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .contact-item svg {
+      color: var(--accent-primary);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-primary);
+      padding: 2rem 1.5rem;
+      border-top: 1px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .footer-content {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-languages {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .footer-copyright {
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive Design */
+    @media (min-width: 640px) {
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-title {
+        font-size: 3rem;
+      }
+    }
+
+    @media (min-width: 768px) {
+      :root {
+        --section-padding: 6rem 2rem;
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item {
+        padding-left: 3.5rem;
+      }
+
+      .timeline-item::before {
+        left: 15px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .nav-links {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: 4rem;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .profile-image {
+        width: 200px;
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">JR</a>
+      <ul class="nav-links">
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#experience" onclick="closeMobileMenu()">Experience</a>
+    <a href="#skills" onclick="closeMobileMenu()">Skills</a>
+    <a href="#projects" onclick="closeMobileMenu()">Projects</a>
+    <a href="#education" onclick="closeMobileMenu()">Education</a>
+    <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <img
+        src="img/profile-picture.png"
+        alt="Juan Felipe Rivera Gonzalez"
+        class="profile-image"
+        data-aos="fade-up"
+        data-aos-duration="800"
+      >
+      <h1 class="hero-title" data-aos="fade" data-aos-delay="100">Juan Felipe Rivera Gonzalez</h1>
+      <p class="hero-subtitle" data-aos="fade" data-aos-delay="200">Full Stack Developer</p>
+      <p class="hero-description" data-aos="fade" data-aos-delay="300">
+        Seasoned Full Stack Developer with 7+ years of experience specializing in scalable web applications,
+        microservices architecture, and cloud infrastructure. Proven track record delivering enterprise-grade
+        solutions for international clients in fintech and education industries.
+      </p>
+      <div class="hero-buttons" data-aos="fade-up" data-aos-delay="400">
+        <a href="#contact" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Get in Touch
+        </a>
+        <a href="#experience" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          View Experience
+        </a>
+      </div>
+      <div class="social-links" data-aos="fade-up" data-aos-delay="500">
+        <a href="https://linkedin.com/in/jjuanrivvera99" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="mailto:jjuanrivvera@gmail.com" class="social-link" aria-label="Email">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a href="https://github.com/jjuanrivvera99" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section class="experience" id="experience">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Professional Experience</h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">7+ years building enterprise solutions</p>
+
+      <div class="timeline">
+        <!-- ACUE -->
+        <div class="timeline-item" data-aos="fade-up">
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <span class="timeline-company">ACUE</span>
+              <span class="timeline-date">Jan 2023 - Present</span>
+            </div>
+            <p class="timeline-role">Full Stack Developer</p>
+            <p class="timeline-location">New York, United States (Remote)</p>
+            <ul class="timeline-highlights">
+              <li>Development, refactoring and management of PHP applications</li>
+              <li>GCP (Cloud SQL, Functions, Cloud Run, BigQuery)</li>
+              <li>Integration of Laravel and Symfony components</li>
+              <li>Development of frontend interfaces using Vue.js and Bootstrap 5</li>
+              <li>Development of Python serverless functions</li>
+            </ul>
+            <div class="tech-tags">
+              <span class="tech-tag">Laravel</span>
+              <span class="tech-tag">PHP</span>
+              <span class="tech-tag">Vue.js</span>
+              <span class="tech-tag">GCP</span>
+              <span class="tech-tag">Canvas LMS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HelloBUILD -->
+        <div class="timeline-item" data-aos="fade-up">
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <span class="timeline-company">HelloBUILD</span>
+              <span class="timeline-date">Feb 2022 - Dec 2022</span>
+            </div>
+            <p class="timeline-role">Full Stack Developer</p>
+            <p class="timeline-location">Florida, United States (Remote)</p>
+            <ul class="timeline-highlights">
+              <li>Development of microservices using Node.js and Serverless</li>
+              <li>Development, refactoring and management of PHP applications</li>
+              <li>Management of docker environments</li>
+              <li>Cloud: Amazon Web Services (AWS)</li>
+            </ul>
+            <div class="tech-tags">
+              <span class="tech-tag">PHP</span>
+              <span class="tech-tag">Node.js</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">AWS</span>
+              <span class="tech-tag">Microservices</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alegra -->
+        <div class="timeline-item" data-aos="fade-up">
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <span class="timeline-company">Alegra</span>
+              <span class="timeline-date">Oct 2019 - Feb 2022</span>
+            </div>
+            <p class="timeline-role">Full Stack Developer</p>
+            <p class="timeline-location">Medellin, Antioquia, Colombia (Remote)</p>
+            <ul class="timeline-highlights">
+              <li>Development of Laravel microservices</li>
+              <li>Vue.js micro-frontends implementation</li>
+              <li>AWS (ECS, CodeBuild, SNS, SQS)</li>
+              <li>E-commerce integrations (Shopify, Mercado Libre)</li>
+              <li>Online payments integrations (Nequi, RappiPay, MercadoPago, etc.)</li>
+            </ul>
+            <div class="tech-tags">
+              <span class="tech-tag">Laravel</span>
+              <span class="tech-tag">Vue.js</span>
+              <span class="tech-tag">AWS</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">Microservices</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Universidad Santiago de Cali -->
+        <div class="timeline-item" data-aos="fade-up">
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <span class="timeline-company">Universidad Santiago de Cali</span>
+              <span class="timeline-date">Jul 2018 - Sep 2019</span>
+            </div>
+            <p class="timeline-role">Developer</p>
+            <p class="timeline-location">Cali, Valle del Cauca, Colombia (On-site)</p>
+            <ul class="timeline-highlights">
+              <li>Development of Laravel applications</li>
+              <li>Administration of Linux servers</li>
+              <li>GitLab DevOps: CI/CD, Monitoring, Container Registry</li>
+              <li>Management of docker environments</li>
+              <li>Oracle Database administration</li>
+            </ul>
+            <div class="tech-tags">
+              <span class="tech-tag">Laravel</span>
+              <span class="tech-tag">PHP</span>
+              <span class="tech-tag">Docker</span>
+              <span class="tech-tag">GitLab</span>
+              <span class="tech-tag">Oracle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section class="skills" id="skills">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Technical Skills</h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Core competencies & technologies</p>
+
+      <div class="skills-grid">
+        <!-- Frontend -->
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="skill-header">
+            <div class="skill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3 class="skill-title">Frontend</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-item">Vue.js</span>
+            <span class="skill-item">JavaScript (ES6+)</span>
+            <span class="skill-item">HTML5</span>
+            <span class="skill-item">CSS3</span>
+            <span class="skill-item">Bootstrap</span>
+            <span class="skill-item">jQuery</span>
+          </div>
+        </div>
+
+        <!-- Backend -->
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="skill-header">
+            <div class="skill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+            </div>
+            <h3 class="skill-title">Backend</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-item">PHP</span>
+            <span class="skill-item">Laravel</span>
+            <span class="skill-item">Node.js</span>
+            <span class="skill-item">TypeScript</span>
+            <span class="skill-item">Python</span>
+            <span class="skill-item">RESTful APIs</span>
+          </div>
+        </div>
+
+        <!-- Database -->
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="skill-header">
+            <div class="skill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            </div>
+            <h3 class="skill-title">Database</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-item">PostgreSQL</span>
+            <span class="skill-item">MySQL</span>
+            <span class="skill-item">Oracle</span>
+            <span class="skill-item">MongoDB</span>
+            <span class="skill-item">Redis</span>
+          </div>
+        </div>
+
+        <!-- Cloud & DevOps -->
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="skill-header">
+            <div class="skill-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+            </div>
+            <h3 class="skill-title">Cloud & DevOps</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-item">AWS</span>
+            <span class="skill-item">GCP</span>
+            <span class="skill-item">Docker</span>
+            <span class="skill-item">GitLab CI/CD</span>
+            <span class="skill-item">Serverless</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section class="projects" id="projects">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Featured Projects</h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Enterprise solutions & open source contributions</p>
+
+      <div class="projects-grid">
+        <!-- ACUE Partner Portal -->
+        <div class="project-card featured" data-aos="fade-up">
+          <h3 class="project-title">ACUE Partner Portal</h3>
+          <p class="project-description">
+            Enterprise Django application managing 580+ institutional partnerships with faculty enrollment tracking,
+            certificate generation, and cohort management. Built integrations with Salesforce CRM, Canvas LMS,
+            SendGrid, and BigQuery.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">Django</span>
+            <span class="tech-tag">MySQL</span>
+            <span class="tech-tag">GCP</span>
+            <span class="tech-tag">Cloud Run</span>
+          </div>
+        </div>
+
+        <!-- Canvas LMS PHP SDK -->
+        <div class="project-card featured" data-aos="fade-up">
+          <h3 class="project-title">Canvas LMS PHP SDK</h3>
+          <p class="project-description">
+            Enterprise-grade open-source PHP library for Canvas LMS API integration with 85% API coverage.
+            Architected using Active Record + DTO patterns with PSR-12 compliance. Achieved 95%+ test coverage
+            with 964 tests and 4,430 assertions.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">PHP</span>
+            <span class="tech-tag">PHPUnit</span>
+            <span class="tech-tag">Open Source</span>
+            <span class="tech-tag">Packagist</span>
+          </div>
+        </div>
+
+        <!-- Payment Gateway -->
+        <div class="project-card" data-aos="fade-up">
+          <h3 class="project-title">Payment Gateway</h3>
+          <p class="project-description">
+            Microservice enabling users to receive payments through configurable providers including PayPal,
+            RappiPay, Nequi, PayU, Tpaga, SrPago, VisaNet, and MercadoPago.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">PHP</span>
+            <span class="tech-tag">8+ Providers</span>
+          </div>
+        </div>
+
+        <!-- E-commerce Gateway -->
+        <div class="project-card" data-aos="fade-up">
+          <h3 class="project-title">E-commerce Gateway</h3>
+          <p class="project-description">
+            Microservice allowing users to sync their E-commerce platforms with the accounting system.
+            Integrated with Shopify and Mercado Libre marketplaces.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">Laravel</span>
+            <span class="tech-tag">Vue.js</span>
+            <span class="tech-tag">Shopify</span>
+          </div>
+        </div>
+
+        <!-- Course Builder 2.0 -->
+        <div class="project-card" data-aos="fade-up">
+          <h3 class="project-title">Course Builder 2.0</h3>
+          <p class="project-description">
+            Robust tool for ACUE's Canvas LMS improving course creation efficiency. Introduced centralized
+            workflow, improved error tracking, and eliminated redundant tasks.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">Canvas LMS</span>
+            <span class="tech-tag">PHP</span>
+            <span class="tech-tag">Automation</span>
+          </div>
+        </div>
+
+        <!-- Serverless Event Management -->
+        <div class="project-card" data-aos="fade-up">
+          <h3 class="project-title">Serverless Event Management</h3>
+          <p class="project-description">
+            Innovative solution for handling live events in Canvas LMS using GCP serverless functions.
+            Features JWT decoding, MySQL storage, and Pub/Sub topics for scalable processing.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">GCP Functions</span>
+            <span class="tech-tag">Pub/Sub</span>
+            <span class="tech-tag">Serverless</span>
+          </div>
+        </div>
+
+        <!-- Infrastructure Lab -->
+        <div class="project-card" data-aos="fade-up">
+          <h3 class="project-title">Multi-Environment Infrastructure Lab</h3>
+          <p class="project-description">
+            Comprehensive homelab spanning Raspberry Pi, VPS, and development workstation with 20+
+            containerized services. Includes Nginx reverse proxy with 22 SSL-enabled hosts.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">Homelab</span>
+            <span class="tech-tag">Nginx</span>
+            <span class="tech-tag">Tailscale</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Education Section -->
+  <section class="education" id="education">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Education</h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Academic background</p>
+
+      <div class="education-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="education-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <h3 class="education-school">SERVICIO NACIONAL DE APRENDIZAJE (SENA)</h3>
+        <p class="education-degree">Technology in Information System Analysis and Development</p>
+        <p class="education-date">July 2018</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <h2 class="section-title" data-aos="fade-up">Get In Touch</h2>
+      <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Let's work together</p>
+
+      <div class="contact-card" data-aos="fade-up" data-aos-delay="200">
+        <h3 class="contact-title">Ready to collaborate?</h3>
+        <p class="contact-description">
+          I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+        </p>
+
+        <div class="contact-info">
+          <div class="contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>jjuanrivvera@gmail.com</span>
+          </div>
+          <div class="contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>+57 316 729 0759</span>
+          </div>
+          <div class="contact-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Cali, Valle del Cauca, Colombia</span>
+          </div>
+        </div>
+
+        <a href="mailto:jjuanrivvera@gmail.com" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Send Email
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p class="footer-languages">
+        <strong>Languages:</strong> Spanish (Native) | English (Advanced)
+      </p>
+      <p class="footer-copyright">
+        &copy; 2024 Juan Felipe Rivera Gonzalez. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- AOS Library -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <script>
+    // Initialize AOS
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 600,
+        easing: 'ease-out-cubic',
+        once: true,
+        offset: 50
+      });
+    });
+
+    // Mobile Navigation Toggle
+    const navToggle = document.getElementById('navToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    navToggle.addEventListener('click', function() {
+      mobileMenu.classList.toggle('active');
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('active');
+    }
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

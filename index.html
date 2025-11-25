@@ -8,7 +8,9 @@
   <meta property="og:title" content="Juan Felipe Rivera Gonzalez - Full Stack Developer">
   <meta property="og:description" content="Seasoned Full Stack Developer with 7+ years specializing in scalable web applications and cloud infrastructure.">
   <meta property="og:type" content="website">
+  <meta property="og:image" content="img/profile-picture.webp">
   <title>Juan Felipe Rivera Gonzalez | Full Stack Developer</title>
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -801,7 +803,7 @@
   <section class="hero" id="hero">
     <div class="hero-content">
       <img
-        src="img/profile-picture.png"
+        src="img/profile-picture.webp"
         alt="Juan Felipe Rivera Gonzalez"
         class="profile-image"
         data-aos="fade-up"
@@ -1203,7 +1205,7 @@
         <strong>Languages:</strong> Spanish (Native) | English (Advanced)
       </p>
       <p class="footer-copyright">
-        &copy; 2024 Juan Felipe Rivera Gonzalez. All rights reserved.
+        &copy; <span id="currentYear"></span> Juan Felipe Rivera Gonzalez. All rights reserved.
       </p>
     </div>
   </footer>
@@ -1220,6 +1222,9 @@
         once: true,
         offset: 50
       });
+
+      // Set current year dynamically
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
     });
 
     // Mobile Navigation Toggle

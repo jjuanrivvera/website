@@ -81,3 +81,85 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+// Google Analytics Event Tracking
+(function() {
+  // Helper function to send GA events
+  function trackEvent(eventName, category, label) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, {
+        'event_category': category,
+        'event_label': label
+      });
+    }
+  }
+
+  // CV Download tracking
+  const cvLink = document.querySelector('a[href="files/CV.pdf"]');
+  if (cvLink) {
+    cvLink.addEventListener('click', function() {
+      trackEvent('download_cv', 'engagement', 'CV PDF Download');
+    });
+  }
+
+  // Email link tracking
+  document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+    link.addEventListener('click', function() {
+      trackEvent('contact_click', 'engagement', 'Email');
+    });
+  });
+
+  // Phone link tracking
+  document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+    link.addEventListener('click', function() {
+      trackEvent('contact_click', 'engagement', 'Phone');
+    });
+  });
+
+  // Social link tracking
+  const socialLinks = {
+    'linkedin.com': 'LinkedIn',
+    'github.com': 'GitHub'
+  };
+
+  document.querySelectorAll('a[target="_blank"]').forEach(link => {
+    const href = link.getAttribute('href');
+    for (const [domain, name] of Object.entries(socialLinks)) {
+      if (href && href.includes(domain)) {
+        link.addEventListener('click', function() {
+          trackEvent('social_click', 'engagement', name);
+        });
+        break;
+      }
+    }
+  });
+
+  // Section scroll tracking
+  const sectionsToTrack = ['experience', 'skills', 'projects', 'education', 'contact'];
+  const trackedSections = new Set();
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.5
+  };
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const sectionId = entry.target.id;
+        if (!trackedSections.has(sectionId)) {
+          trackedSections.add(sectionId);
+          trackEvent('section_view', 'scroll', sectionId);
+        }
+      }
+    });
+  }, observerOptions);
+
+  sectionsToTrack.forEach(sectionId => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      sectionObserver.observe(section);
+    }
+  });
+})();

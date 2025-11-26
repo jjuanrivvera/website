@@ -40,6 +40,11 @@ if (navToggle && mobileMenu) {
     navToggle.setAttribute('aria-expanded', isOpen);
     document.body.classList.toggle('menu-open', isOpen);
   });
+
+  // Event delegation for mobile menu links (replaces inline onclick handlers)
+  document.querySelectorAll('.mobile-menu a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+  });
 }
 
 function closeMobileMenu() {

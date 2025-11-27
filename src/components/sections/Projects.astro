@@ -1,0 +1,71 @@
+---
+import { getLangFromUrl, useTranslations } from '@i18n/utils';
+import type { TranslationKey } from '@i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const projects = [
+  {
+    key: 'acuePortal',
+    title: 'ACUE Partner Portal',
+    featured: true,
+    techTags: ['Django', 'MySQL', 'GCP', 'Cloud Run'],
+  },
+  {
+    key: 'canvasKit',
+    title: 'Canvas LMS PHP SDK',
+    featured: true,
+    techTags: ['PHP', 'PHPUnit', 'Open Source', 'Packagist'],
+  },
+  {
+    key: 'paymentGateway',
+    title: 'Payment Gateway',
+    featured: false,
+    techTags: ['Laravel', 'PHP', '8+ Providers'],
+  },
+  {
+    key: 'ecommerceGateway',
+    title: 'E-commerce Gateway',
+    featured: false,
+    techTags: ['Laravel', 'Vue.js', 'Shopify'],
+  },
+  {
+    key: 'courseBuilder',
+    title: 'Course Builder 2.0',
+    featured: false,
+    techTags: ['Canvas LMS', 'PHP', 'Automation'],
+  },
+  {
+    key: 'serverlessEvents',
+    title: 'Serverless Event Management',
+    featured: false,
+    techTags: ['GCP Functions', 'Pub/Sub', 'Serverless'],
+  },
+  {
+    key: 'infraLab',
+    title: 'Multi-Environment Infrastructure Lab',
+    featured: false,
+    techTags: ['Docker', 'Homelab', 'Nginx', 'Tailscale'],
+  },
+];
+---
+
+<section class="projects" id="projects">
+  <div class="container">
+    <h2 class="section-title" data-aos="fade-up">{t('projects.title')}</h2>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">{t('projects.subtitle')}</p>
+
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <div class={`project-card ${project.featured ? 'featured' : ''}`} data-aos="fade-up">
+          <h3 class="project-title">{project.title}</h3>
+          <p class="project-description">{t(`projects.${project.key}.description` as TranslationKey)}</p>
+          <div class="tech-tags">
+            {project.techTags.map((tag) => <span class="tech-tag">{tag}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,28 @@
+---
+import { getLangFromUrl, getAlternateUrl, getLangSwitcher, useTranslations, getAlternateLang } from '@i18n/utils';
+
+interface Props {
+  class?: string;
+  mobile?: boolean;
+}
+
+const { class: className = '', mobile = false } = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const altUrl = getAlternateUrl(lang, Astro.url.pathname);
+const altLang = getAlternateLang(lang);
+const { flag, code } = getLangSwitcher(lang);
+---
+
+<div class={`${mobile ? 'mobile-lang-switcher' : 'language-switcher'} ${className}`}>
+  <a
+    href={altUrl}
+    class="lang-link"
+    aria-label={t('a11y.langSwitch')}
+    hreflang={altLang}
+  >
+    <span class="lang-flag" aria-hidden="true">{flag}</span>
+    <span class="lang-code">{code}</span>
+  </a>
+</div>

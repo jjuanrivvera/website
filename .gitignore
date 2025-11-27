@@ -1,4 +1,44 @@
-.claude
-.playwright-mcp
+# Dependencies
+node_modules/
+
+# Astro build output
+dist/
+.astro/
+
+# Legacy backup (remove after successful migration)
+_legacy/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
 # Local Netlify folder
-.netlify
+.netlify/
+
+# Package manager lock files (keep pnpm-lock.yaml)
+package-lock.json
+yarn.lock
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Claude Code / Playwright
+.claude/
+.playwright-mcp/

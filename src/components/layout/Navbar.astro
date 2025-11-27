@@ -1,0 +1,47 @@
+---
+import { getLangFromUrl, useTranslations } from '@i18n/utils';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<a href="#main-content" class="skip-link">{t('a11y.skipLink')}</a>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#hero" class="nav-logo">JR</a>
+    <ul class="nav-links">
+      <li><a href="#experience">{t('nav.experience')}</a></li>
+      <li><a href="#skills">{t('nav.skills')}</a></li>
+      <li><a href="#projects">{t('nav.projects')}</a></li>
+      <li><a href="#education">{t('nav.education')}</a></li>
+      <li><a href="#contact">{t('nav.contact')}</a></li>
+    </ul>
+
+    <LanguageSwitcher />
+
+    <button
+      class="nav-toggle"
+      id="navToggle"
+      aria-label={t('a11y.toggleMenu')}
+      aria-expanded="false"
+      aria-controls="mobileMenu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<nav class="mobile-menu" id="mobileMenu" aria-label={t('a11y.mobileMenu')}>
+  <a href="#experience">{t('nav.experience')}</a>
+  <a href="#skills">{t('nav.skills')}</a>
+  <a href="#projects">{t('nav.projects')}</a>
+  <a href="#education">{t('nav.education')}</a>
+  <a href="#contact">{t('nav.contact')}</a>
+
+  <LanguageSwitcher mobile />
+</nav>

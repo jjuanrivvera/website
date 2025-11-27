@@ -1,0 +1,53 @@
+---
+import { getLangFromUrl, useTranslations } from '@i18n/utils';
+import type { TranslationKey } from '@i18n/ui';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const skillCategories = [
+  {
+    key: 'frontend',
+    icon: 'code',
+    skills: ['Vue.js', 'JavaScript (ES6+)', 'HTML5', 'CSS3', 'Bootstrap', 'jQuery'],
+  },
+  {
+    key: 'backend',
+    icon: 'server',
+    skills: ['PHP', 'Laravel', 'Node.js', 'TypeScript', 'Python', 'RESTful APIs'],
+  },
+  {
+    key: 'database',
+    icon: 'database',
+    skills: ['PostgreSQL', 'MySQL', 'Oracle', 'MongoDB', 'Redis'],
+  },
+  {
+    key: 'cloud',
+    icon: 'cloud',
+    skills: ['AWS', 'GCP', 'Docker', 'GitLab CI/CD', 'Serverless'],
+  },
+];
+---
+
+<section class="skills" id="skills">
+  <div class="container">
+    <h2 class="section-title" data-aos="fade-up">{t('skills.title')}</h2>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">{t('skills.subtitle')}</p>
+
+    <div class="skills-grid">
+      {skillCategories.map((category, index) => (
+        <div class="skill-card" data-aos="fade-up" data-aos-delay={index * 100}>
+          <div class="skill-header">
+            <div class="skill-icon">
+              <svg width="20" height="20"><use href={`/img/icons.svg#icon-${category.icon}`}></use></svg>
+            </div>
+            <h3 class="skill-title">{t(`skills.${category.key}` as TranslationKey)}</h3>
+          </div>
+          <div class="skill-list">
+            {category.skills.map((skill) => <span class="skill-item">{skill}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

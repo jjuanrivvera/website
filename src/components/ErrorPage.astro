@@ -1,0 +1,34 @@
+---
+import { getLangFromUrl, useTranslations } from '@i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const homeUrl = lang === 'es' ? '/es/' : '/';
+---
+
+<main id="main-content" class="error-page">
+  <div class="container">
+    <h1>404</h1>
+    <h2>{t('404.title')}</h2>
+    <p>{t('404.description')}</p>
+    <a href={homeUrl} class="btn btn-primary">{t('404.cta')}</a>
+  </div>
+</main>
+
+<style>
+  .error-page {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .error-page h1 {
+    font-size: 6rem;
+    color: var(--accent-primary);
+    margin-bottom: 0;
+  }
+  .error-page h2 {
+    margin-top: 0;
+  }
+</style>

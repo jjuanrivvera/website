@@ -1,0 +1,317 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { getLangFromUrl, useTranslations, getLocale, getCanonicalUrl } from '@i18n/utils';
+import profilePicture from '@assets/img/profile-picture.webp';
+import '@styles/global.css';
+import 'aos/dist/aos.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const locale = getLocale(lang);
+const canonicalUrl = getCanonicalUrl(lang);
+const altLocale = lang === 'en' ? 'es_ES' : 'en_US';
+
+const { title = t('meta.title'), description = t('meta.description'), noindex = false } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta -->
+  <meta name="description" content={description}>
+  <meta name="keywords" content={t('meta.keywords')}>
+  {noindex && <meta name="robots" content="noindex, follow" />}
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={t('meta.og.title')}>
+  <meta property="og:description" content={t('meta.og.description')}>
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={canonicalUrl}>
+  <meta property="og:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta property="og:image:width" content="500">
+  <meta property="og:image:height" content="500">
+  <meta property="og:image:alt" content={t('meta.og.imageAlt')}>
+  <meta property="og:locale" content={locale}>
+  <meta property="og:locale:alternate" content={altLocale}>
+  <meta property="og:site_name" content={t('meta.og.siteName')}>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={t('meta.og.title')}>
+  <meta name="twitter:description" content={t('meta.og.description')}>
+  <meta name="twitter:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta name="twitter:image:alt" content={t('meta.og.imageAlt')}>
+
+  <!-- Canonical & Hreflang -->
+  <link rel="canonical" href={canonicalUrl}>
+  <link rel="alternate" hreflang="en-US" href="https://jjuanrivvera.com/">
+  <link rel="alternate" hreflang="es-ES" href="https://jjuanrivvera.com/es/">
+  <link rel="alternate" hreflang="x-default" href="https://jjuanrivvera.com/">
+
+  <title>{title}</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+  <meta name="theme-color" content="#6366f1">
+
+  <!-- Preconnect to external services -->
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://cloudflareinsights.com; frame-ancestors 'none'; form-action 'self';">
+
+  <!-- Preload LCP image for performance -->
+  <link rel="preload" href={profilePicture.src} as="image" type="image/webp">
+
+  <!-- Author -->
+  <meta name="author" content="Juan Felipe Rivera Gonzalez">
+
+  <!-- Preload critical fonts -->
+  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/fonts.css">
+
+  <!-- Client Router for SPA-like navigation -->
+  <ClientRouter />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Juan Felipe Rivera Gonzalez",
+    "jobTitle": t('schema.jobTitle'),
+    "description": t('schema.description'),
+    "url": canonicalUrl,
+    "image": "https://jjuanrivvera.com/img/profile-picture.webp",
+    "email": "jjuanrivvera@gmail.com",
+    "telephone": "+573167290759",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cali",
+      "addressRegion": "Valle del Cauca",
+      "addressCountry": "CO"
+    },
+    "sameAs": [
+      "https://linkedin.com/in/jjuanrivvera99",
+      "https://github.com/jjuanrivvera99"
+    ],
+    "knowsAbout": [
+      "PHP", "Laravel", "Vue.js", "Node.js", "JavaScript", "TypeScript",
+      "Python", "AWS", "GCP", "Docker", "Microservices", "RESTful APIs",
+      "PostgreSQL", "MySQL"
+    ],
+    "alumniOf": {
+      "@type": "EducationalOrganization",
+      "name": "SERVICIO NACIONAL DE APRENDIZAJE (SENA)"
+    },
+    "worksFor": {
+      "@type": "Organization",
+      "name": "ACUE",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "New York",
+        "addressCountry": "US"
+      }
+    }
+  })} />
+</head>
+<body>
+  <slot />
+
+  <!-- AOS Animation Library -->
+  <script>
+    import AOS from 'aos';
+
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out',
+      once: true,
+    });
+
+    // Re-initialize AOS after View Transitions navigation
+    document.addEventListener('astro:after-swap', () => {
+      AOS.refresh();
+    });
+  </script>
+
+  <!-- Main JS (navbar toggle, analytics tracking) -->
+  <script>
+    declare function gtag(...args: unknown[]): void;
+
+    // Setup mobile menu with proper cleanup to prevent memory leaks
+    function setupMobileMenu() {
+      const navToggle = document.getElementById('navToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+
+      if (!navToggle || !mobileMenu) return;
+
+      // Toggle handler
+      const toggleHandler = () => {
+        const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', String(!isExpanded));
+        mobileMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+      };
+
+      // Close menu handler
+      const closeMenu = () => {
+        mobileMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+        navToggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('menu-open');
+      };
+
+      // Escape key handler
+      const escapeHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+          closeMenu();
+        }
+      };
+
+      // Attach listeners
+      navToggle.addEventListener('click', toggleHandler);
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMenu);
+      });
+      document.addEventListener('keydown', escapeHandler);
+    }
+
+    // Setup navbar scroll effect
+    function setupNavbarScroll() {
+      const navbar = document.getElementById('navbar');
+      if (!navbar) return;
+
+      const scrollHandler = () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      };
+
+      window.addEventListener('scroll', scrollHandler);
+    }
+
+    // Setup CV download tracking
+    function setupCVTracking() {
+      const cvLink = document.querySelector('[data-track-cv]');
+      if (cvLink && typeof gtag !== 'undefined') {
+        cvLink.addEventListener('click', () => {
+          gtag('event', 'download_cv', {
+            'event_category': 'engagement',
+            'event_label': 'CV PDF Download',
+            'value': 1
+          });
+        });
+      }
+    }
+
+    // Setup contact link tracking (email, phone, social)
+    function setupContactTracking() {
+      if (typeof gtag === 'undefined') return;
+
+      // Email click tracking
+      document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+        link.addEventListener('click', () => {
+          gtag('event', 'contact_email', {
+            'event_category': 'contact',
+            'event_label': 'Email Click',
+            'value': 1
+          });
+        });
+      });
+
+      // Phone click tracking
+      document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+        link.addEventListener('click', () => {
+          gtag('event', 'contact_phone', {
+            'event_category': 'contact',
+            'event_label': 'Phone Click',
+            'value': 1
+          });
+        });
+      });
+
+      // Social link tracking
+      const socialDomains = ['linkedin.com', 'github.com', 'twitter.com', 'x.com'];
+      document.querySelectorAll('a[href^="https://"]').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        const socialDomain = socialDomains.find(domain => href.includes(domain));
+        if (socialDomain) {
+          link.addEventListener('click', () => {
+            gtag('event', 'social_click', {
+              'event_category': 'social',
+              'event_label': socialDomain.replace('.com', ''),
+              'value': 1
+            });
+          });
+        }
+      });
+    }
+
+    // Setup section view tracking with IntersectionObserver
+    function setupSectionTracking() {
+      if (typeof gtag === 'undefined') return;
+
+      const sections = document.querySelectorAll('section[id]');
+      const trackedSections = new Set<string>();
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.id;
+            if (!trackedSections.has(sectionId)) {
+              trackedSections.add(sectionId);
+              gtag('event', 'section_view', {
+                'event_category': 'navigation',
+                'event_label': sectionId,
+                'value': 1
+              });
+            }
+          }
+        });
+      }, { threshold: 0.5 });
+
+      sections.forEach(section => observer.observe(section));
+    }
+
+    // Initialize all handlers
+    setupMobileMenu();
+    setupNavbarScroll();
+    setupCVTracking();
+    setupContactTracking();
+    setupSectionTracking();
+
+    // Re-initialize after View Transitions (Astro swaps DOM on navigation)
+    document.addEventListener('astro:after-swap', () => {
+      setupMobileMenu();
+      setupCVTracking();
+      setupContactTracking();
+      setupSectionTracking();
+    });
+  </script>
+
+  <!-- Google Analytics -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-M063F7X189"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-M063F7X189', {
+      'anonymize_ip': true
+    });
+  </script>
+</body>
+</html>

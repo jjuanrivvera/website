@@ -1,93 +1,171 @@
 # Juan Felipe Rivera Portfolio Website
 
-A modern, responsive personal portfolio website showcasing professional experience, technical skills, and projects.
+A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish), optimized performance, and comprehensive SEO.
 
 **Live Site:** [jjuanrivvera.com](https://jjuanrivvera.com)
 
 ## Features
 
+- **Internationalization (i18n)** - Full English and Spanish support with URL-based routing (`/` for EN, `/es/` for ES)
 - **Dark Theme Design** - Modern dark UI with vibrant accent colors and gradient effects
-- **Responsive Layout** - Mobile-first design that works across all devices
+- **Responsive Layout** - Mobile-first design with hamburger menu for mobile devices
+- **SPA-like Navigation** - Astro View Transitions for smooth page transitions without full reloads
 - **Smooth Animations** - AOS (Animate On Scroll) library for scroll-triggered animations
-- **Accessibility** - Skip link, keyboard navigation, focus styles, and reduced motion support
-- **Performance Optimized** - Self-hosted fonts, WebP images, preloaded LCP image
-- **SEO Ready** - Open Graph, Twitter Cards, Schema.org structured data, sitemap, robots.txt
+- **Accessibility** - Skip link, keyboard navigation (Escape to close menu), focus styles, reduced motion support
+- **Performance Optimized** - Image optimization, font preloading, LCP preload, CSS/JS bundling
+- **SEO Ready** - Open Graph, Twitter Cards, JSON-LD structured data, dynamic hreflang, sitemap
 
 ## Tech Stack
 
-- **HTML5** - Semantic markup
+- **[Astro](https://astro.build)** - Static site generator with component islands
+- **TypeScript** - Type-safe translations and utilities
 - **CSS3** - Custom properties, flexbox, grid, animations
-- **JavaScript** - Vanilla JS (no framework)
 - **AOS** - Animate On Scroll library
-- **Inter Font** - Self-hosted variable font
-- **Netlify** - Hosting and deployment
+- **Inter Font** - Self-hosted web font
+- **Netlify** - Hosting with automatic deployments
 
 ## Project Structure
 
 ```
 website/
-├── css/
-│   ├── style.css      # Main styles
-│   ├── fonts.css      # Font declarations
-│   └── aos.css        # AOS library styles
-├── js/
-│   ├── main.js        # Main JavaScript
-│   └── aos.js         # AOS library
-├── fonts/
-│   └── Inter*.woff2   # Self-hosted Inter font files
-├── img/
-│   ├── profile-picture.webp
-│   ├── icons.svg      # SVG sprite for icons
-│   ├── favicon.ico
-│   └── logo-*.png
-├── files/
-│   └── CV.pdf         # Downloadable CV
-├── index.html         # Main HTML file
-├── sitemap.xml        # SEO sitemap
-└── robots.txt         # Search engine directives
+├── src/
+│   ├── assets/
+│   │   └── img/                    # Optimized images (processed by Astro)
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Navbar.astro        # Navigation with language switcher
+│   │   │   └── Footer.astro        # Footer component
+│   │   ├── sections/
+│   │   │   ├── Hero.astro          # Hero section
+│   │   │   ├── Experience.astro    # Work experience timeline
+│   │   │   ├── Skills.astro        # Technical skills grid
+│   │   │   ├── Projects.astro      # Featured projects
+│   │   │   ├── Education.astro     # Academic background
+│   │   │   └── Contact.astro       # Contact information
+│   │   └── ErrorPage.astro         # 404 error page component
+│   ├── i18n/
+│   │   ├── ui.ts                   # Translation strings (EN/ES)
+│   │   └── utils.ts                # i18n utilities (translations, URLs, hreflang)
+│   ├── layouts/
+│   │   └── Layout.astro            # Main layout with meta tags, scripts
+│   ├── pages/
+│   │   ├── index.astro             # English homepage
+│   │   ├── 404.astro               # English 404 page
+│   │   └── es/
+│   │       ├── index.astro         # Spanish homepage
+│   │       └── 404.astro           # Spanish 404 page
+│   └── styles/
+│       └── global.css              # Global styles
+├── public/
+│   ├── css/
+│   │   └── fonts.css               # Font-face declarations
+│   ├── fonts/
+│   │   └── Inter*.woff2            # Self-hosted Inter font files
+│   ├── img/
+│   │   ├── icons.svg               # SVG sprite for icons
+│   │   └── favicon.ico             # Favicon
+│   ├── files/
+│   │   └── CV.pdf                  # Downloadable CV
+│   └── robots.txt                  # Search engine directives
+├── astro.config.mjs                # Astro configuration
+├── tsconfig.json                   # TypeScript configuration
+├── netlify.toml                    # Netlify deployment config
+└── package.json                    # Dependencies and scripts
 ```
 
 ## Sections
 
-- **Hero** - Introduction with profile image, title, and social links
-- **Experience** - Professional work history timeline
-- **Skills** - Technical skills organized by category (Frontend, Backend, Database, Cloud)
-- **Projects** - Featured projects with descriptions and tech stacks
-- **Education** - Academic background
-- **Contact** - Contact information and call-to-action
+| Section | Description |
+|---------|-------------|
+| **Hero** | Introduction with profile image, title, CTAs, and social links |
+| **Experience** | Professional work history timeline with tech tags |
+| **Skills** | Technical skills organized by category (Frontend, Backend, Database, Cloud) |
+| **Projects** | Featured projects with descriptions and technologies |
+| **Education** | Academic background |
+| **Contact** | Contact information with email, phone, and location |
 
 ## Development
 
-### Local Development
+### Prerequisites
 
-Simply open `index.html` in a browser or use a local server:
+- Node.js 20+
+- pnpm 9+
+
+### Setup
 
 ```bash
-# Using Python
-python -m http.server 8000
+# Install dependencies
+pnpm install
 
-# Using Node.js (npx)
-npx serve .
+# Start development server
+pnpm dev
 
-# Using PHP
-php -S localhost:8000
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Type checking
+pnpm astro check
 ```
 
-### Deployment
+### Available Scripts
 
-The site is deployed on Netlify with automatic deployments from the `main` branch.
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start dev server at `localhost:4321` |
+| `pnpm build` | Type-check and build for production |
+| `pnpm preview` | Preview production build locally |
+| `pnpm astro check` | Run TypeScript diagnostics |
+
+## Internationalization
+
+The site supports English (default) and Spanish with URL-based routing:
+
+| Language | URL Pattern | Example |
+|----------|-------------|---------|
+| English | `/` | `jjuanrivvera.com/` |
+| Spanish | `/es/` | `jjuanrivvera.com/es/` |
+
+### Translation System
+
+Translations are defined in `src/i18n/ui.ts` with TypeScript for type safety:
+
+```typescript
+// Access translations in components
+const t = useTranslations(lang);
+const title = t('hero.name');
+```
+
+### Adding Translations
+
+1. Add the key to both `en` and `es` objects in `src/i18n/ui.ts`
+2. Use `t('your.key')` in components
+
+## SEO Features
+
+- **Dynamic Canonical URLs** - Each page has its own canonical URL
+- **hreflang Tags** - Proper alternate language links for each page
+- **Open Graph** - Social sharing metadata with optimized images
+- **Twitter Cards** - Large image cards for Twitter
+- **JSON-LD** - Person schema for structured data
+- **Sitemap** - Auto-generated with i18n support (`sitemap-index.xml`)
+- **robots.txt** - Search engine directives
 
 ## Performance Features
 
-- **Preloaded LCP Image** - Profile picture is preloaded for faster rendering
-- **Self-hosted Fonts** - Eliminates external font requests
-- **WebP Images** - Optimized image format with PNG fallback
-- **Deferred Scripts** - JavaScript loaded with `defer` attribute
-- **Content Security Policy** - Restricts resource loading for security
+- **Image Optimization** - Astro's built-in image processing with WebP output
+- **LCP Preload** - Profile picture preloaded for faster rendering
+- **Font Preload** - Critical fonts preloaded
+- **CSS Bundling** - Styles bundled and minified
+- **JS Code Splitting** - Only load what's needed per page
+- **View Transitions** - SPA-like navigation without full reloads
 
 ## Accessibility
 
 - Skip link for keyboard navigation
+- Escape key closes mobile menu
 - Focus-visible styles for keyboard users
 - Reduced motion support via `prefers-reduced-motion`
 - ARIA labels on interactive elements
@@ -95,12 +173,46 @@ The site is deployed on Netlify with automatic deployments from the `main` branc
 
 ## Analytics
 
-Google Analytics is integrated for tracking:
-- Page views
-- CV downloads
-- Contact link clicks (email, phone)
-- Social media clicks (LinkedIn, GitHub)
-- Section scroll visibility
+Google Analytics 4 is integrated with privacy-focused configuration:
+
+- IP anonymization enabled
+- Tracked events:
+  - Page views
+  - CV downloads
+  - Email clicks
+  - Phone clicks
+  - Social media clicks (LinkedIn, GitHub)
+  - Section visibility (IntersectionObserver)
+
+## Deployment
+
+### Netlify (Recommended)
+
+The site is configured for Netlify deployment:
+
+1. Connect your repository to Netlify
+2. Build settings are auto-detected from `netlify.toml`:
+   - Build command: `pnpm run build`
+   - Publish directory: `dist`
+   - Node version: 20
+   - pnpm version: 9
+
+### Manual Deployment
+
+```bash
+# Build the site
+pnpm build
+
+# The `dist/` folder contains the static site
+# Upload to any static hosting provider
+```
+
+## Security
+
+- Content Security Policy (CSP) meta tag
+- X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff
+- Referrer-Policy: strict-origin-when-cross-origin
 
 ## License
 
@@ -108,4 +220,4 @@ All rights reserved.
 
 ---
 
-*Built with vanilla HTML, CSS, and JavaScript*
+*Built with [Astro](https://astro.build)*

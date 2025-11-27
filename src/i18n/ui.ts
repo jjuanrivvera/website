@@ -78,6 +78,7 @@ export const ui = {
     'projects.courseBuilder.description': 'Robust tool for ACUE\'s Canvas LMS improving course creation efficiency. Introduced centralized workflow, improved error tracking, and eliminated redundant tasks.',
     'projects.serverlessEvents.description': 'Innovative solution for handling live events in Canvas LMS using GCP serverless functions. Features JWT decoding, MySQL storage, and Pub/Sub topics for scalable processing.',
     'projects.infraLab.description': 'Comprehensive homelab spanning Raspberry Pi, VPS, and development workstation with 20+ containerized services. Includes Nginx reverse proxy with 22 SSL-enabled hosts.',
+    'projects.portfolio.description': 'Modern portfolio website built with Astro featuring internationalization (EN/ES), View Transitions for SPA-like navigation, AOS animations, and comprehensive SEO with Open Graph and JSON-LD structured data. Deployed on Netlify with CI/CD.',
 
     // Education
     'education.title': 'Education',
@@ -177,6 +178,7 @@ export const ui = {
     'projects.courseBuilder.description': 'Herramienta robusta para el Canvas LMS de ACUE que mejora la eficiencia en la creación de cursos. Introduje flujo de trabajo centralizado, seguimiento de errores mejorado y eliminación de tareas redundantes.',
     'projects.serverlessEvents.description': 'Solución innovadora para manejar eventos en vivo en Canvas LMS usando funciones serverless de GCP. Incluye decodificación JWT, almacenamiento MySQL y topics Pub/Sub para procesamiento escalable.',
     'projects.infraLab.description': 'Laboratorio completo que abarca Raspberry Pi, VPS y estación de trabajo de desarrollo con más de 20 servicios en contenedores. Incluye proxy reverso Nginx con 22 hosts habilitados para SSL.',
+    'projects.portfolio.description': 'Sitio web de portafolio moderno construido con Astro con internacionalización (EN/ES), View Transitions para navegación tipo SPA, animaciones AOS y SEO completo con Open Graph y datos estructurados JSON-LD. Desplegado en Netlify con CI/CD.',
 
     // Education
     'education.title': 'Educación',

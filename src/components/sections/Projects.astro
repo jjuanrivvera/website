@@ -7,6 +7,13 @@ const t = useTranslations(lang);
 
 const projects = [
   {
+    key: 'portfolio',
+    title: 'Personal Portfolio',
+    featured: true,
+    techTags: ['Astro', 'TypeScript', 'i18n', 'Netlify'],
+    link: 'https://github.com/jjuanrivvera/website',
+  },
+  {
     key: 'acuePortal',
     title: 'ACUE Partner Portal',
     featured: true,
@@ -17,6 +24,7 @@ const projects = [
     title: 'Canvas LMS PHP SDK',
     featured: true,
     techTags: ['PHP', 'PHPUnit', 'Open Source', 'Packagist'],
+    link: 'https://github.com/jjuanrivvera/canvas-lms-kit',
   },
   {
     key: 'paymentGateway',
@@ -59,7 +67,14 @@ const projects = [
     <div class="projects-grid">
       {projects.map((project) => (
         <div class={`project-card ${project.featured ? 'featured' : ''}`} data-aos="fade-up">
-          <h3 class="project-title">{project.title}</h3>
+          <div class="project-header">
+            <h3 class="project-title">{project.title}</h3>
+            {project.link && (
+              <a href={project.link} target="_blank" rel="noopener noreferrer" class="project-link" aria-label={`View ${project.title} on GitHub`}>
+                <svg width="20" height="20"><use href="/img/icons.svg#icon-github"></use></svg>
+              </a>
+            )}
+          </div>
           <p class="project-description">{t(`projects.${project.key}.description` as TranslationKey)}</p>
           <div class="tech-tags">
             {project.techTags.map((tag) => <span class="tech-tag">{tag}</span>)}

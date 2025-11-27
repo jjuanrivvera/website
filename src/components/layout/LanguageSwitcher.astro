@@ -1,5 +1,6 @@
 ---
 import { getLangFromUrl, getLanguageOptions, useTranslations } from '@i18n/utils';
+import { languageMeta } from '@i18n/ui';
 
 interface Props {
   class?: string;
@@ -11,19 +12,74 @@ const { class: className = '', mobile = false } = Astro.props;
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const languageOptions = getLanguageOptions(Astro.url.pathname);
+const currentLang = languageMeta[lang];
 ---
 
-<div class={`${mobile ? 'mobile-lang-switcher' : 'language-switcher'} ${className}`}>
-  {languageOptions.map(option => (
-    <a
-      href={option.href}
-      class={`lang-link ${option.lang === lang ? 'is-active' : ''}`}
-      aria-label={`${t('a11y.langSwitch')} (${option.label})`}
-      hreflang={option.lang}
-      aria-current={option.lang === lang ? 'page' : undefined}
-    >
-      <span class="lang-flag" aria-hidden="true">{option.flag}</span>
-      <span class="lang-code">{option.code}</span>
-    </a>
-  ))}
+<div class={`lang-dropdown ${mobile ? 'mobile-lang-dropdown' : ''} ${className}`}>
+  <button
+    type="button"
+    class="lang-toggle"
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-label={t('a11y.langSwitch')}
+  >
+    <span class="lang-flag" aria-hidden="true">{currentLang.flag}</span>
+    <span class="lang-code">{currentLang.code}</span>
+    <svg class="lang-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="lang-menu" role="menu">
+    {languageOptions.map(option => (
+      <a
+        href={option.href}
+        class={`lang-option ${option.lang === lang ? 'is-active' : ''}`}
+        role="menuitem"
+        hreflang={option.lang}
+        aria-current={option.lang === lang ? 'page' : undefined}
+      >
+        <span class="lang-flag" aria-hidden="true">{option.flag}</span>
+        <span class="lang-label">{option.label}</span>
+      </a>
+    ))}
+  </div>
 </div>
+
+<script>
+  function initLanguageDropdowns() {
+    document.querySelectorAll('.lang-dropdown').forEach(dropdown => {
+      const toggle = dropdown.querySelector('.lang-toggle') as HTMLButtonElement;
+      const menu = dropdown.querySelector('.lang-menu') as HTMLElement;
+
+      if (!toggle || !menu) return;
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isExpanded));
+        menu.classList.toggle('is-open');
+      });
+
+      // Close on click outside
+      document.addEventListener('click', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('is-open');
+      });
+
+      // Close on Escape key
+      dropdown.addEventListener('keydown', (e) => {
+        if ((e as KeyboardEvent).key === 'Escape') {
+          toggle.setAttribute('aria-expanded', 'false');
+          menu.classList.remove('is-open');
+          toggle.focus();
+        }
+      });
+    });
+  }
+
+  // Run on initial load
+  initLanguageDropdowns();
+
+  // Re-run after View Transitions
+  document.addEventListener('astro:after-swap', initLanguageDropdowns);
+</script>

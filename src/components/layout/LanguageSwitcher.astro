@@ -1,5 +1,5 @@
 ---
-import { getLangFromUrl, getAlternateUrl, getLangSwitcher, useTranslations, getAlternateLang } from '@i18n/utils';
+import { getLangFromUrl, getLanguageOptions, useTranslations } from '@i18n/utils';
 
 interface Props {
   class?: string;
@@ -10,19 +10,20 @@ const { class: className = '', mobile = false } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const altUrl = getAlternateUrl(lang, Astro.url.pathname);
-const altLang = getAlternateLang(lang);
-const { flag, code } = getLangSwitcher(lang);
+const languageOptions = getLanguageOptions(Astro.url.pathname);
 ---
 
 <div class={`${mobile ? 'mobile-lang-switcher' : 'language-switcher'} ${className}`}>
-  <a
-    href={altUrl}
-    class="lang-link"
-    aria-label={t('a11y.langSwitch')}
-    hreflang={altLang}
-  >
-    <span class="lang-flag" aria-hidden="true">{flag}</span>
-    <span class="lang-code">{code}</span>
-  </a>
+  {languageOptions.map(option => (
+    <a
+      href={option.href}
+      class={`lang-link ${option.lang === lang ? 'is-active' : ''}`}
+      aria-label={`${t('a11y.langSwitch')} (${option.label})`}
+      hreflang={option.lang}
+      aria-current={option.lang === lang ? 'page' : undefined}
+    >
+      <span class="lang-flag" aria-hidden="true">{option.flag}</span>
+      <span class="lang-code">{option.code}</span>
+    </a>
+  ))}
 </div>

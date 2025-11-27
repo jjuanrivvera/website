@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import { getLangFromUrl, useTranslations, getLocale, getCanonicalUrl, getHreflangUrls } from '@i18n/utils';
+import { languageMeta, defaultLang, type Lang } from '@i18n/ui';
 import profilePicture from '@assets/img/profile-picture.webp';
 import '@styles/global.css';
 import 'aos/dist/aos.css';
@@ -16,7 +17,11 @@ const t = useTranslations(lang);
 const locale = getLocale(lang);
 const canonicalUrl = getCanonicalUrl(lang, Astro.url.pathname);
 const hreflangUrls = getHreflangUrls(Astro.url.pathname);
-const altLocale = lang === 'en' ? 'es_ES' : 'en_US';
+const hreflangEntries = Object.entries(hreflangUrls) as [Lang, string][];
+const alternateLocales = hreflangEntries
+  .filter(([code]) => code !== lang)
+  .map(([code]) => languageMeta[code].locale);
+const xDefaultHref = hreflangUrls[defaultLang];
 const profileImageUrl = new URL(profilePicture.src, Astro.site).href;
 
 const { title = t('meta.title'), description = t('meta.description'), noindex = false } = Astro.props;
@@ -43,7 +48,9 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
   <meta property="og:image:height" content="500">
   <meta property="og:image:alt" content={t('meta.og.imageAlt')}>
   <meta property="og:locale" content={locale}>
-  <meta property="og:locale:alternate" content={altLocale}>
+  {alternateLocales.map(code => (
+    <meta property="og:locale:alternate" content={code.replace('-', '_')} />
+  ))}
   <meta property="og:site_name" content={t('meta.og.siteName')}>
 
   <!-- Twitter Card -->
@@ -55,9 +62,10 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
 
   <!-- Canonical & Hreflang -->
   <link rel="canonical" href={canonicalUrl}>
-  <link rel="alternate" hreflang="en-US" href={hreflangUrls.en}>
-  <link rel="alternate" hreflang="es-ES" href={hreflangUrls.es}>
-  <link rel="alternate" hreflang="x-default" href={hreflangUrls.en}>
+  {hreflangEntries.map(([code, href]) => (
+    <link rel="alternate" hreflang={languageMeta[code].locale} href={href} />
+  ))}
+  <link rel="alternate" hreflang="x-default" href={xDefaultHref}>
 
   <title>{title}</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">

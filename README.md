@@ -1,12 +1,12 @@
 # Juan Felipe Rivera Portfolio Website
 
-A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish), optimized performance, and comprehensive SEO.
+A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish/Portuguese), optimized performance, and comprehensive SEO.
 
 **Live Site:** [jjuanrivvera.com](https://jjuanrivvera.com)
 
 ## Features
 
-- **Internationalization (i18n)** - Full English and Spanish support with URL-based routing (`/` for EN, `/es/` for ES)
+- **Internationalization (i18n)** - Full English, Spanish, and Portuguese support with URL-based routing (`/` for EN, `/es/` for ES, `/pt/` for PT)
 - **Dark Theme Design** - Modern dark UI with vibrant accent colors and gradient effects
 - **Responsive Layout** - Mobile-first design with hamburger menu for mobile devices
 - **SPA-like Navigation** - Astro View Transitions for smooth page transitions without full reloads
@@ -51,9 +51,12 @@ website/
 │   ├── pages/
 │   │   ├── index.astro             # English homepage
 │   │   ├── 404.astro               # English 404 page
-│   │   └── es/
-│   │       ├── index.astro         # Spanish homepage
-│   │       └── 404.astro           # Spanish 404 page
+│   │   ├── es/
+│   │   │   ├── index.astro         # Spanish homepage
+│   │   │   └── 404.astro           # Spanish 404 page
+│   │   └── pt/
+│   │       ├── index.astro         # Portuguese homepage
+│   │       └── 404.astro           # Portuguese 404 page
 │   └── styles/
 │       └── global.css              # Global styles
 ├── public/
@@ -121,12 +124,13 @@ pnpm astro check
 
 ## Internationalization
 
-The site supports English (default) and Spanish with URL-based routing:
+The site supports English (default), Spanish, and Portuguese with URL-based routing:
 
 | Language | URL Pattern | Example |
 |----------|-------------|---------|
 | English | `/` | `jjuanrivvera.com/` |
 | Spanish | `/es/` | `jjuanrivvera.com/es/` |
+| Portuguese | `/pt/` | `jjuanrivvera.com/pt/` |
 
 ### Translation System
 
@@ -140,7 +144,7 @@ const title = t('hero.name');
 
 ### Adding Translations
 
-1. Add the key to both `en` and `es` objects in `src/i18n/ui.ts`
+1. Add the key to the `en`, `es`, and `pt` objects in `src/i18n/ui.ts`
 2. Use `t('your.key')` in components
 
 ## SEO Features

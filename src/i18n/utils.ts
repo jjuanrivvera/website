@@ -1,5 +1,21 @@
-import { ui, defaultLang, languages, experienceHighlights, type Lang } from './ui';
+import { ui, defaultLang, languages, languageMeta, experienceHighlights, type Lang } from './ui';
 import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const supportedLanguages = Object.keys(languages) as Lang[];
+const localePrefixRegex = new RegExp(`^/(${supportedLanguages.join('|')})/`);
+const localeExactRegex = new RegExp(`^/(${supportedLanguages.join('|')})$`);
+
+function stripLocalePrefix(pathname: string): string {
+  return pathname.replace(localePrefixRegex, '/').replace(localeExactRegex, '/');
+}
+
+export type LanguageOption = {
+  lang: Lang;
+  label: string;
+  flag: string;
+  code: string;
+  href: string;
+};
 
 /**
  * Get the language from the URL path
@@ -29,29 +45,26 @@ export function getExperienceHighlights(
   return experienceHighlights[lang][company];
 }
 
-/**
- * Get the alternate language
- */
-export function getAlternateLang(lang: Lang): Lang {
-  return lang === 'en' ? 'es' : 'en';
+export function getLocaleUrl(lang: Lang, pathname: string): string {
+  const basePath = stripLocalePrefix(pathname);
+  return getRelativeLocaleUrl(lang, basePath);
 }
 
-/**
- * Get the URL for the alternate language version (uses Astro's built-in helper)
- * Preserves the current path when switching languages
- */
-export function getAlternateUrl(lang: Lang, pathname: string): string {
-  const alternateLang = getAlternateLang(lang);
-  // Remove the current locale prefix from pathname to get the base path
-  const basePath = pathname.replace(/^\/(es|en)\//, '/').replace(/^\/(es|en)$/, '/');
-  return getRelativeLocaleUrl(alternateLang, basePath);
+export function getLanguageOptions(pathname: string): LanguageOption[] {
+  return supportedLanguages.map(lang => ({
+    lang,
+    label: languages[lang],
+    flag: languageMeta[lang].flag,
+    code: languageMeta[lang].code,
+    href: getLocaleUrl(lang, pathname),
+  }));
 }
 
 /**
  * Get locale string for meta tags
  */
 export function getLocale(lang: Lang): string {
-  return lang === 'en' ? 'en_US' : 'es_ES';
+  return languageMeta[lang].locale.replace('-', '_');
 }
 
 /**
@@ -67,23 +80,20 @@ export function getCanonicalUrl(_lang: Lang, pathname: string): string {
 /**
  * Get hreflang URLs for the current page
  */
-export function getHreflangUrls(pathname: string): { en: string; es: string } {
+export function getHreflangUrls(pathname: string): Record<Lang, string> {
   const base = 'https://jjuanrivvera.com';
-  // Get base path without locale prefix
-  const basePath = pathname.replace(/^\/(es)\//, '/').replace(/^\/(es)$/, '/');
+  const basePath = stripLocalePrefix(pathname);
   const normalizedBasePath = basePath === '/' ? '/' : (basePath.endsWith('/') ? basePath : `${basePath}/`);
 
-  return {
-    en: `${base}${normalizedBasePath}`,
-    es: `${base}/es${normalizedBasePath === '/' ? '/' : normalizedBasePath}`,
-  };
-}
+  return supportedLanguages.reduce((acc, locale) => {
+    const localizedPath =
+      locale === defaultLang
+        ? normalizedBasePath
+        : normalizedBasePath === '/'
+          ? `/${locale}/`
+          : `/${locale}${normalizedBasePath}`;
 
-/**
- * Language switcher flag/code
- */
-export function getLangSwitcher(lang: Lang) {
-  return lang === 'en'
-    ? { flag: '🇪🇸', code: 'ES' }
-    : { flag: '🇺🇸', code: 'EN' };
+    acc[locale] = `${base}${localizedPath}`;
+    return acc;
+  }, {} as Record<Lang, string>);
 }

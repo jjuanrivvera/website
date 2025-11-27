@@ -67,11 +67,8 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://www.google-analytics.com">
 
-  <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://cloudflareinsights.com; frame-ancestors 'none'; form-action 'self';">
-
-  <!-- Preload LCP image for performance -->
-  <link rel="preload" href={profilePicture.src} as="image" type="image/webp">
+  <!-- Content Security Policy (frame-ancestors set via HTTP header in netlify.toml) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.google-analytics.com https://cloudflareinsights.com; form-action 'self';">
 
   <!-- Author -->
   <meta name="author" content="Juan Felipe Rivera Gonzalez">

@@ -55,11 +55,28 @@ export function getLocale(lang: Lang): string {
 }
 
 /**
- * Get canonical URL for a language
+ * Get canonical URL for the current page
  */
-export function getCanonicalUrl(lang: Lang): string {
+export function getCanonicalUrl(_lang: Lang, pathname: string): string {
   const base = 'https://jjuanrivvera.com';
-  return lang === 'en' ? `${base}/` : `${base}/es/`;
+  // Normalize pathname to ensure consistent trailing slash
+  const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+  return `${base}${normalizedPath}`;
+}
+
+/**
+ * Get hreflang URLs for the current page
+ */
+export function getHreflangUrls(pathname: string): { en: string; es: string } {
+  const base = 'https://jjuanrivvera.com';
+  // Get base path without locale prefix
+  const basePath = pathname.replace(/^\/(es)\//, '/').replace(/^\/(es)$/, '/');
+  const normalizedBasePath = basePath === '/' ? '/' : (basePath.endsWith('/') ? basePath : `${basePath}/`);
+
+  return {
+    en: `${base}${normalizedBasePath}`,
+    es: `${base}/es${normalizedBasePath === '/' ? '/' : normalizedBasePath}`,
+  };
 }
 
 /**

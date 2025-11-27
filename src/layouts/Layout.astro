@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { getLangFromUrl, useTranslations, getLocale, getCanonicalUrl } from '@i18n/utils';
+import { getLangFromUrl, useTranslations, getLocale, getCanonicalUrl, getHreflangUrls } from '@i18n/utils';
 import profilePicture from '@assets/img/profile-picture.webp';
 import '@styles/global.css';
 import 'aos/dist/aos.css';
@@ -14,8 +14,10 @@ interface Props {
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const locale = getLocale(lang);
-const canonicalUrl = getCanonicalUrl(lang);
+const canonicalUrl = getCanonicalUrl(lang, Astro.url.pathname);
+const hreflangUrls = getHreflangUrls(Astro.url.pathname);
 const altLocale = lang === 'en' ? 'es_ES' : 'en_US';
+const profileImageUrl = new URL(profilePicture.src, Astro.site).href;
 
 const { title = t('meta.title'), description = t('meta.description'), noindex = false } = Astro.props;
 ---
@@ -36,7 +38,7 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
   <meta property="og:description" content={t('meta.og.description')}>
   <meta property="og:type" content="website">
   <meta property="og:url" content={canonicalUrl}>
-  <meta property="og:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta property="og:image" content={profileImageUrl}>
   <meta property="og:image:width" content="500">
   <meta property="og:image:height" content="500">
   <meta property="og:image:alt" content={t('meta.og.imageAlt')}>
@@ -48,14 +50,14 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={t('meta.og.title')}>
   <meta name="twitter:description" content={t('meta.og.description')}>
-  <meta name="twitter:image" content="https://jjuanrivvera.com/img/profile-picture.webp">
+  <meta name="twitter:image" content={profileImageUrl}>
   <meta name="twitter:image:alt" content={t('meta.og.imageAlt')}>
 
   <!-- Canonical & Hreflang -->
   <link rel="canonical" href={canonicalUrl}>
-  <link rel="alternate" hreflang="en-US" href="https://jjuanrivvera.com/">
-  <link rel="alternate" hreflang="es-ES" href="https://jjuanrivvera.com/es/">
-  <link rel="alternate" hreflang="x-default" href="https://jjuanrivvera.com/">
+  <link rel="alternate" hreflang="en-US" href={hreflangUrls.en}>
+  <link rel="alternate" hreflang="es-ES" href={hreflangUrls.es}>
+  <link rel="alternate" hreflang="x-default" href={hreflangUrls.en}>
 
   <title>{title}</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
@@ -92,7 +94,7 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
     "jobTitle": t('schema.jobTitle'),
     "description": t('schema.description'),
     "url": canonicalUrl,
-    "image": "https://jjuanrivvera.com/img/profile-picture.webp",
+    "image": profileImageUrl,
     "email": "jjuanrivvera@gmail.com",
     "telephone": "+573167290759",
     "address": {
@@ -149,6 +151,9 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
   <script>
     declare function gtag(...args: unknown[]): void;
 
+    // Track current escape handler for cleanup
+    let currentEscapeHandler: ((e: KeyboardEvent) => void) | null = null;
+
     // Setup mobile menu with proper cleanup to prevent memory leaks
     function setupMobileMenu() {
       const navToggle = document.getElementById('navToggle');
@@ -173,10 +178,18 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
         document.body.classList.remove('menu-open');
       };
 
-      // Escape key handler
-      const escapeHandler = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-          closeMenu();
+      // Remove previous escape handler if exists
+      if (currentEscapeHandler) {
+        document.removeEventListener('keydown', currentEscapeHandler);
+      }
+
+      // Create new escape key handler
+      currentEscapeHandler = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          const menu = document.getElementById('mobileMenu');
+          if (menu?.classList.contains('active')) {
+            closeMenu();
+          }
         }
       };
 
@@ -185,23 +198,35 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
       mobileMenu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', closeMenu);
       });
-      document.addEventListener('keydown', escapeHandler);
+      document.addEventListener('keydown', currentEscapeHandler);
     }
+
+    // Track current scroll handler for cleanup
+    let currentScrollHandler: (() => void) | null = null;
 
     // Setup navbar scroll effect
     function setupNavbarScroll() {
       const navbar = document.getElementById('navbar');
       if (!navbar) return;
 
-      const scrollHandler = () => {
+      // Remove previous scroll handler if exists
+      if (currentScrollHandler) {
+        window.removeEventListener('scroll', currentScrollHandler);
+      }
+
+      currentScrollHandler = () => {
+        const nav = document.getElementById('navbar');
+        if (!nav) return;
         if (window.scrollY > 50) {
-          navbar.classList.add('scrolled');
+          nav.classList.add('scrolled');
         } else {
-          navbar.classList.remove('scrolled');
+          nav.classList.remove('scrolled');
         }
       };
 
-      window.addEventListener('scroll', scrollHandler);
+      window.addEventListener('scroll', currentScrollHandler);
+      // Apply immediately in case page is already scrolled
+      currentScrollHandler();
     }
 
     // Setup CV download tracking
@@ -297,6 +322,7 @@ const { title = t('meta.title'), description = t('meta.description'), noindex = 
     // Re-initialize after View Transitions (Astro swaps DOM on navigation)
     document.addEventListener('astro:after-swap', () => {
       setupMobileMenu();
+      setupNavbarScroll();
       setupCVTracking();
       setupContactTracking();
       setupSectionTracking();

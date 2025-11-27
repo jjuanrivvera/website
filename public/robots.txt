@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jjuanrivvera.com/sitemap.xml
+Sitemap: https://jjuanrivvera.com/sitemap-index.xml

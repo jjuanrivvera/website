@@ -1,12 +1,19 @@
 export const languages = {
   en: 'English',
   es: 'Español',
+  pt: 'Português (Brasil)',
 } as const;
 
 export const defaultLang = 'en' as const;
 
 export type Lang = keyof typeof languages;
 export type TranslationKey = keyof (typeof ui)['en'];
+
+export const languageMeta = {
+  en: { flag: '🇺🇸', code: 'EN', locale: 'en-US' },
+  es: { flag: '🇪🇸', code: 'ES', locale: 'es-ES' },
+  pt: { flag: '🇧🇷', code: 'PT', locale: 'pt-BR' },
+} as const satisfies Record<Lang, { flag: string; code: string; locale: string }>;
 
 export const ui = {
   en: {
@@ -26,7 +33,7 @@ export const ui = {
     'a11y.linkedin': 'LinkedIn profile',
     'a11y.email': 'Send email',
     'a11y.github': 'GitHub profile',
-    'a11y.langSwitch': 'Switch to Spanish',
+    'a11y.langSwitch': 'Change language',
 
     // Navigation
     'nav.experience': 'Experience',
@@ -78,7 +85,7 @@ export const ui = {
     'projects.courseBuilder.description': 'Robust tool for ACUE\'s Canvas LMS improving course creation efficiency. Introduced centralized workflow, improved error tracking, and eliminated redundant tasks.',
     'projects.serverlessEvents.description': 'Innovative solution for handling live events in Canvas LMS using GCP serverless functions. Features JWT decoding, MySQL storage, and Pub/Sub topics for scalable processing.',
     'projects.infraLab.description': 'Comprehensive homelab spanning Raspberry Pi, VPS, and development workstation with 20+ containerized services. Includes Nginx reverse proxy with 22 SSL-enabled hosts.',
-    'projects.portfolio.description': 'Modern portfolio website built with Astro featuring internationalization (EN/ES), View Transitions for SPA-like navigation, AOS animations, and comprehensive SEO with Open Graph and JSON-LD structured data. Deployed on Netlify with CI/CD.',
+    'projects.portfolio.description': 'Modern portfolio website built with Astro featuring internationalization (EN/ES/PT), View Transitions for SPA-like navigation, AOS animations, and comprehensive SEO with Open Graph and JSON-LD structured data. Deployed on Netlify with CI/CD.',
 
     // Education
     'education.title': 'Education',
@@ -126,7 +133,7 @@ export const ui = {
     'a11y.linkedin': 'Perfil de LinkedIn',
     'a11y.email': 'Enviar correo electrónico',
     'a11y.github': 'Perfil de GitHub',
-    'a11y.langSwitch': 'Cambiar a inglés',
+    'a11y.langSwitch': 'Cambiar idioma',
 
     // Navigation
     'nav.experience': 'Experiencia',
@@ -178,7 +185,7 @@ export const ui = {
     'projects.courseBuilder.description': 'Herramienta robusta para el Canvas LMS de ACUE que mejora la eficiencia en la creación de cursos. Introduje flujo de trabajo centralizado, seguimiento de errores mejorado y eliminación de tareas redundantes.',
     'projects.serverlessEvents.description': 'Solución innovadora para manejar eventos en vivo en Canvas LMS usando funciones serverless de GCP. Incluye decodificación JWT, almacenamiento MySQL y topics Pub/Sub para procesamiento escalable.',
     'projects.infraLab.description': 'Laboratorio completo que abarca Raspberry Pi, VPS y estación de trabajo de desarrollo con más de 20 servicios en contenedores. Incluye proxy reverso Nginx con 22 hosts habilitados para SSL.',
-    'projects.portfolio.description': 'Sitio web de portafolio moderno construido con Astro con internacionalización (EN/ES), View Transitions para navegación tipo SPA, animaciones AOS y SEO completo con Open Graph y datos estructurados JSON-LD. Desplegado en Netlify con CI/CD.',
+    'projects.portfolio.description': 'Sitio web de portafolio moderno construido con Astro con internacionalización (EN/ES/PT), View Transitions para navegación tipo SPA, animaciones AOS y SEO completo con Open Graph y datos estructurados JSON-LD. Desplegado en Netlify con CI/CD.',
 
     // Education
     'education.title': 'Educación',
@@ -207,6 +214,105 @@ export const ui = {
     '404.title': 'Página No Encontrada',
     '404.description': 'La página que buscas no existe o ha sido movida.',
     '404.cta': 'Ir al Inicio',
+  },
+  pt: {
+    // Meta
+    'meta.title': 'Juan Felipe Rivera Gonzalez | Desenvolvedor Full Stack',
+    'meta.description': 'Juan Felipe Rivera Gonzalez - Desenvolvedor Full Stack com mais de 7 anos de experiência em aplicações web escaláveis, microserviços e infraestrutura em nuvem.',
+    'meta.keywords': 'Desenvolvedor Full Stack, PHP, Laravel, Vue.js, AWS, GCP, Node.js, Engenheiro de Software',
+    'meta.og.title': 'Juan Felipe Rivera Gonzalez - Desenvolvedor Full Stack',
+    'meta.og.description': 'Desenvolvedor Full Stack experiente com mais de 7 anos focado em aplicações escaláveis e infraestrutura em nuvem.',
+    'meta.og.imageAlt': 'Juan Felipe Rivera Gonzalez - Desenvolvedor Full Stack',
+    'meta.og.siteName': 'Portfólio de Juan Felipe Rivera',
+
+    // Accessibility
+    'a11y.skipLink': 'Pular para o conteúdo principal',
+    'a11y.toggleMenu': 'Alternar menu',
+    'a11y.mobileMenu': 'Navegação móvel',
+    'a11y.linkedin': 'Perfil no LinkedIn',
+    'a11y.email': 'Enviar e-mail',
+    'a11y.github': 'Perfil no GitHub',
+    'a11y.langSwitch': 'Mudar idioma',
+
+    // Navigation
+    'nav.experience': 'Experiência',
+    'nav.skills': 'Habilidades',
+    'nav.projects': 'Projetos',
+    'nav.education': 'Educação',
+    'nav.contact': 'Contato',
+
+    // Hero
+    'hero.name': 'Juan Felipe Rivera Gonzalez',
+    'hero.title': 'Desenvolvedor Full Stack',
+    'hero.description': 'Desenvolvedor Full Stack experiente com mais de 7 anos especializado em aplicações web escaláveis, arquitetura de microserviços e infraestrutura em nuvem. Histórico comprovado entregando soluções de nível empresarial para clientes internacionais nos setores financeiro e educacional.',
+    'hero.imageAlt': 'Juan Felipe Rivera Gonzalez - Desenvolvedor Full Stack especializado em PHP, Laravel, Vue.js, AWS e GCP',
+    'hero.cta.contact': 'Entrar em Contato',
+    'hero.cta.experience': 'Ver Experiência',
+    'hero.cta.download': 'Baixar CV',
+
+    // Experience
+    'experience.title': 'Experiência Profissional',
+    'experience.subtitle': 'Mais de 7 anos construindo soluções empresariais',
+    'experience.acue.date': 'Jan 2023 - Presente',
+    'experience.acue.role': 'Desenvolvedor Full Stack',
+    'experience.acue.location': 'Nova York, Estados Unidos (Remoto)',
+    'experience.hellobuild.date': 'Fev 2022 - Dez 2022',
+    'experience.hellobuild.role': 'Desenvolvedor Full Stack',
+    'experience.hellobuild.location': 'Flórida, Estados Unidos (Remoto)',
+    'experience.alegra.date': 'Out 2019 - Fev 2022',
+    'experience.alegra.role': 'Desenvolvedor Full Stack',
+    'experience.alegra.location': 'Medellín, Antioquia, Colômbia (Remoto)',
+    'experience.usc.date': 'Jul 2018 - Set 2019',
+    'experience.usc.role': 'Desenvolvedor',
+    'experience.usc.location': 'Cali, Valle del Cauca, Colômbia (Presencial)',
+
+    // Skills
+    'skills.title': 'Habilidades Técnicas',
+    'skills.subtitle': 'Competências essenciais e tecnologias',
+    'skills.frontend': 'Frontend',
+    'skills.backend': 'Backend',
+    'skills.database': 'Banco de Dados',
+    'skills.cloud': 'Nuvem & DevOps',
+
+    // Projects
+    'projects.title': 'Projetos em Destaque',
+    'projects.subtitle': 'Soluções empresariais e contribuições open source',
+    'projects.acuePortal.description': 'Aplicação Django empresarial que gerencia mais de 580 parcerias institucionais com acompanhamento de matrícula de docentes, geração de certificados e gestão de coortes. Integrações com Salesforce CRM, Canvas LMS, SendGrid e BigQuery.',
+    'projects.canvasKit.description': 'Biblioteca PHP open source de nível empresarial para integração com a API do Canvas LMS com 85% de cobertura. Arquitetada com padrões Active Record + DTO e conformidade PSR-12. Alcançou mais de 95% de cobertura com 964 testes e 4.430 asserções.',
+    'projects.paymentGateway.description': 'Microserviço que permite aos usuários receber pagamentos por provedores configuráveis incluindo PayPal, RappiPay, Nequi, PayU, Tpaga, SrPago, VisaNet e MercadoPago.',
+    'projects.ecommerceGateway.description': 'Microserviço que sincroniza plataformas de e-commerce com o sistema contábil. Integrado com os marketplaces Shopify e Mercado Livre.',
+    'projects.courseBuilder.description': 'Ferramenta robusta para o Canvas LMS da ACUE que melhora a eficiência na criação de cursos. Introduz fluxo centralizado, melhor rastreamento de erros e elimina tarefas redundantes.',
+    'projects.serverlessEvents.description': 'Solução inovadora para lidar com eventos ao vivo no Canvas LMS usando funções serverless da GCP. Inclui decodificação JWT, armazenamento MySQL e tópicos Pub/Sub para processamento escalável.',
+    'projects.infraLab.description': 'Homelab completo abrangendo Raspberry Pi, VPS e estação de trabalho de desenvolvimento com mais de 20 serviços em contêineres. Inclui proxy reverso Nginx com 22 hosts com SSL.',
+    'projects.portfolio.description': 'Site de portfólio moderno construído com Astro com internacionalização (EN/ES/PT), View Transitions para navegação estilo SPA, animações AOS e SEO completo com Open Graph e dados estruturados JSON-LD. Implantado na Netlify com CI/CD.',
+
+    // Education
+    'education.title': 'Educação',
+    'education.subtitle': 'Formação acadêmica',
+    'education.degree': 'Tecnologia em Análise e Desenvolvimento de Sistemas de Informação',
+    'education.date': 'Julho 2018',
+
+    // Contact
+    'contact.title': 'Entre em Contato',
+    'contact.subtitle': 'Vamos trabalhar juntos',
+    'contact.heading': 'Pronto para colaborar?',
+    'contact.description': 'Estou sempre aberto a discutir novos projetos, ideias criativas ou oportunidades para contribuir com a sua visão.',
+    'contact.cta': 'Enviar E-mail',
+
+    // Footer
+    'footer.languages': 'Idiomas:',
+    'footer.spanish': 'Espanhol (Nativo)',
+    'footer.english': 'Inglês (Avançado)',
+    'footer.copyright': 'Todos os direitos reservados.',
+
+    // Schema
+    'schema.jobTitle': 'Desenvolvedor Full Stack',
+    'schema.description': 'Desenvolvedor Full Stack experiente com mais de 7 anos especializado em aplicações web escaláveis, arquitetura de microserviços e infraestrutura em nuvem.',
+
+    // 404
+    '404.title': 'Página Não Encontrada',
+    '404.description': 'A página que você procura não existe ou foi movida.',
+    '404.cta': 'Voltar ao Início',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
@@ -268,6 +374,35 @@ export const experienceHighlights = {
       'GitLab DevOps: CI/CD, Monitoreo, Container Registry',
       'Gestión de ambientes Docker',
       'Administración de bases de datos Oracle',
+    ],
+  },
+  pt: {
+    acue: [
+      'Desenvolvimento, refatoração e gerenciamento de aplicações PHP',
+      'GCP (Cloud SQL, Functions, Cloud Run, BigQuery)',
+      'Integração de componentes Laravel e Symfony',
+      'Desenvolvimento de interfaces frontend com Vue.js e Bootstrap 5',
+      'Desenvolvimento de funções serverless em Python',
+    ],
+    hellobuild: [
+      'Desenvolvimento de microserviços com Node.js e Serverless',
+      'Desenvolvimento, refatoração e gerenciamento de aplicações PHP',
+      'Gestão de ambientes Docker',
+      'Nuvem: Amazon Web Services (AWS)',
+    ],
+    alegra: [
+      'Desenvolvimento de microserviços em Laravel',
+      'Implementação de micro-frontends com Vue.js',
+      'AWS (ECS, CodeBuild, SNS, SQS)',
+      'Integrações de e-commerce (Shopify, Mercado Libre)',
+      'Integrações de pagamentos online (Nequi, RappiPay, MercadoPago etc.)',
+    ],
+    usc: [
+      'Desenvolvimento de aplicações Laravel',
+      'Administração de servidores Linux',
+      'GitLab DevOps: CI/CD, Monitoramento, Container Registry',
+      'Gestão de ambientes Docker',
+      'Administração de banco de dados Oracle',
     ],
   },
 } as const;

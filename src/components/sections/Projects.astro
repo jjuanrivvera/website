@@ -62,25 +62,44 @@ const projects = [
 <section class="projects" id="projects">
   <div class="container">
     <h2 class="section-title" data-aos="fade-up">{t('projects.title')}</h2>
-    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">{t('projects.subtitle')}</p>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+      {t('projects.subtitle')}
+    </p>
 
     <div class="projects-grid">
-      {projects.map((project) => (
-        <div class={`project-card ${project.featured ? 'featured' : ''}`} data-aos="fade-up">
-          <div class="project-header">
-            <h3 class="project-title">{project.title}</h3>
-            {project.link && (
-              <a href={project.link} target="_blank" rel="noopener noreferrer" class="project-link" aria-label={`View ${project.title} on GitHub`}>
-                <svg width="20" height="20"><use href="/img/icons.svg#icon-github"></use></svg>
-              </a>
-            )}
+      {
+        projects.map((project) => (
+          <div
+            class={`project-card ${project.featured ? 'featured' : ''}`}
+            data-aos="fade-up"
+          >
+            <div class="project-header">
+              <h3 class="project-title">{project.title}</h3>
+              {project.link && (
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="project-link"
+                  aria-label={`View ${project.title} on GitHub`}
+                >
+                  <svg width="20" height="20">
+                    <use href="/img/icons.svg#icon-github" />
+                  </svg>
+                </a>
+              )}
+            </div>
+            <p class="project-description">
+              {t(`projects.${project.key}.description` as TranslationKey)}
+            </p>
+            <div class="tech-tags">
+              {project.techTags.map((tag) => (
+                <span class="tech-tag">{tag}</span>
+              ))}
+            </div>
           </div>
-          <p class="project-description">{t(`projects.${project.key}.description` as TranslationKey)}</p>
-          <div class="tech-tags">
-            {project.techTags.map((tag) => <span class="tech-tag">{tag}</span>)}
-          </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>

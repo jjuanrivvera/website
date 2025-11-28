@@ -1,5 +1,7 @@
 /* CSS Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -48,7 +50,11 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
@@ -211,7 +217,11 @@ button:focus:not(:focus-visible) {
   align-items: center;
   justify-content: center;
   padding: 6rem 1.5rem 4rem;
-  background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+  background: radial-gradient(
+    ellipse at center,
+    var(--bg-secondary) 0%,
+    var(--bg-primary) 70%
+  );
   position: relative;
   overflow: hidden;
 }
@@ -224,7 +234,11 @@ button:focus:not(:focus-visible) {
   transform: translate(-50%, -50%);
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.1) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -240,15 +254,21 @@ button:focus:not(:focus-visible) {
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid transparent;
-  background: linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
-              var(--accent-gradient) border-box;
+  background:
+    linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+    var(--accent-gradient) border-box;
   animation: glow-pulse 3s ease-in-out infinite;
   margin-bottom: 2rem;
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
-  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.6);
+  }
 }
 
 .hero-title {
@@ -592,7 +612,11 @@ section {
 
 .project-card.featured {
   border-color: rgba(99, 102, 241, 0.3);
-  background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(99, 102, 241, 0.05) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-tertiary) 0%,
+    rgba(99, 102, 241, 0.05) 100%
+  );
 }
 
 .project-header {
@@ -876,7 +900,7 @@ body.menu-open {
   transition: transform 0.2s ease;
 }
 
-.lang-toggle[aria-expanded="true"] .lang-chevron {
+.lang-toggle[aria-expanded='true'] .lang-chevron {
   transform: rotate(180deg);
 }
 
@@ -963,7 +987,9 @@ body.menu-open {
   visibility: hidden;
   transform: none;
   overflow: hidden;
-  transition: all 0.2s ease, max-height 0.3s ease;
+  transition:
+    all 0.2s ease,
+    max-height 0.3s ease;
 }
 
 .mobile-lang-dropdown .lang-menu.is-open {

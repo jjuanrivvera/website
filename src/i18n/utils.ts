@@ -1,4 +1,11 @@
-import { ui, defaultLang, languages, languageMeta, experienceHighlights, type Lang } from './ui';
+import {
+  ui,
+  defaultLang,
+  languages,
+  languageMeta,
+  experienceHighlights,
+  type Lang,
+} from './ui';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
 const supportedLanguages = Object.keys(languages) as Lang[];
@@ -6,7 +13,9 @@ const localePrefixRegex = new RegExp(`^/(${supportedLanguages.join('|')})/`);
 const localeExactRegex = new RegExp(`^/(${supportedLanguages.join('|')})$`);
 
 function stripLocalePrefix(pathname: string): string {
-  return pathname.replace(localePrefixRegex, '/').replace(localeExactRegex, '/');
+  return pathname
+    .replace(localePrefixRegex, '/')
+    .replace(localeExactRegex, '/');
 }
 
 export type LanguageOption = {
@@ -51,7 +60,7 @@ export function getLocaleUrl(lang: Lang, pathname: string): string {
 }
 
 export function getLanguageOptions(pathname: string): LanguageOption[] {
-  return supportedLanguages.map(lang => ({
+  return supportedLanguages.map((lang) => ({
     lang,
     label: languages[lang],
     flag: languageMeta[lang].flag,
@@ -83,17 +92,21 @@ export function getCanonicalUrl(_lang: Lang, pathname: string): string {
 export function getHreflangUrls(pathname: string): Record<Lang, string> {
   const base = 'https://jjuanrivvera.com';
   const basePath = stripLocalePrefix(pathname);
-  const normalizedBasePath = basePath === '/' ? '/' : (basePath.endsWith('/') ? basePath : `${basePath}/`);
+  const normalizedBasePath =
+    basePath === '/' ? '/' : basePath.endsWith('/') ? basePath : `${basePath}/`;
 
-  return supportedLanguages.reduce((acc, locale) => {
-    const localizedPath =
-      locale === defaultLang
-        ? normalizedBasePath
-        : normalizedBasePath === '/'
-          ? `/${locale}/`
-          : `/${locale}${normalizedBasePath}`;
+  return supportedLanguages.reduce(
+    (acc, locale) => {
+      const localizedPath =
+        locale === defaultLang
+          ? normalizedBasePath
+          : normalizedBasePath === '/'
+            ? `/${locale}/`
+            : `/${locale}${normalizedBasePath}`;
 
-    acc[locale] = `${base}${localizedPath}`;
-    return acc;
-  }, {} as Record<Lang, string>);
+      acc[locale] = `${base}${localizedPath}`;
+      return acc;
+    },
+    {} as Record<Lang, string>
+  );
 }

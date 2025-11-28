@@ -42,3 +42,8 @@ yarn.lock
 # Claude Code / Playwright
 .claude/
 .playwright-mcp/
+
+# Test outputs
+playwright-report/
+test-results/
+.lighthouseci/

@@ -1,5 +1,8 @@
 # Juan Felipe Rivera Portfolio Website
 
+[![CI](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml/badge.svg)](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-site-id/deploy-status)](https://app.netlify.com/sites/your-site/deploys)
+
 A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish/Portuguese), optimized performance, and comprehensive SEO.
 
 **Live Site:** [jjuanrivvera.com](https://jjuanrivvera.com)
@@ -78,14 +81,14 @@ website/
 
 ## Sections
 
-| Section | Description |
-|---------|-------------|
-| **Hero** | Introduction with profile image, title, CTAs, and social links |
-| **Experience** | Professional work history timeline with tech tags |
-| **Skills** | Technical skills organized by category (Frontend, Backend, Database, Cloud) |
-| **Projects** | Featured projects with descriptions and technologies |
-| **Education** | Academic background |
-| **Contact** | Contact information with email, phone, and location |
+| Section        | Description                                                                 |
+| -------------- | --------------------------------------------------------------------------- |
+| **Hero**       | Introduction with profile image, title, CTAs, and social links              |
+| **Experience** | Professional work history timeline with tech tags                           |
+| **Skills**     | Technical skills organized by category (Frontend, Backend, Database, Cloud) |
+| **Projects**   | Featured projects with descriptions and technologies                        |
+| **Education**  | Academic background                                                         |
+| **Contact**    | Contact information with email, phone, and location                         |
 
 ## Development
 
@@ -115,22 +118,27 @@ pnpm astro check
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server at `localhost:4321` |
-| `pnpm build` | Type-check and build for production |
-| `pnpm preview` | Preview production build locally |
-| `pnpm astro check` | Run TypeScript diagnostics |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `pnpm dev`          | Start dev server at `localhost:4321` |
+| `pnpm build`        | Type-check and build for production  |
+| `pnpm preview`      | Preview production build locally     |
+| `pnpm check`        | Run TypeScript diagnostics           |
+| `pnpm format`       | Format code with Prettier            |
+| `pnpm format:check` | Check code formatting                |
+| `pnpm lint`         | Lint code with ESLint                |
+| `pnpm test`         | Run Playwright E2E tests             |
+| `pnpm test:ui`      | Run Playwright tests with UI         |
 
 ## Internationalization
 
 The site supports English (default), Spanish, and Portuguese with URL-based routing:
 
-| Language | URL Pattern | Example |
-|----------|-------------|---------|
-| English | `/` | `jjuanrivvera.com/` |
-| Spanish | `/es/` | `jjuanrivvera.com/es/` |
-| Portuguese | `/pt/` | `jjuanrivvera.com/pt/` |
+| Language   | URL Pattern | Example                |
+| ---------- | ----------- | ---------------------- |
+| English    | `/`         | `jjuanrivvera.com/`    |
+| Spanish    | `/es/`      | `jjuanrivvera.com/es/` |
+| Portuguese | `/pt/`      | `jjuanrivvera.com/pt/` |
 
 ### Translation System
 
@@ -224,4 +232,4 @@ All rights reserved.
 
 ---
 
-*Built with [Astro](https://astro.build)*
+_Built with [Astro](https://astro.build)_

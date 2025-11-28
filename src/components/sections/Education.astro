@@ -8,11 +8,15 @@ const t = useTranslations(lang);
 <section class="education" id="education">
   <div class="container">
     <h2 class="section-title" data-aos="fade-up">{t('education.title')}</h2>
-    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">{t('education.subtitle')}</p>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+      {t('education.subtitle')}
+    </p>
 
     <div class="education-card" data-aos="fade-up" data-aos-delay="200">
       <div class="education-icon">
-        <svg width="24" height="24"><use href="/img/icons.svg#icon-graduation"></use></svg>
+        <svg width="24" height="24"
+          ><use href="/img/icons.svg#icon-graduation"></use></svg
+        >
       </div>
       <h3 class="education-school">SERVICIO NACIONAL DE APRENDIZAJE (SENA)</h3>
       <p class="education-degree">{t('education.degree')}</p>

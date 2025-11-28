@@ -1,5 +1,9 @@
 ---
-import { getLangFromUrl, useTranslations, getExperienceHighlights } from '@i18n/utils';
+import {
+  getLangFromUrl,
+  useTranslations,
+  getExperienceHighlights,
+} from '@i18n/utils';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -31,30 +35,42 @@ const jobs = [
 <section class="experience" id="experience">
   <div class="container">
     <h2 class="section-title" data-aos="fade-up">{t('experience.title')}</h2>
-    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">{t('experience.subtitle')}</p>
+    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+      {t('experience.subtitle')}
+    </p>
 
     <div class="timeline">
-      {jobs.map((job) => {
-        const highlights = getExperienceHighlights(lang, job.key);
-        return (
-          <div class="timeline-item" data-aos="fade-up">
-            <div class="timeline-card">
-              <div class="timeline-header">
-                <h3 class="timeline-company">{job.company}</h3>
-                <span class="timeline-date">{t(`experience.${job.key}.date`)}</span>
-              </div>
-              <p class="timeline-role">{t(`experience.${job.key}.role`)}</p>
-              <p class="timeline-location">{t(`experience.${job.key}.location`)}</p>
-              <ul class="timeline-highlights">
-                {highlights.map((highlight) => <li>{highlight}</li>)}
-              </ul>
-              <div class="tech-tags">
-                {job.techTags.map((tag) => <span class="tech-tag">{tag}</span>)}
+      {
+        jobs.map((job) => {
+          const highlights = getExperienceHighlights(lang, job.key);
+          return (
+            <div class="timeline-item" data-aos="fade-up">
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <h3 class="timeline-company">{job.company}</h3>
+                  <span class="timeline-date">
+                    {t(`experience.${job.key}.date`)}
+                  </span>
+                </div>
+                <p class="timeline-role">{t(`experience.${job.key}.role`)}</p>
+                <p class="timeline-location">
+                  {t(`experience.${job.key}.location`)}
+                </p>
+                <ul class="timeline-highlights">
+                  {highlights.map((highlight) => (
+                    <li>{highlight}</li>
+                  ))}
+                </ul>
+                <div class="tech-tags">
+                  {job.techTags.map((tag) => (
+                    <span class="tech-tag">{tag}</span>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      }
     </div>
   </div>
 </section>

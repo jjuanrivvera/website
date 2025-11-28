@@ -1,7 +1,7 @@
 # Juan Felipe Rivera Portfolio Website
 
 [![CI](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml/badge.svg)](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-site-id/deploy-status)](https://app.netlify.com/sites/your-site/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/8a070b98-08e4-4765-94a5-3c0aef85a461/deploy-status)](https://app.netlify.com/sites/jjuanrivvera99/deploys)
 
 A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish/Portuguese), optimized performance, and comprehensive SEO.
 

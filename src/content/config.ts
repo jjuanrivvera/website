@@ -28,7 +28,16 @@ const blog = defineCollection({
 
         // Taxonomy
         tags: z
-          .array(z.string())
+          .array(
+            z
+              .string()
+              .min(2, 'Tags should be at least 2 characters')
+              .max(30, 'Tags should be 30 characters or less')
+              .regex(
+                /^[\p{L}\p{N}\s-]+$/u,
+                'Tags should only contain letters, numbers, hyphens, and spaces'
+              )
+          )
           .min(1, 'At least one tag is required')
           .max(5, 'Maximum 5 tags allowed'),
 

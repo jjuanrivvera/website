@@ -38,21 +38,41 @@ function calculateTagSimilarity(tagsA: string[], tagsB: string[]): number {
   return intersection.size / union.size;
 }
 
+// Recency scoring thresholds (in days)
+const RECENCY_THRESHOLDS = {
+  VERY_RECENT: 30, // Within 30 days = max score
+  RECENT: 90, // Within 90 days = high score
+  MODERATE: 180, // Within 180 days = medium score
+  OLD: 365, // Within 365 days = low score
+} as const;
+
+// Recency scores for each threshold
+const RECENCY_SCORES = {
+  VERY_RECENT: 1.0,
+  RECENT: 0.8,
+  MODERATE: 0.6,
+  OLD: 0.4,
+  VERY_OLD: 0.2,
+} as const;
+
 /**
  * Calculate recency score (0-1 scale)
- * More recent posts get higher scores
+ * Scores posts based on temporal proximity to reference date
+ * Posts closer in time to the reference get higher scores
  */
-function calculateRecencyScore(postDate: Date, newestDate: Date): number {
+function calculateRecencyScore(postDate: Date, referenceDate: Date): number {
+  const MS_PER_DAY = 1000 * 60 * 60 * 24;
   const daysDiff = Math.abs(
-    (newestDate.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24)
+    (referenceDate.getTime() - postDate.getTime()) / MS_PER_DAY
   );
 
-  // Posts within 30 days get max score, older posts decay
-  if (daysDiff <= 30) return 1;
-  if (daysDiff <= 90) return 0.8;
-  if (daysDiff <= 180) return 0.6;
-  if (daysDiff <= 365) return 0.4;
-  return 0.2;
+  // Posts within thresholds get corresponding scores
+  if (daysDiff <= RECENCY_THRESHOLDS.VERY_RECENT)
+    return RECENCY_SCORES.VERY_RECENT;
+  if (daysDiff <= RECENCY_THRESHOLDS.RECENT) return RECENCY_SCORES.RECENT;
+  if (daysDiff <= RECENCY_THRESHOLDS.MODERATE) return RECENCY_SCORES.MODERATE;
+  if (daysDiff <= RECENCY_THRESHOLDS.OLD) return RECENCY_SCORES.OLD;
+  return RECENCY_SCORES.VERY_OLD;
 }
 
 /**
@@ -85,16 +105,10 @@ export function getRelatedPosts(
     return true;
   });
 
-  // Find newest post date for recency calculation
-  const newestDate = new Date(
-    Math.max(
-      ...candidates.map((p) =>
-        p.data.updatedDate
-          ? p.data.updatedDate.getTime()
-          : p.data.pubDate.getTime()
-      )
-    )
-  );
+  // Use current post's date as reference for recency calculation
+  // This ensures related posts are relative to the current post's timeframe
+  const currentPostDate =
+    currentPost.data.updatedDate || currentPost.data.pubDate;
 
   // Calculate similarity scores
   const scoredPosts: RelatedPost[] = candidates.map((post) => {
@@ -104,7 +118,7 @@ export function getRelatedPosts(
     );
 
     const postDate = post.data.updatedDate || post.data.pubDate;
-    const recencyScore = calculateRecencyScore(postDate, newestDate);
+    const recencyScore = calculateRecencyScore(postDate, currentPostDate);
 
     // Weighted score: configurable weights
     const score =
@@ -125,6 +139,12 @@ export function getRelatedPosts(
 
 /**
  * Get posts by specific tag
+ * @param allPosts - All blog posts to filter
+ * @param tag - The tag to filter by (case-insensitive)
+ * @param excludeDrafts - Whether to exclude draft posts (defaults to true)
+ * @returns Array of posts with the specified tag, sorted by date (newest first)
+ * @example
+ * const typescriptPosts = getPostsByTag(allPosts, 'TypeScript');
  */
 export function getPostsByTag(
   allPosts: BlogPost[],
@@ -145,6 +165,12 @@ export function getPostsByTag(
 
 /**
  * Get all unique tags from posts with counts
+ * @param posts - All blog posts to extract tags from
+ * @param excludeDrafts - Whether to exclude draft posts (defaults to true)
+ * @returns Map of normalized tag names to their occurrence counts, sorted by count (descending)
+ * @example
+ * const tagCounts = getAllTags(allPosts);
+ * // Map { 'typescript' => 5, 'javascript' => 3, 'react' => 2 }
  */
 export function getAllTags(
   posts: BlogPost[],

@@ -4,18 +4,16 @@
  */
 
 import type { BlogPost, HreflangLink, SupportedLang } from '@models/blog';
-
-const SITE_URL = 'https://jjuanrivvera.com';
-
-// Language code mapping for hreflang (ISO 639-1 + ISO 3166-1)
-const LANG_CODES: Record<SupportedLang, string> = {
-  en: 'en-US',
-  es: 'es-ES',
-  pt: 'pt-BR',
-};
+import { SITE_CONFIG, LOCALE_MAP } from '@config/site';
 
 /**
  * Build blog post URL for a specific language
+ * @param slug - The post slug (with or without language prefix)
+ * @param lang - The target language code
+ * @returns Full URL to the blog post
+ * @example
+ * buildPostUrl('my-post', 'en') // => 'https://jjuanrivvera.com/blog/my-post'
+ * buildPostUrl('my-post', 'es') // => 'https://jjuanrivvera.com/es/blog/my-post'
  */
 function buildPostUrl(slug: string, lang: SupportedLang): string {
   // Remove language prefix from slug if present (safe regex)
@@ -23,10 +21,10 @@ function buildPostUrl(slug: string, lang: SupportedLang): string {
 
   // English posts don't have language prefix
   if (lang === 'en') {
-    return `${SITE_URL}/blog/${cleanSlug}`;
+    return `${SITE_CONFIG.url}/blog/${cleanSlug}`;
   }
 
-  return `${SITE_URL}/${lang}/blog/${cleanSlug}`;
+  return `${SITE_CONFIG.url}/${lang}/blog/${cleanSlug}`;
 }
 
 /**
@@ -43,7 +41,7 @@ export function generateHreflangLinks(
 
   // Add current post's language
   links.push({
-    lang: LANG_CODES[currentPost.data.lang],
+    lang: LOCALE_MAP[currentPost.data.lang],
     url: buildPostUrl(currentPost.slug, currentPost.data.lang),
   });
 
@@ -58,7 +56,7 @@ export function generateHreflangLinks(
 
     translations.forEach((translation) => {
       links.push({
-        lang: LANG_CODES[translation.data.lang],
+        lang: LOCALE_MAP[translation.data.lang],
         url: buildPostUrl(translation.slug, translation.data.lang),
       });
     });
@@ -87,6 +85,12 @@ export function generateHreflangLinks(
 
 /**
  * Get translation of a post in a specific language
+ * @param currentPost - The current blog post
+ * @param targetLang - The target language to find translation for
+ * @param allPosts - All blog posts to search within
+ * @returns The translated post or null if not found
+ * @example
+ * const spanishPost = getTranslation(englishPost, 'es', allPosts);
  */
 export function getTranslation(
   currentPost: BlogPost,
@@ -107,6 +111,12 @@ export function getTranslation(
 
 /**
  * Get all available translations for a post
+ * @param currentPost - The current blog post
+ * @param allPosts - All blog posts to search within
+ * @returns Map of language codes to their corresponding posts
+ * @example
+ * const translations = getAllTranslations(post, allPosts);
+ * const spanishVersion = translations.get('es');
  */
 export function getAllTranslations(
   currentPost: BlogPost,
@@ -136,6 +146,12 @@ export function getAllTranslations(
 
 /**
  * Build blog listing URL for a specific language
+ * @param lang - The target language code
+ * @param page - The page number (defaults to 1)
+ * @returns Full URL to the blog listing page
+ * @example
+ * buildBlogListingUrl('en', 1) // => 'https://jjuanrivvera.com/blog'
+ * buildBlogListingUrl('es', 2) // => 'https://jjuanrivvera.com/es/blog/2'
  */
 export function buildBlogListingUrl(
   lang: SupportedLang,
@@ -143,17 +159,23 @@ export function buildBlogListingUrl(
 ): string {
   const basePath = lang === 'en' ? '/blog' : `/${lang}/blog`;
   return page === 1
-    ? `${SITE_URL}${basePath}`
-    : `${SITE_URL}${basePath}/${page}`;
+    ? `${SITE_CONFIG.url}${basePath}`
+    : `${SITE_CONFIG.url}${basePath}/${page}`;
 }
 
 /**
  * Build tag page URL for a specific language
+ * @param tag - The tag name (will be normalized to lowercase with hyphens)
+ * @param lang - The target language code
+ * @returns Full URL to the tag archive page
+ * @example
+ * buildTagUrl('TypeScript', 'en') // => 'https://jjuanrivvera.com/blog/tag/typescript'
+ * buildTagUrl('Web Dev', 'es') // => 'https://jjuanrivvera.com/es/blog/tag/web-dev'
  */
 export function buildTagUrl(tag: string, lang: SupportedLang): string {
   const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
   const basePath = lang === 'en' ? '/blog/tag' : `/${lang}/blog/tag`;
-  return `${SITE_URL}${basePath}/${normalizedTag}`;
+  return `${SITE_CONFIG.url}${basePath}/${normalizedTag}`;
 }
 
 /**

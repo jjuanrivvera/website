@@ -6,7 +6,7 @@ export const SITE_CONFIG = {
   author: 'Juan Felipe Rivera González',
   email: 'jjuanrivvera@gmail.com',
   twitter: '@jjuanrivvera99',
-  github: 'jjuanrivvera',
+  github: 'jjuanrivvera99',
   linkedin: 'jjuanrivvera99',
   defaultLanguage: 'en' as const,
   supportedLanguages: ['en', 'es', 'pt'] as const,

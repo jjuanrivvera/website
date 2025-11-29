@@ -196,16 +196,25 @@ test.describe('Blog', () => {
       }
     });
 
-    test.skip('language switcher falls back to blog listing when translation unavailable', async ({
-      page,
-    }) => {
-      // Skip: Portuguese language switcher test needs more investigation
+    test('language switcher provides Portuguese option', async ({ page }) => {
       await page.goto('/blog');
       await page.locator('.post-card__title a').first().click();
+      await page.waitForLoadState('networkidle');
 
-      // Try to switch to Portuguese
-      await page.getByRole('button', { name: 'Change language' }).click();
-      // Portuguese option may not be immediately visible
+      // Open language switcher (use first one - desktop navbar)
+      await page
+        .getByRole('button', { name: 'Change language' })
+        .first()
+        .click();
+
+      // Portuguese link should be visible and have a valid href
+      const ptLink = page.locator('#navbar a[hreflang="pt"]').first();
+      await expect(ptLink).toBeVisible();
+
+      const href = await ptLink.getAttribute('href');
+      expect(href).toBeTruthy();
+      // Href should either point to /pt/blog (fallback) or /pt/blog/[slug] (translation)
+      expect(href).toMatch(/^\/pt\/blog/);
     });
 
     test('language switcher is visible on blog posts', async ({ page }) => {
@@ -345,12 +354,32 @@ test.describe('Blog', () => {
   });
 
   test.describe('Reading Progress', () => {
-    test.skip('reading progress bar is visible on blog posts', async ({
-      page,
-    }) => {
-      // Skip: Component may not be visible depending on page scroll position
+    test('reading progress bar is visible on blog posts', async ({ page }) => {
       await page.goto('/blog');
       await page.locator('.post-card__title a').first().click();
+      await page.waitForLoadState('networkidle');
+
+      // Reading progress bar should exist
+      const progressBar = page.locator('.reading-progress');
+      await expect(progressBar).toBeVisible();
+
+      // Verify ARIA attributes
+      await expect(progressBar).toHaveAttribute('role', 'progressbar');
+      await expect(progressBar).toHaveAttribute('aria-valuemin', '0');
+      await expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+
+      // Scroll down and verify progress updates
+      await page.evaluate(() =>
+        window.scrollTo(0, document.body.scrollHeight / 2)
+      );
+      await page.waitForTimeout(100); // Wait for scroll handler
+
+      // Progress bar inner should have some width
+      const progressBarInner = page.locator('#reading-progress-bar');
+      const width = await progressBarInner.evaluate((el) => {
+        return window.getComputedStyle(el).width;
+      });
+      expect(width).not.toBe('0px');
     });
   });
 

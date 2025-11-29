@@ -35,6 +35,9 @@ export function getReadingTime(
   const imageCount = imageMatches.length;
 
   // Count code blocks (both fenced and indented)
+  // Note: This regex handles most common cases but may not capture
+  // all edge cases (nested/escaped backticks). For production use with
+  // complex code examples, consider using the MDX AST parser instead.
   const codeBlockMatches =
     content.match(/```[\s\S]*?```|~~~[\s\S]*?~~~/g) || [];
   const codeBlockCount = codeBlockMatches.length;

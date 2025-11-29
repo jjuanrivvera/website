@@ -1,0 +1,44 @@
+---
+/**
+ * Tag Page (Portuguese)
+ */
+
+import type { GetStaticPaths } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import TagArchive from '@components/blog/TagArchive.astro';
+import { getAllTags } from '@utils/relatedPosts';
+import { sortPostsByDate } from '@utils/postSorting';
+
+export const getStaticPaths = (async () => {
+  const isDev = import.meta.env.DEV;
+
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.lang === 'pt' && (isDev || !data.draft);
+  });
+
+  const tags = getAllTags(posts);
+
+  return Array.from(tags.entries()).map(([tag]) => {
+    const tagPosts = sortPostsByDate(
+      posts.filter((post) =>
+        post.data.tags.some((t) => t.toLowerCase() === tag)
+      )
+    );
+
+    return {
+      params: { tag },
+      props: { tag, tagPosts },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  tag: string;
+  tagPosts: CollectionEntry<'blog'>[];
+}
+
+const { tag, tagPosts } = Astro.props;
+---
+
+<TagArchive tag={tag} tagPosts={tagPosts} lang="pt" />

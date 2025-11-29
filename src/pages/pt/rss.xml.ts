@@ -1,0 +1,68 @@
+/**
+ * RSS Feed (Portuguese)
+ *
+ * Generates RSS 2.0 feed with full content
+ * Follows best practices for blog RSS feeds
+ */
+
+import rss from '@astrojs/rss';
+import { getCollection } from 'astro:content';
+import type { APIContext } from 'astro';
+
+export async function GET(context: APIContext) {
+  const isDev = import.meta.env.DEV;
+
+  // Get all published Portuguese posts, sorted by date
+  const posts = (
+    await getCollection('blog', ({ data }) => {
+      return data.lang === 'pt' && (isDev || !data.draft);
+    })
+  ).sort((a, b) => {
+    const dateA = a.data.updatedDate || a.data.pubDate;
+    const dateB = b.data.updatedDate || b.data.pubDate;
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  return rss({
+    title: 'Juan Felipe Rivera Gonzalez - Blog',
+    description:
+      'Artigos sobre desenvolvimento web, engenharia de software e tecnologia por Juan Felipe Rivera Gonzalez, Desenvolvedor Full Stack.',
+    site: context.site ?? 'https://jjuanrivvera.com',
+    items: posts.map((post) => {
+      return {
+        title: post.data.title,
+        description: post.data.description,
+        pubDate: post.data.pubDate,
+        link: `/pt/blog/${post.slug.replace(/^pt\//, '')}`,
+        author: `${post.data.author} <noreply@jjuanrivvera.com>`,
+        categories: post.data.tags,
+        customData: `
+          ${
+            post.data.cover
+              ? `<enclosure url="${
+                  typeof post.data.cover === 'string'
+                    ? post.data.cover
+                    : `${context.site}${post.data.cover.src}`
+                }" type="image/jpeg" />`
+              : ''
+          }
+          ${post.data.featured ? '<featured>true</featured>' : ''}
+          ${post.data.updatedDate ? `<atom:updated>${post.data.updatedDate.toISOString()}</atom:updated>` : ''}
+        `,
+      };
+    }),
+    customData: `
+      <language>pt-br</language>
+      <copyright>Copyright ${new Date().getFullYear()} Juan Felipe Rivera Gonzalez</copyright>
+      <managingEditor>noreply@jjuanrivvera.com (Juan Felipe Rivera Gonzalez)</managingEditor>
+      <webMaster>noreply@jjuanrivvera.com (Juan Felipe Rivera Gonzalez)</webMaster>
+      <ttl>60</ttl>
+      <image>
+        <url>https://jjuanrivvera.com/og-image.jpg</url>
+        <title>Juan Felipe Rivera Gonzalez - Blog</title>
+        <link>https://jjuanrivvera.com/pt/blog</link>
+      </image>
+    `,
+    stylesheet: '/rss-styles.xsl',
+  });
+}

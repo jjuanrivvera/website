@@ -1,0 +1,79 @@
+---
+/**
+ * RelatedPosts Component
+ * Shows related blog posts based on tag similarity
+ */
+
+import type { BlogPost } from '@models/blog';
+import PostCard from './PostCard.astro';
+
+interface Props {
+  posts: BlogPost[];
+  lang: 'en' | 'es' | 'pt';
+  title?: string;
+}
+
+const { posts, lang, title } = Astro.props;
+
+// Default titles by language
+const defaultTitles = {
+  en: 'Related Posts',
+  es: 'Artículos Relacionados',
+  pt: 'Artigos Relacionados',
+};
+
+const displayTitle = title || defaultTitles[lang];
+
+// Don't render if no related posts
+if (posts.length === 0) {
+  return null;
+}
+---
+
+<section class="related-posts" aria-labelledby="related-posts-title">
+  <h2 id="related-posts-title" class="related-posts__title">
+    {displayTitle}
+  </h2>
+
+  <div class="related-posts__grid">
+    {posts.map((post) => <PostCard post={post} lang={lang} />)}
+  </div>
+</section>
+
+<style>
+  .related-posts {
+    margin-top: 64px;
+    padding-top: 48px;
+    border-top: 2px solid var(--color-border, #e0e0e0);
+  }
+
+  .related-posts__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 32px 0;
+    color: var(--color-text-primary, #1a1a1a);
+  }
+
+  .related-posts__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .related-posts {
+      margin-top: 48px;
+      padding-top: 32px;
+    }
+
+    .related-posts__title {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    .related-posts__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

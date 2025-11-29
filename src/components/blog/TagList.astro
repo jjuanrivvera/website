@@ -1,0 +1,96 @@
+---
+/**
+ * TagList Component
+ * Displays a list of tags with links to tag pages
+ */
+
+interface Props {
+  tags: string[];
+  lang: 'en' | 'es' | 'pt';
+  limit?: number;
+  showAll?: boolean;
+}
+
+const { tags, lang, limit, showAll = false } = Astro.props;
+
+// Limit tags if specified
+const displayTags = limit && !showAll ? tags.slice(0, limit) : tags;
+const hasMore = limit && tags.length > limit;
+
+// Build tag URL
+const buildTagUrl = (tag: string) => {
+  const normalizedTag = tag.toLowerCase().replace(/\s+/g, '-');
+  return lang === 'en'
+    ? `/blog/tag/${normalizedTag}`
+    : `/${lang}/blog/tag/${normalizedTag}`;
+};
+---
+
+<div class="tag-list">
+  {
+    displayTags.map((tag) => (
+      <a
+        href={buildTagUrl(tag)}
+        class="tag-list__tag"
+        title={`View all posts tagged with ${tag}`}
+      >
+        #{tag}
+      </a>
+    ))
+  }
+  {
+    hasMore && (
+      <span
+        class="tag-list__more"
+        aria-label={`${tags.length - limit} more tags`}
+      >
+        +{tags.length - limit!}
+      </span>
+    )
+  }
+</div>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .tag-list__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: var(--color-bg-tertiary, #f0f0f0);
+    color: var(--color-text-secondary, #666);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .tag-list__tag:hover {
+    background: var(--color-accent, #0066cc);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .tag-list__more {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    background: var(--color-bg-tertiary, #f0f0f0);
+    color: var(--color-text-tertiary, #999);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Focus styles for accessibility */
+  .tag-list__tag:focus-visible {
+    outline: 2px solid var(--color-accent, #0066cc);
+    outline-offset: 2px;
+  }
+</style>

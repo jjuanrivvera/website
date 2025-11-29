@@ -1,0 +1,230 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Navbar from '@components/layout/Navbar.astro';
+import Footer from '@components/layout/Footer.astro';
+import PostCard from '@components/blog/PostCard.astro';
+import type { SupportedLang } from '@models/blog';
+
+interface Props {
+  tag: string;
+  tagPosts: CollectionEntry<'blog'>[];
+  lang: SupportedLang;
+}
+
+const { tag, tagPosts, lang } = Astro.props;
+
+// Internationalization strings
+const i18n: Record<
+  SupportedLang,
+  {
+    home: string;
+    blog: string;
+    article: string;
+    articles: string;
+    taggedAs: (count: number) => string;
+    about: string;
+    backToAllArticles: string;
+  }
+> = {
+  en: {
+    home: 'Home',
+    blog: 'Blog',
+    article: 'article',
+    articles: 'articles',
+    taggedAs: (count: number) =>
+      count === 1 ? 'article tagged as' : 'articles tagged as',
+    about: 'about',
+    backToAllArticles: 'Back to all articles',
+  },
+  es: {
+    home: 'Inicio',
+    blog: 'Blog',
+    article: 'artículo',
+    articles: 'artículos',
+    taggedAs: (count: number) =>
+      count === 1 ? 'artículo etiquetado como' : 'artículos etiquetados como',
+    about: 'sobre',
+    backToAllArticles: 'Volver a todos los artículos',
+  },
+  pt: {
+    home: 'Início',
+    blog: 'Blog',
+    article: 'artigo',
+    articles: 'artigos',
+    taggedAs: (count: number) =>
+      count === 1 ? 'artigo marcado como' : 'artigos marcados como',
+    about: 'sobre',
+    backToAllArticles: 'Voltar para todos os artigos',
+  },
+};
+
+const t = i18n[lang];
+const displayTag = tag.charAt(0).toUpperCase() + tag.slice(1);
+const title = `${displayTag} - Blog`;
+const description = `${tagPosts.length} ${t.taggedAs(tagPosts.length)} "${displayTag}"`;
+
+// Build URLs
+const basePath = lang === 'en' ? '' : `/${lang}`;
+const blogPath = `${basePath}/blog`;
+const canonicalUrl = `https://jjuanrivvera.com${basePath}/blog/tag/${encodeURIComponent(tag)}`;
+
+// Breadcrumb items
+const breadcrumbItems = [
+  { text: t.home, href: `${basePath}/` },
+  { text: t.blog, href: blogPath },
+  { text: `#${displayTag}`, href: '' },
+];
+---
+
+<Layout
+  title={title}
+  description={description}
+  noCanonical={true}
+  noOpenGraph={true}
+>
+  <link slot="head" rel="canonical" href={canonicalUrl} />
+
+  <meta slot="head" property="og:type" content="website" />
+  <meta slot="head" property="og:title" content={title} />
+  <meta slot="head" property="og:description" content={description} />
+  <meta slot="head" property="og:url" content={canonicalUrl} />
+
+  <Navbar />
+
+  <main id="main-content" class="blog-main">
+    <div class="tag-page">
+      <div class="tag-page__container">
+        <nav class="tag-page__breadcrumb">
+          {
+            breadcrumbItems.map((item, index) => (
+              <>
+                {item.href ? (
+                  <a href={item.href}>{item.text}</a>
+                ) : (
+                  <span>{item.text}</span>
+                )}
+                {index < breadcrumbItems.length - 1 && (
+                  <span aria-hidden="true">/</span>
+                )}
+              </>
+            ))
+          }
+        </nav>
+
+        <header class="tag-page__header">
+          <h1 class="tag-page__title">#{displayTag}</h1>
+          <p class="tag-page__description">
+            {tagPosts.length}
+            {tagPosts.length === 1 ? t.article : t.articles}
+          </p>
+        </header>
+
+        <div class="tag-page__grid">
+          {tagPosts.map((post) => <PostCard post={post} lang={lang} />)}
+        </div>
+
+        <div class="tag-page__back">
+          <a href={blogPath} class="tag-page__back-link">
+            ← {t.backToAllArticles}
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .tag-page {
+    padding: 48px 0;
+  }
+
+  .tag-page__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .tag-page__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #666);
+    margin-bottom: 24px;
+  }
+
+  .tag-page__breadcrumb a {
+    color: var(--color-text-secondary, #666);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .tag-page__breadcrumb a:hover {
+    color: var(--color-accent, #0066cc);
+  }
+
+  .tag-page__header {
+    margin-bottom: 64px;
+  }
+
+  .tag-page__title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: var(--color-text-primary, #1a1a1a);
+  }
+
+  .tag-page__description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  .tag-page__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+    margin-bottom: 64px;
+  }
+
+  .tag-page__back {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 2px solid var(--color-border, #e0e0e0);
+  }
+
+  .tag-page__back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-accent, #0066cc);
+    text-decoration: none;
+    font-weight: 600;
+    transition: gap 0.2s ease;
+  }
+
+  .tag-page__back-link:hover {
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .tag-page {
+      padding: 32px 0;
+    }
+
+    .tag-page__header {
+      margin-bottom: 48px;
+    }
+
+    .tag-page__title {
+      font-size: 2.5rem;
+    }
+
+    .tag-page__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

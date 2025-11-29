@@ -1,25 +1,37 @@
 ---
 import { getLangFromUrl, useTranslations } from '@i18n/utils';
+import type { Lang } from '@i18n/ui';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface Props {
+  customLanguageUrls?: Record<Lang, string>;
+}
+
+const { customLanguageUrls } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+// Construct URLs based on language
+const indexUrl = lang === 'en' ? '/' : `/${lang}`;
+const blogUrl = lang === 'en' ? '/blog' : `/${lang}/blog`;
 ---
 
 <a href="#main-content" class="skip-link">{t('a11y.skipLink')}</a>
 
 <nav class="navbar" id="navbar">
   <div class="nav-container">
-    <a href="#hero" class="nav-logo">JR</a>
+    <a href={`${indexUrl}#hero`} class="nav-logo">JR</a>
     <ul class="nav-links">
-      <li><a href="#experience">{t('nav.experience')}</a></li>
-      <li><a href="#skills">{t('nav.skills')}</a></li>
-      <li><a href="#projects">{t('nav.projects')}</a></li>
-      <li><a href="#education">{t('nav.education')}</a></li>
-      <li><a href="#contact">{t('nav.contact')}</a></li>
+      <li><a href={`${indexUrl}#experience`}>{t('nav.experience')}</a></li>
+      <li><a href={`${indexUrl}#skills`}>{t('nav.skills')}</a></li>
+      <li><a href={`${indexUrl}#projects`}>{t('nav.projects')}</a></li>
+      <li><a href={`${indexUrl}#education`}>{t('nav.education')}</a></li>
+      <li><a href={`${indexUrl}#contact`}>{t('nav.contact')}</a></li>
+      <li><a href={blogUrl}>{t('nav.blog')}</a></li>
     </ul>
 
-    <LanguageSwitcher />
+    <LanguageSwitcher customUrls={customLanguageUrls} />
 
     <button
       class="nav-toggle"
@@ -37,11 +49,12 @@ const t = useTranslations(lang);
 
 <!-- Mobile Menu -->
 <nav class="mobile-menu" id="mobileMenu" aria-label={t('a11y.mobileMenu')}>
-  <a href="#experience">{t('nav.experience')}</a>
-  <a href="#skills">{t('nav.skills')}</a>
-  <a href="#projects">{t('nav.projects')}</a>
-  <a href="#education">{t('nav.education')}</a>
-  <a href="#contact">{t('nav.contact')}</a>
+  <a href={`${indexUrl}#experience`}>{t('nav.experience')}</a>
+  <a href={`${indexUrl}#skills`}>{t('nav.skills')}</a>
+  <a href={`${indexUrl}#projects`}>{t('nav.projects')}</a>
+  <a href={`${indexUrl}#education`}>{t('nav.education')}</a>
+  <a href={`${indexUrl}#contact`}>{t('nav.contact')}</a>
+  <a href={blogUrl}>{t('nav.blog')}</a>
 
-  <LanguageSwitcher mobile />
+  <LanguageSwitcher mobile customUrls={customLanguageUrls} />
 </nav>

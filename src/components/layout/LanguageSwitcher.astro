@@ -3,19 +3,36 @@ import {
   getLangFromUrl,
   getLanguageOptions,
   useTranslations,
+  type LanguageOption,
 } from '@i18n/utils';
-import { languageMeta } from '@i18n/ui';
+import { languageMeta, languages, type Lang } from '@i18n/ui';
 
 interface Props {
   class?: string;
   mobile?: boolean;
+  customUrls?: Record<Lang, string>;
 }
 
-const { class: className = '', mobile = false } = Astro.props;
+const { class: className = '', mobile = false, customUrls } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
-const languageOptions = getLanguageOptions(Astro.url.pathname);
+
+// Use custom URLs if provided, otherwise generate from pathname
+let languageOptions: LanguageOption[];
+if (customUrls) {
+  const supportedLanguages: Lang[] = ['en', 'es', 'pt'];
+  languageOptions = supportedLanguages.map((langCode) => ({
+    lang: langCode,
+    label: languages[langCode],
+    flag: languageMeta[langCode].flag,
+    code: languageMeta[langCode].code,
+    href: customUrls[langCode],
+  }));
+} else {
+  languageOptions = getLanguageOptions(Astro.url.pathname);
+}
+
 const currentLang = languageMeta[lang];
 ---
 
@@ -68,7 +85,44 @@ const currentLang = languageMeta[lang];
 </div>
 
 <script>
+  // Store handlers for cleanup
+  let documentClickHandlers: (() => void)[] = [];
+  let dropdownKeydownHandlers = new WeakMap<Element, (e: Event) => void>();
+  let toggleClickHandlers = new WeakMap<Element, (e: Event) => void>();
+
+  function cleanupLanguageDropdowns() {
+    // Remove all document click handlers
+    documentClickHandlers.forEach((handler) => {
+      document.removeEventListener('click', handler);
+    });
+    documentClickHandlers = [];
+
+    // Remove toggle and keydown handlers
+    document.querySelectorAll('.lang-dropdown').forEach((dropdown) => {
+      const toggle = dropdown.querySelector(
+        '.lang-toggle'
+      ) as HTMLButtonElement;
+
+      if (toggle) {
+        const toggleHandler = toggleClickHandlers.get(toggle);
+        if (toggleHandler) {
+          toggle.removeEventListener('click', toggleHandler);
+          toggleClickHandlers.delete(toggle);
+        }
+      }
+
+      const keydownHandler = dropdownKeydownHandlers.get(dropdown);
+      if (keydownHandler) {
+        dropdown.removeEventListener('keydown', keydownHandler);
+        dropdownKeydownHandlers.delete(dropdown);
+      }
+    });
+  }
+
   function initLanguageDropdowns() {
+    // Clean up existing handlers before adding new ones
+    cleanupLanguageDropdowns();
+
     document.querySelectorAll('.lang-dropdown').forEach((dropdown) => {
       const toggle = dropdown.querySelector(
         '.lang-toggle'
@@ -77,27 +131,34 @@ const currentLang = languageMeta[lang];
 
       if (!toggle || !menu) return;
 
-      toggle.addEventListener('click', (e) => {
+      // Toggle click handler
+      const toggleHandler = (e: Event) => {
         e.stopPropagation();
         const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
         toggle.setAttribute('aria-expanded', String(!isExpanded));
         menu.classList.toggle('is-open');
-      });
+      };
+      toggle.addEventListener('click', toggleHandler);
+      toggleClickHandlers.set(toggle, toggleHandler);
 
       // Close on click outside
-      document.addEventListener('click', () => {
+      const documentClickHandler = () => {
         toggle.setAttribute('aria-expanded', 'false');
         menu.classList.remove('is-open');
-      });
+      };
+      document.addEventListener('click', documentClickHandler);
+      documentClickHandlers.push(documentClickHandler);
 
       // Close on Escape key
-      dropdown.addEventListener('keydown', (e) => {
+      const keydownHandler = (e: Event) => {
         if ((e as KeyboardEvent).key === 'Escape') {
           toggle.setAttribute('aria-expanded', 'false');
           menu.classList.remove('is-open');
           toggle.focus();
         }
-      });
+      };
+      dropdown.addEventListener('keydown', keydownHandler);
+      dropdownKeydownHandlers.set(dropdown, keydownHandler);
     });
   }
 
@@ -106,4 +167,11 @@ const currentLang = languageMeta[lang];
 
   // Re-run after View Transitions
   document.addEventListener('astro:after-swap', initLanguageDropdowns);
+
+  // Cleanup before navigation to prevent memory leaks
+  document.addEventListener(
+    'astro:before-preparation',
+    cleanupLanguageDropdowns,
+    { once: true }
+  );
 </script>

@@ -10,7 +10,11 @@
       "@layouts/*": ["src/layouts/*"],
       "@i18n/*": ["src/i18n/*"],
       "@styles/*": ["src/styles/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@utils/*": ["src/utils/*"],
+      "@models/*": ["src/types/*"],
+      "@content/*": ["src/content/*"],
+      "@config/*": ["src/config/*"]
     }
   }
 }

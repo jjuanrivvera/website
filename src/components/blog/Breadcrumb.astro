@@ -1,0 +1,114 @@
+---
+/**
+ * Breadcrumb Component
+ * Navigation breadcrumbs with structured data for SEO
+ */
+
+import type { BreadcrumbItem } from '@models/blog';
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+// Generate JSON-LD structured data for breadcrumbs
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item) => ({
+    '@type': 'ListItem',
+    position: item.position,
+    name: item.label,
+    item: `https://jjuanrivvera.com${item.url}`,
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="breadcrumb">
+  <ol class="breadcrumb__list">
+    {
+      items.map((item, index) => (
+        <li class="breadcrumb__item">
+          {index < items.length - 1 ? (
+            <>
+              <a href={item.url} class="breadcrumb__link">
+                {item.label}
+              </a>
+              <span class="breadcrumb__separator" aria-hidden="true">
+                /
+              </span>
+            </>
+          ) : (
+            <span class="breadcrumb__current" aria-current="page">
+              {item.label}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<!-- JSON-LD Structured Data for SEO -->
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify(breadcrumbSchema)}
+/>
+
+<style>
+  .breadcrumb {
+    margin-bottom: 24px;
+  }
+
+  .breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breadcrumb__link {
+    color: var(--color-text-secondary, #666);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb__link:hover {
+    color: var(--color-accent, #0066cc);
+    text-decoration: underline;
+  }
+
+  .breadcrumb__separator {
+    color: var(--color-text-tertiary, #999);
+  }
+
+  .breadcrumb__current {
+    color: var(--color-text-primary, #1a1a1a);
+    font-weight: 500;
+  }
+
+  /* Focus styles for accessibility */
+  .breadcrumb__link:focus-visible {
+    outline: 2px solid var(--color-accent, #0066cc);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 640px) {
+    .breadcrumb__list {
+      font-size: 0.8125rem;
+    }
+  }
+</style>

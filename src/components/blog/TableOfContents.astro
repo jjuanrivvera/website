@@ -1,0 +1,211 @@
+---
+/**
+ * TableOfContents Component
+ * Interactive table of contents with active section highlighting
+ * Uses Intersection Observer to track scroll position
+ *
+ * CRITICAL: Script wrapped in astro:page-load for View Transitions compatibility
+ */
+
+import type { TocHeading } from '@models/blog';
+
+interface Props {
+  headings: TocHeading[];
+  title?: string;
+}
+
+const { headings, title = 'Table of Contents' } = Astro.props;
+
+// Only show TOC if there are headings
+if (headings.length === 0) {
+  return null;
+}
+---
+
+<nav class="toc" aria-label="Table of Contents">
+  <h2 class="toc__title">{title}</h2>
+  <ul class="toc__list">
+    {
+      headings.map((heading) => (
+        <li class="toc__item" data-depth={heading.depth}>
+          <a href={`#${heading.slug}`} class="toc__link" data-toc-link>
+            {heading.text}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  // ✅ CRITICAL: Wrap in astro:page-load for View Transitions
+  document.addEventListener('astro:page-load', () => {
+    // Browser compatibility check
+    if (!('IntersectionObserver' in window)) {
+      console.warn(
+        'IntersectionObserver not supported, TOC highlighting disabled'
+      );
+      return;
+    }
+
+    try {
+      const links = document.querySelectorAll('[data-toc-link]');
+      const headings = document.querySelectorAll('h2[id], h3[id], h4[id]');
+
+      if (!links.length || !headings.length) return;
+
+      // Intersection Observer to track which heading is visible
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.getAttribute('id');
+            const link = document.querySelector(
+              `[data-toc-link][href="#${id}"]`
+            );
+
+            if (entry.isIntersecting) {
+              // Remove active class from all links
+              links.forEach((l) => l.classList.remove('active'));
+              // Add active class to current link
+              link?.classList.add('active');
+            }
+          });
+        },
+        {
+          rootMargin: '-100px 0px -66%',
+          threshold: 0,
+        }
+      );
+
+      // Observe all headings
+      headings.forEach((heading) => {
+        observer.observe(heading);
+      });
+
+      // Smooth scroll behavior
+      links.forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href')?.slice(1);
+          const targetElement = targetId && document.getElementById(targetId);
+
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+
+            // Update URL without triggering navigation
+            window.history.pushState({}, '', `#${targetId}`);
+          }
+        });
+      });
+
+      // Cleanup on navigation
+      document.addEventListener(
+        'astro:before-preparation',
+        () => {
+          observer.disconnect();
+        },
+        { once: true }
+      );
+    } catch (error) {
+      console.error('Error initializing TOC:', error);
+    }
+  });
+</script>
+
+<style>
+  .toc {
+    background: var(--color-bg-secondary, #f9f9f9);
+    border-radius: 12px;
+    padding: 24px;
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+  }
+
+  .toc__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--color-text-primary, #1a1a1a);
+  }
+
+  .toc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc__item {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Indent based on heading depth */
+  .toc__item[data-depth='2'] {
+    padding-left: 0;
+  }
+
+  .toc__item[data-depth='3'] {
+    padding-left: 16px;
+  }
+
+  .toc__item[data-depth='4'] {
+    padding-left: 32px;
+  }
+
+  .toc__link {
+    display: block;
+    padding: 6px 12px;
+    color: var(--color-text-secondary, #666);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .toc__link:hover {
+    color: var(--color-accent, #0066cc);
+    background: var(--color-bg-tertiary, #f0f0f0);
+    border-left-color: var(--color-accent, #0066cc);
+  }
+
+  .toc__link.active {
+    color: var(--color-accent, #0066cc);
+    font-weight: 600;
+    border-left-color: var(--color-accent, #0066cc);
+    background: var(--color-bg-tertiary, #f0f0f0);
+  }
+
+  /* Custom scrollbar */
+  .toc::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .toc::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .toc::-webkit-scrollbar-thumb {
+    background: var(--color-border, #ddd);
+    border-radius: 3px;
+  }
+
+  .toc::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-tertiary, #999);
+  }
+
+  /* Mobile: make non-sticky */
+  @media (max-width: 1024px) {
+    .toc {
+      position: relative;
+      top: 0;
+      max-height: none;
+      margin-bottom: 32px;
+    }
+  }
+</style>

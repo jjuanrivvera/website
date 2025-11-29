@@ -1,0 +1,55 @@
+---
+/**
+ * ReadingTime Component
+ * Displays estimated reading time for a blog post
+ */
+
+import { getLocalizedReadingTime } from '@utils/readingTime';
+
+interface Props {
+  minutes: number;
+  lang: 'en' | 'es' | 'pt';
+}
+
+const { minutes, lang } = Astro.props;
+const readingTimeText = getLocalizedReadingTime(minutes, lang);
+---
+
+<span
+  class="reading-time"
+  aria-label={`Estimated reading time: ${readingTimeText}`}
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    class="reading-time__icon"
+  >
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
+  </svg>
+  <span>{readingTimeText}</span>
+</span>
+
+<style>
+  .reading-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-secondary, #666);
+    font-size: 0.875rem;
+  }
+
+  .reading-time__icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+</style>

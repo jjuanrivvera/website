@@ -7,6 +7,10 @@ import mdx from '@astrojs/mdx';
 const site =
   process.env.DEPLOY_PRIME_URL || process.env.URL || 'https://jjuanrivvera.com';
 
+// Use Netlify URL for all deployments, fallback to production URL
+// URL = custom domain for production, preview URL for deploy-previews
+const site = process.env.URL || 'https://jjuanrivvera.com';
+
 export default defineConfig({
   site,
   integrations: [

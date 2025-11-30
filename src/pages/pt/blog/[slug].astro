@@ -1,0 +1,26 @@
+---
+/**
+ * Individual Blog Post Page (Portuguese)
+ */
+
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import PostLayout from '@layouts/PostLayout.astro';
+
+export const getStaticPaths = (async () => {
+  const isDev = import.meta.env.DEV;
+
+  const posts = await getCollection('blog', ({ data }) => {
+    return data.lang === 'pt' && (isDev || !data.draft);
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.slug.replace(/^pt\//, '') },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+---
+
+<PostLayout post={post} />

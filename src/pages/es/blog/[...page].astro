@@ -1,0 +1,32 @@
+---
+/**
+ * Blog Listing Page (Spanish)
+ */
+
+import type { GetStaticPaths, Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import BlogListing from '@components/blog/BlogListing.astro';
+import { sortPostsByDate } from '@utils/postSorting';
+import { BLOG_CONFIG } from '@config/blog';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const isDev = import.meta.env.DEV;
+
+  const posts = sortPostsByDate(
+    await getCollection('blog', ({ data }) => {
+      return data.lang === 'es' && (isDev || !data.draft);
+    })
+  );
+
+  return paginate(posts, { pageSize: BLOG_CONFIG.postsPerPage });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<CollectionEntry<'blog'>>;
+}
+
+const { page } = Astro.props;
+---
+
+<BlogListing page={page} lang="es" />

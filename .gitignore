@@ -39,11 +39,14 @@ yarn.lock
 # TypeScript cache
 *.tsbuildinfo
 
-# Claude Code / Playwright
-.claude/
-.playwright-mcp/
-
 # Test outputs
 playwright-report/
 test-results/
 .lighthouseci/
+
+# AI
+.claude/
+.playwright-mcp/
+AGENTS.md
+CLAUDE.md
+GEMINI.md

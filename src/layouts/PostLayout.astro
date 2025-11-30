@@ -1,0 +1,346 @@
+---
+/**
+ * PostLayout
+ * Enhanced blog post layout with SEO, hreflang, structured data
+ */
+
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import Layout from './Layout.astro';
+import Navbar from '@components/layout/Navbar.astro';
+import Footer from '@components/layout/Footer.astro';
+import Breadcrumb from '@components/blog/Breadcrumb.astro';
+import ReadingTime from '@components/blog/ReadingTime.astro';
+import TagList from '@components/blog/TagList.astro';
+import TableOfContents from '@components/blog/TableOfContents.astro';
+import RelatedPosts from '@components/blog/RelatedPosts.astro';
+import AuthorBio from '@components/blog/AuthorBio.astro';
+import SocialShare from '@components/blog/SocialShare.astro';
+import ReadingProgress from '@components/blog/ReadingProgress.astro';
+import { getReadingTime } from '@utils/readingTime';
+import { extractToc } from '@utils/toc';
+import { getRelatedPosts } from '@utils/relatedPosts';
+import {
+  generateHreflangLinks,
+  getBlogLanguageSwitcherUrls,
+} from '@utils/blogHreflang';
+import { formatDate } from '@utils/dateFormatting';
+import { generateBlogPostingSchema } from '@utils/blogSchema';
+import profilePicture from '@assets/img/profile-picture.webp';
+import '@styles/blog.css';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { data } = post;
+
+// Get all posts for related posts and hreflang
+const allPosts = await getCollection('blog');
+
+// Render post content
+const { Content, headings } = await post.render();
+
+// Calculate reading time
+const readingTime = getReadingTime(post.body);
+
+// Extract TOC from content
+const toc = extractToc(post.body);
+
+// Get related posts
+const relatedPosts = getRelatedPosts(post, allPosts, { limit: 3 });
+
+// Generate hreflang links
+const hreflangLinks = generateHreflangLinks(post, allPosts);
+
+// Generate language switcher URLs (for translation navigation)
+const languageSwitcherUrls = getBlogLanguageSwitcherUrls(post, allPosts);
+
+// Build post URL
+const cleanSlug = post.slug.replace(/^(en|es|pt)\//, '');
+const postUrl =
+  data.lang === 'en'
+    ? `https://jjuanrivvera.com/blog/${cleanSlug}`
+    : `https://jjuanrivvera.com/${data.lang}/blog/${cleanSlug}`;
+
+// Format dates
+const publishedTime = data.pubDate.toISOString();
+const modifiedTime = data.updatedDate?.toISOString();
+
+// Breadcrumb items
+const breadcrumbs = [
+  {
+    label: 'Home',
+    url: data.lang === 'en' ? '/' : `/${data.lang}`,
+    position: 1,
+  },
+  {
+    label: 'Blog',
+    url: data.lang === 'en' ? '/blog' : `/${data.lang}/blog`,
+    position: 2,
+  },
+  { label: data.title, url: postUrl, position: 3 },
+];
+
+// Determine social sharing image (use dynamic origin for Netlify previews)
+const siteOrigin = Astro.url.origin;
+const socialImage = data.ogImage || data.cover;
+const socialImageUrl = socialImage
+  ? typeof socialImage === 'string'
+    ? socialImage.startsWith('http')
+      ? socialImage
+      : `${siteOrigin}${socialImage}`
+    : `${siteOrigin}${socialImage.src}`
+  : undefined;
+
+// JSON-LD structured data for BlogPosting
+const blogPostingSchema = generateBlogPostingSchema({
+  post,
+  postUrl,
+  profilePicture,
+  siteOrigin,
+});
+---
+
+<Layout
+  title={data.title}
+  description={data.description}
+  noCanonical={true}
+  noOpenGraph={true}
+>
+  <!-- Hreflang tags for multilingual SEO -->
+  {
+    hreflangLinks.map((link) => (
+      <link slot="head" rel="alternate" hreflang={link.lang} href={link.url} />
+    ))
+  }
+
+  <!-- Canonical URL -->
+  <link slot="head" rel="canonical" href={data.canonicalUrl || postUrl} />
+
+  <!-- Open Graph meta tags -->
+  <meta slot="head" property="og:type" content="article" />
+  <meta slot="head" property="og:title" content={data.title} />
+  <meta slot="head" property="og:description" content={data.description} />
+  <meta slot="head" property="og:url" content={postUrl} />
+  <meta
+    slot="head"
+    property="og:image"
+    content={socialImageUrl ||
+      `${siteOrigin}/img/blog/canvas-lms-kit-introduction-cover.jpg`}
+  />
+  <meta slot="head" property="og:image:width" content="1200" />
+  <meta slot="head" property="og:image:height" content="630" />
+  <meta slot="head" property="article:published_time" content={publishedTime} />
+  {
+    modifiedTime && (
+      <meta
+        slot="head"
+        property="article:modified_time"
+        content={modifiedTime}
+      />
+    )
+  }
+  <meta slot="head" property="article:author" content={data.author} />
+  {
+    data.tags.map((tag) => (
+      <meta slot="head" property="article:tag" content={tag} />
+    ))
+  }
+
+  <!-- Twitter Card -->
+  <meta slot="head" name="twitter:card" content="summary_large_image" />
+  <meta slot="head" name="twitter:title" content={data.title} />
+  <meta slot="head" name="twitter:description" content={data.description} />
+  <meta
+    slot="head"
+    name="twitter:image"
+    content={socialImageUrl ||
+      `${siteOrigin}/img/blog/canvas-lms-kit-introduction-cover.jpg`}
+  />
+  <meta slot="head" name="twitter:image:alt" content={data.title} />
+
+  <!-- JSON-LD structured data -->
+  <script
+    slot="head"
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(blogPostingSchema)}
+  />
+
+  <Navbar customLanguageUrls={languageSwitcherUrls} />
+
+  <ReadingProgress />
+
+  <main id="main-content" class="blog-main">
+    <article class="blog-post">
+      <div class="blog-post__container">
+        <Breadcrumb items={breadcrumbs} />
+
+        <header class="blog-post__header">
+          <h1 class="blog-post__title">{data.title}</h1>
+
+          <div class="blog-post__meta">
+            <time datetime={publishedTime} class="blog-post__date">
+              {formatDate(data.pubDate, data.lang)}
+            </time>
+            <span class="blog-post__separator" aria-hidden="true">•</span>
+            <ReadingTime minutes={readingTime.minutes} lang={data.lang} />
+            {
+              data.updatedDate && (
+                <>
+                  <span class="blog-post__separator" aria-hidden="true">
+                    •
+                  </span>
+                  <span class="blog-post__updated">
+                    {data.lang === 'en'
+                      ? 'Updated'
+                      : data.lang === 'es'
+                        ? 'Actualizado'
+                        : 'Atualizado'}
+                    : {formatDate(data.updatedDate, data.lang)}
+                  </span>
+                </>
+              )
+            }
+          </div>
+
+          <TagList tags={data.tags} lang={data.lang} showAll />
+        </header>
+
+        <div class="blog-post__layout">
+          {
+            toc.length > 0 && (
+              <aside class="blog-post__toc">
+                <TableOfContents
+                  headings={toc}
+                  title={
+                    data.lang === 'en'
+                      ? 'Table of Contents'
+                      : data.lang === 'es'
+                        ? 'Tabla de Contenidos'
+                        : 'Índice'
+                  }
+                />
+              </aside>
+            )
+          }
+
+          <div class="blog-post__content">
+            <div class="blog-post-content">
+              <Content />
+            </div>
+
+            <SocialShare
+              url={postUrl}
+              title={data.title}
+              description={data.description}
+              lang={data.lang}
+            />
+
+            <AuthorBio name={data.author} lang={data.lang} />
+          </div>
+        </div>
+
+        {
+          relatedPosts.length > 0 && (
+            <RelatedPosts posts={relatedPosts} lang={data.lang} />
+          )
+        }
+      </div>
+    </article>
+  </main>
+
+  <Footer showLanguages={false} />
+</Layout>
+
+<style>
+  .blog-post {
+    padding: 48px 0;
+  }
+
+  .blog-post__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .blog-post__header {
+    margin-bottom: 48px;
+  }
+
+  .blog-post__title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 24px 0;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .blog-post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .blog-post__separator {
+    color: rgba(99, 102, 241, 0.3);
+  }
+
+  .blog-post__date,
+  .blog-post__updated {
+    font-weight: 500;
+  }
+
+  .blog-post__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .blog-post__content {
+    min-width: 0; /* Prevent overflow */
+  }
+
+  /* Desktop: side-by-side layout with TOC */
+  @media (min-width: 1024px) {
+    .blog-post__layout {
+      grid-template-columns: 1fr 280px;
+    }
+
+    .blog-post__toc {
+      order: 2;
+    }
+
+    .blog-post__content {
+      order: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-post {
+      padding: 32px 0;
+    }
+
+    .blog-post__container {
+      padding: 0 20px;
+    }
+
+    .blog-post__title {
+      font-size: 2rem;
+    }
+
+    .blog-post__meta {
+      font-size: 0.875rem;
+    }
+  }
+</style>

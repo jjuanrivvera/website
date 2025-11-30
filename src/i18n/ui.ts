@@ -47,6 +47,7 @@ export const ui = {
     'nav.projects': 'Projects',
     'nav.education': 'Education',
     'nav.contact': 'Contact',
+    'nav.blog': 'Blog',
 
     // Hero
     'hero.name': 'Juan Felipe Rivera Gonzalez',
@@ -129,6 +130,37 @@ export const ui = {
     'schema.description':
       'Seasoned Full Stack Developer with 7+ years of experience specializing in scalable web applications, microservices architecture, and cloud infrastructure.',
 
+    // Blog
+    'blog.title': 'Blog',
+    'blog.description':
+      'Articles about web development, software engineering, and technology.',
+    'blog.readingTime': 'min read',
+    'blog.readMore': 'Read more',
+    'blog.relatedPosts': 'Related Posts',
+    'blog.relatedPostsSubtitle': 'You might also like',
+    'blog.sharePost': 'Share this post',
+    'blog.shareTwitter': 'Share on Twitter',
+    'blog.shareFacebook': 'Share on Facebook',
+    'blog.shareLinkedIn': 'Share on LinkedIn',
+    'blog.shareReddit': 'Share on Reddit',
+    'blog.shareEmail': 'Share via Email',
+    'blog.toc': 'Table of Contents',
+    'blog.tocSubtitle': 'On this page',
+    'blog.authorBio': 'About the Author',
+    'blog.publishedOn': 'Published on',
+    'blog.updatedOn': 'Updated on',
+    'blog.tags': 'Tags',
+    'blog.taggedWith': 'Tagged with',
+    'blog.backToAllPosts': 'Back to all posts',
+    'blog.pagination.previous': 'Previous',
+    'blog.pagination.next': 'Next',
+    'blog.pagination.pageOf': 'Page {current} of {total}',
+    'blog.pagination.aria': 'Blog pagination',
+    'blog.breadcrumb.home': 'Home',
+    'blog.breadcrumb.blog': 'Blog',
+    'blog.article': 'article',
+    'blog.articles': 'articles',
+
     // 404
     '404.title': 'Page Not Found',
     '404.description':
@@ -165,6 +197,7 @@ export const ui = {
     'nav.projects': 'Proyectos',
     'nav.education': 'Educación',
     'nav.contact': 'Contacto',
+    'nav.blog': 'Blog',
 
     // Hero
     'hero.name': 'Juan Felipe Rivera Gonzalez',
@@ -249,6 +282,37 @@ export const ui = {
     'schema.description':
       'Desarrollador Full Stack experimentado con más de 7 años de experiencia especializándose en aplicaciones web escalables, arquitectura de microservicios e infraestructura en la nube.',
 
+    // Blog
+    'blog.title': 'Blog',
+    'blog.description':
+      'Artículos sobre desarrollo web, ingeniería de software y tecnología.',
+    'blog.readingTime': 'min de lectura',
+    'blog.readMore': 'Leer más',
+    'blog.relatedPosts': 'Artículos Relacionados',
+    'blog.relatedPostsSubtitle': 'También te puede interesar',
+    'blog.sharePost': 'Compartir este artículo',
+    'blog.shareTwitter': 'Compartir en Twitter',
+    'blog.shareFacebook': 'Compartir en Facebook',
+    'blog.shareLinkedIn': 'Compartir en LinkedIn',
+    'blog.shareReddit': 'Compartir en Reddit',
+    'blog.shareEmail': 'Compartir por Email',
+    'blog.toc': 'Tabla de Contenidos',
+    'blog.tocSubtitle': 'En esta página',
+    'blog.authorBio': 'Sobre el Autor',
+    'blog.publishedOn': 'Publicado el',
+    'blog.updatedOn': 'Actualizado el',
+    'blog.tags': 'Etiquetas',
+    'blog.taggedWith': 'Etiquetado con',
+    'blog.backToAllPosts': 'Volver a todos los artículos',
+    'blog.pagination.previous': 'Anterior',
+    'blog.pagination.next': 'Siguiente',
+    'blog.pagination.pageOf': 'Página {current} de {total}',
+    'blog.pagination.aria': 'Paginación del blog',
+    'blog.breadcrumb.home': 'Inicio',
+    'blog.breadcrumb.blog': 'Blog',
+    'blog.article': 'artículo',
+    'blog.articles': 'artículos',
+
     // 404
     '404.title': 'Página No Encontrada',
     '404.description': 'La página que buscas no existe o ha sido movida.',
@@ -283,6 +347,7 @@ export const ui = {
     'nav.projects': 'Projetos',
     'nav.education': 'Educação',
     'nav.contact': 'Contato',
+    'nav.blog': 'Blog',
 
     // Hero
     'hero.name': 'Juan Felipe Rivera Gonzalez',
@@ -364,6 +429,37 @@ export const ui = {
     'schema.jobTitle': 'Desenvolvedor Full Stack',
     'schema.description':
       'Desenvolvedor Full Stack experiente com mais de 7 anos especializado em aplicações web escaláveis, arquitetura de microserviços e infraestrutura em nuvem.',
+
+    // Blog
+    'blog.title': 'Blog',
+    'blog.description':
+      'Artigos sobre desenvolvimento web, engenharia de software e tecnologia.',
+    'blog.readingTime': 'min de leitura',
+    'blog.readMore': 'Leia mais',
+    'blog.relatedPosts': 'Artigos Relacionados',
+    'blog.relatedPostsSubtitle': 'Você também pode gostar',
+    'blog.sharePost': 'Compartilhar este artigo',
+    'blog.shareTwitter': 'Compartilhar no Twitter',
+    'blog.shareFacebook': 'Compartilhar no Facebook',
+    'blog.shareLinkedIn': 'Compartilhar no LinkedIn',
+    'blog.shareReddit': 'Compartilhar no Reddit',
+    'blog.shareEmail': 'Compartilhar por E-mail',
+    'blog.toc': 'Sumário',
+    'blog.tocSubtitle': 'Nesta página',
+    'blog.authorBio': 'Sobre o Autor',
+    'blog.publishedOn': 'Publicado em',
+    'blog.updatedOn': 'Atualizado em',
+    'blog.tags': 'Tags',
+    'blog.taggedWith': 'Marcado com',
+    'blog.backToAllPosts': 'Voltar para todos os artigos',
+    'blog.pagination.previous': 'Anterior',
+    'blog.pagination.next': 'Próximo',
+    'blog.pagination.pageOf': 'Página {current} de {total}',
+    'blog.pagination.aria': 'Paginação do blog',
+    'blog.breadcrumb.home': 'Início',
+    'blog.breadcrumb.blog': 'Blog',
+    'blog.article': 'artigo',
+    'blog.articles': 'artigos',
 
     // 404
     '404.title': 'Página Não Encontrada',

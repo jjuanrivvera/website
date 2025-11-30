@@ -1,0 +1,263 @@
+---
+import type { Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '@layouts/Layout.astro';
+import Navbar from '@components/layout/Navbar.astro';
+import Footer from '@components/layout/Footer.astro';
+import PostCard from '@components/blog/PostCard.astro';
+import type { SupportedLang } from '@models/blog';
+
+interface Props {
+  page: Page<CollectionEntry<'blog'>>;
+  lang: SupportedLang;
+}
+
+const { page, lang } = Astro.props;
+
+// Internationalization strings
+const i18n: Record<
+  SupportedLang,
+  {
+    title: string;
+    description: string;
+    previous: string;
+    next: string;
+    page: string;
+    of: string;
+    paginationLabel: string;
+  }
+> = {
+  en: {
+    title: 'Blog',
+    description:
+      'Articles about web development, software engineering, and technology.',
+    previous: 'Previous',
+    next: 'Next',
+    page: 'Page',
+    of: 'of',
+    paginationLabel: 'Blog pagination',
+  },
+  es: {
+    title: 'Blog',
+    description:
+      'Artículos sobre desarrollo web, ingeniería de software y tecnología.',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    page: 'Página',
+    of: 'de',
+    paginationLabel: 'Paginación del blog',
+  },
+  pt: {
+    title: 'Blog',
+    description:
+      'Artigos sobre desenvolvimento web, engenharia de software e tecnologia.',
+    previous: 'Anterior',
+    next: 'Próximo',
+    page: 'Página',
+    of: 'de',
+    paginationLabel: 'Paginação do blog',
+  },
+};
+
+const t = i18n[lang];
+const title =
+  page.currentPage === 1
+    ? t.title
+    : `${t.title} - ${t.page} ${page.currentPage}`;
+const description = t.description;
+
+// Build canonical URL
+const basePath = lang === 'en' ? '/blog' : `/${lang}/blog`;
+const canonicalUrl = page.url.current
+  ? `https://jjuanrivvera.com${page.url.current}`
+  : `https://jjuanrivvera.com${basePath}`;
+---
+
+<Layout
+  title={title}
+  description={description}
+  noCanonical={true}
+  noOpenGraph={true}
+>
+  <link slot="head" rel="canonical" href={canonicalUrl} />
+
+  {
+    page.url.prev && (
+      <link
+        slot="head"
+        rel="prev"
+        href={`https://jjuanrivvera.com${page.url.prev}`}
+      />
+    )
+  }
+  {
+    page.url.next && (
+      <link
+        slot="head"
+        rel="next"
+        href={`https://jjuanrivvera.com${page.url.next}`}
+      />
+    )
+  }
+
+  <meta slot="head" property="og:type" content="website" />
+  <meta slot="head" property="og:title" content={title} />
+  <meta slot="head" property="og:description" content={description} />
+  <meta slot="head" property="og:url" content={canonicalUrl} />
+
+  <Navbar />
+
+  <main id="main-content" class="blog-main">
+    <div class="blog-listing">
+      <div class="blog-listing__container">
+        <header class="blog-listing__header">
+          <h1 class="blog-listing__title">{t.title}</h1>
+          <p class="blog-listing__description">{description}</p>
+        </header>
+
+        <div class="blog-listing__grid">
+          {page.data.map((post) => <PostCard post={post} lang={lang} />)}
+        </div>
+
+        {
+          (page.url.prev || page.url.next) && (
+            <nav class="pagination" aria-label={t.paginationLabel}>
+              <div class="pagination__info">
+                {t.page} {page.currentPage} {t.of} {page.lastPage}
+              </div>
+
+              <div class="pagination__buttons">
+                {page.url.prev ? (
+                  <a href={page.url.prev} class="pagination__button" rel="prev">
+                    ← {t.previous}
+                  </a>
+                ) : (
+                  <span class="pagination__button pagination__button--disabled">
+                    ← {t.previous}
+                  </span>
+                )}
+
+                {page.url.next ? (
+                  <a href={page.url.next} class="pagination__button" rel="next">
+                    {t.next} →
+                  </a>
+                ) : (
+                  <span class="pagination__button pagination__button--disabled">
+                    {t.next} →
+                  </span>
+                )}
+              </div>
+            </nav>
+          )
+        }
+      </div>
+    </div>
+  </main>
+
+  <Footer showLanguages={false} />
+</Layout>
+
+<style>
+  .blog-listing {
+    padding: 96px 0 48px 0;
+  }
+
+  .blog-listing__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .blog-listing__header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .blog-listing__title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .blog-listing__description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .blog-listing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+    margin-bottom: 64px;
+  }
+
+  .pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 32px 0;
+    border-top: 2px solid var(--color-border, #e0e0e0);
+  }
+
+  .pagination__info {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary, #666);
+    font-weight: 500;
+  }
+
+  .pagination__buttons {
+    display: flex;
+    gap: 16px;
+  }
+
+  .pagination__button {
+    padding: 12px 24px;
+    background: var(--color-accent, #0066cc);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .pagination__button:hover {
+    background: var(--color-accent-dark, #0052a3);
+    transform: translateY(-2px);
+  }
+
+  .pagination__button--disabled {
+    background: var(--color-bg-tertiary, #f0f0f0);
+    color: var(--color-text-tertiary, #999);
+    cursor: not-allowed;
+  }
+
+  .pagination__button--disabled:hover {
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    .blog-listing {
+      padding: 32px 0;
+    }
+
+    .blog-listing__header {
+      margin-bottom: 48px;
+    }
+
+    .blog-listing__title {
+      font-size: 2.5rem;
+    }
+
+    .blog-listing__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

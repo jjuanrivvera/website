@@ -16,6 +16,8 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  noCanonical?: boolean; // Suppress default canonical/hreflang (for pages that provide their own)
+  noOpenGraph?: boolean; // Suppress default OG tags (for pages that provide their own)
 }
 
 const lang = getLangFromUrl(Astro.url);
@@ -34,6 +36,8 @@ const {
   title = t('meta.title'),
   description = t('meta.description'),
   noindex = false,
+  noCanonical = false,
+  noOpenGraph = false,
 } = Astro.props;
 ---
 
@@ -48,42 +52,70 @@ const {
     <meta name="keywords" content={t('meta.keywords')} />
     {noindex && <meta name="robots" content="noindex, follow" />}
 
-    <!-- Open Graph -->
-    <meta property="og:title" content={t('meta.og.title')} />
-    <meta property="og:description" content={t('meta.og.description')} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={profileImageUrl} />
-    <meta property="og:image:width" content="500" />
-    <meta property="og:image:height" content="500" />
-    <meta property="og:image:alt" content={t('meta.og.imageAlt')} />
-    <meta property="og:locale" content={locale} />
     {
-      alternateLocales.map((code) => (
-        <meta property="og:locale:alternate" content={code.replace('-', '_')} />
-      ))
+      !noOpenGraph && (
+        <>
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={description} />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={canonicalUrl} />
+          <meta property="og:image" content={profileImageUrl} />
+          <meta property="og:image:width" content="500" />
+          <meta property="og:image:height" content="500" />
+          <meta property="og:image:alt" content={t('meta.og.imageAlt')} />
+          <meta property="og:locale" content={locale} />
+          {alternateLocales.map((code) => (
+            <meta
+              property="og:locale:alternate"
+              content={code.replace('-', '_')}
+            />
+          ))}
+          <meta property="og:site_name" content={t('meta.og.siteName')} />
+
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={description} />
+          <meta name="twitter:image" content={profileImageUrl} />
+          <meta name="twitter:image:alt" content={t('meta.og.imageAlt')} />
+        </>
+      )
     }
-    <meta property="og:site_name" content={t('meta.og.siteName')} />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={t('meta.og.title')} />
-    <meta name="twitter:description" content={t('meta.og.description')} />
-    <meta name="twitter:image" content={profileImageUrl} />
-    <meta name="twitter:image:alt" content={t('meta.og.imageAlt')} />
-
-    <!-- Canonical & Hreflang -->
-    <link rel="canonical" href={canonicalUrl} />
     {
-      hreflangEntries.map(([code, href]) => (
-        <link
-          rel="alternate"
-          hreflang={languageMeta[code].locale}
-          href={href}
-        />
-      ))
+      !noCanonical && (
+        <>
+          <link rel="canonical" href={canonicalUrl} />
+          {hreflangEntries.map(([code, href]) => (
+            <link
+              rel="alternate"
+              hreflang={languageMeta[code].locale}
+              href={href}
+            />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
+        </>
+      )
     }
-    <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
+
+    <!-- RSS Feeds -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Juan Felipe Rivera Gonzalez - Blog (English)"
+      href="/rss.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Juan Felipe Rivera Gonzalez - Blog (Español)"
+      href="/es/rss.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Juan Felipe Rivera Gonzalez - Blog (Português)"
+      href="/pt/rss.xml"
+    />
 
     <title>{title}</title>
     <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
@@ -126,6 +158,7 @@ const {
 
     <!-- JSON-LD Structured Data -->
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify({
         '@context': 'https://schema.org',
@@ -178,6 +211,9 @@ const {
         },
       })}
     />
+
+    <!-- Allow child layouts to inject custom head content -->
+    <slot name="head" />
   </head>
   <body>
     <slot />

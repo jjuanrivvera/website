@@ -1,0 +1,10 @@
+# Blog Assets Directory
+
+This directory contains all images used in blog posts:
+
+- `covers/` - Cover images for blog posts
+- `content/` - Images used within blog post content
+- `shared/` - Images shared across multiple posts
+
+All blog images should be stored locally, not referenced from external URLs.
+See docs/BLOG_GUIDELINES.md for more details.

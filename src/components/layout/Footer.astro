@@ -1,6 +1,12 @@
 ---
 import { getLangFromUrl, useTranslations } from '@i18n/utils';
 
+interface Props {
+  showLanguages?: boolean;
+}
+
+const { showLanguages = true } = Astro.props;
+
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const currentYear = new Date().getFullYear();
@@ -8,10 +14,14 @@ const currentYear = new Date().getFullYear();
 
 <footer>
   <div class="footer-content">
-    <p class="footer-languages">
-      <strong>{t('footer.languages')}</strong>
-      {t('footer.spanish')} | {t('footer.english')}
-    </p>
+    {
+      showLanguages && (
+        <p class="footer-languages">
+          <strong>{t('footer.languages')}</strong>
+          {t('footer.spanish')} | {t('footer.english')}
+        </p>
+      )
+    }
     <p class="footer-copyright">
       &copy; {currentYear} Juan Felipe Rivera Gonzalez. {t('footer.copyright')}
     </p>

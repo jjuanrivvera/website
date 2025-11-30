@@ -116,4 +116,174 @@ test.describe('i18n', () => {
       page.getByRole('link', { name: 'Habilidades', exact: true })
     ).toBeVisible();
   });
+
+  test('all navigation items are visible in English', async ({ page }) => {
+    await page.goto('/');
+
+    // Check all navigation items are visible
+    await expect(
+      page.getByRole('link', { name: 'Experience', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Skills', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Projects', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Education', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Contact', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Blog', exact: true })
+    ).toBeVisible();
+  });
+
+  test('all navigation items are visible in Spanish', async ({ page }) => {
+    await page.goto('/es/');
+
+    // Check all navigation items are visible
+    await expect(
+      page.getByRole('link', { name: 'Experiencia', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Habilidades', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Proyectos', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Educación', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Contacto', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Blog', exact: true })
+    ).toBeVisible();
+  });
+
+  test('all navigation items are visible in Portuguese', async ({ page }) => {
+    await page.goto('/pt/');
+
+    // Check all navigation items are visible
+    await expect(
+      page.getByRole('link', { name: 'Experiência', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Habilidades', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Projetos', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Educação', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Contato', exact: true })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Blog', exact: true })
+    ).toBeVisible();
+  });
+
+  test('blog navigation link works in all languages', async ({ page }) => {
+    // English
+    await page.goto('/');
+    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
+    await expect(page).toHaveURL(/\/blog\/?$/);
+
+    // Spanish
+    await page.goto('/es/');
+    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
+    await expect(page).toHaveURL(/\/es\/blog\/?$/);
+
+    // Portuguese
+    await page.goto('/pt/');
+    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
+    await expect(page).toHaveURL(/\/pt\/blog\/?$/);
+  });
+
+  test('section navigation anchors work in English', async ({ page }) => {
+    await page.goto('/');
+
+    // Test Experience navigation
+    await page
+      .getByRole('link', { name: 'Experience', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/#experience$/);
+
+    // Test Skills navigation
+    await page.goto('/');
+    await page
+      .getByRole('link', { name: 'Skills', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/#skills$/);
+
+    // Test Projects navigation
+    await page.goto('/');
+    await page
+      .getByRole('link', { name: 'Projects', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/#projects$/);
+  });
+
+  test('section navigation anchors work in Spanish', async ({ page }) => {
+    await page.goto('/es/');
+
+    // Test Experience navigation
+    await page
+      .getByRole('link', { name: 'Experiencia', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/es\/?#experience$/);
+
+    // Test Skills navigation
+    await page.goto('/es/');
+    await page
+      .getByRole('link', { name: 'Habilidades', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/es\/?#skills$/);
+
+    // Test Projects navigation
+    await page.goto('/es/');
+    await page
+      .getByRole('link', { name: 'Proyectos', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/es\/?#projects$/);
+  });
+
+  test('section navigation anchors work in Portuguese', async ({ page }) => {
+    await page.goto('/pt/');
+
+    // Test Experience navigation
+    await page
+      .getByRole('link', { name: 'Experiência', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/pt\/?#experience$/);
+
+    // Test Skills navigation
+    await page.goto('/pt/');
+    await page
+      .getByRole('link', { name: 'Habilidades', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/pt\/?#skills$/);
+
+    // Test Projects navigation
+    await page.goto('/pt/');
+    await page
+      .getByRole('link', { name: 'Projetos', exact: true })
+      .first()
+      .click();
+    await expect(page).toHaveURL(/\/pt\/?#projects$/);
+  });
 });

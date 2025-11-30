@@ -80,22 +80,22 @@ const breadcrumbSchema = {
   }
 
   .breadcrumb__link {
-    color: var(--color-text-secondary, #666);
+    color: rgba(156, 163, 175, 0.9); /* Light gray for dark backgrounds */
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .breadcrumb__link:hover {
-    color: var(--color-accent, #0066cc);
+    color: rgb(147, 197, 253); /* Light blue for dark backgrounds */
     text-decoration: underline;
   }
 
   .breadcrumb__separator {
-    color: var(--color-text-tertiary, #999);
+    color: rgba(156, 163, 175, 0.5); /* Muted gray */
   }
 
   .breadcrumb__current {
-    color: var(--color-text-primary, #1a1a1a);
+    color: rgb(229, 231, 235); /* Light color for dark backgrounds */
     font-weight: 500;
   }
 

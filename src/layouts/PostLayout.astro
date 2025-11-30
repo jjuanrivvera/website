@@ -85,14 +85,10 @@ const breadcrumbs = [
 
 // Determine social sharing image (use dynamic origin for Netlify previews)
 const siteOrigin = Astro.url.origin;
-const socialImage = data.cover;
-const socialImageUrl = socialImage
-  ? typeof socialImage === 'string'
-    ? socialImage.startsWith('http')
-      ? socialImage
-      : `${siteOrigin}${socialImage}`
-    : `${siteOrigin}${socialImage.src}`
-  : `${siteOrigin}/img/blog/default-og-image.jpg`; // Default fallback
+// For social media, use public folder images for reliability
+// Construct OG image path from post slug (convention: /img/blog/{slug}-og.jpg)
+const ogImagePath = `/img/blog/${cleanSlug}-og.jpg`;
+const socialImageUrl = `${siteOrigin}${ogImagePath}`;
 
 // JSON-LD structured data for BlogPosting
 const blogPostingSchema = generateBlogPostingSchema({

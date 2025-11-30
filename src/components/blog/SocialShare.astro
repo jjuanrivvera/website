@@ -160,14 +160,16 @@ const labels = {
     flex-direction: column;
     gap: 16px;
     padding: 24px;
-    background: var(--color-bg-secondary, #f9f9f9);
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
     border-radius: 12px;
     margin-top: 32px;
+    backdrop-filter: blur(10px);
   }
 
   .social-share__label {
     font-weight: 600;
-    color: var(--color-text-primary, #1a1a1a);
+    color: rgb(229, 231, 235);
   }
 
   .social-share__buttons {
@@ -181,9 +183,9 @@ const labels = {
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
-    background: white;
-    color: var(--color-text-primary, #1a1a1a);
-    border: 1px solid var(--color-border, #e0e0e0);
+    background: rgba(99, 102, 241, 0.15);
+    color: rgb(229, 231, 235);
+    border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 8px;
     text-decoration: none;
     font-size: 0.9375rem;
@@ -192,11 +194,11 @@ const labels = {
   }
 
   .social-share__button:hover {
-    background: var(--color-accent, #0066cc);
-    color: white;
-    border-color: var(--color-accent, #0066cc);
+    background: rgba(99, 102, 241, 0.3);
+    color: rgb(147, 197, 253);
+    border-color: rgb(147, 197, 253);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 102, 204, 0.2);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
   }
 
   .social-share__button svg {

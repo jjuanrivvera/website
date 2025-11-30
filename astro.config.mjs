@@ -3,8 +3,11 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 
+// Use Netlify preview URL for deploy previews, production URL otherwise
+const site = process.env.DEPLOY_PRIME_URL || process.env.URL || 'https://jjuanrivvera.com';
+
 export default defineConfig({
-  site: 'https://jjuanrivvera.com',
+  site,
   integrations: [
     mdx({
       syntaxHighlight: 'shiki',

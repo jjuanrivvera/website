@@ -12,10 +12,12 @@ export function generateBlogPostingSchema({
   post,
   postUrl,
   profilePicture,
-}: BlogPostingSchemaParams) {
+  siteOrigin,
+}: BlogPostingSchemaParams & { siteOrigin?: string }) {
   const { data } = post;
   const publishedTime = data.pubDate.toISOString();
   const modifiedTime = data.updatedDate?.toISOString();
+  const origin = siteOrigin || SITE_CONFIG.url;
 
   return {
     '@context': 'https://schema.org',
@@ -24,8 +26,10 @@ export function generateBlogPostingSchema({
     description: data.description,
     image: data.cover
       ? typeof data.cover === 'string'
-        ? data.cover
-        : `${SITE_CONFIG.url}${data.cover.src}`
+        ? data.cover.startsWith('http')
+          ? data.cover
+          : `${origin}${data.cover}`
+        : `${origin}${data.cover.src}`
       : undefined,
     datePublished: publishedTime,
     dateModified: modifiedTime || publishedTime,
@@ -39,7 +43,7 @@ export function generateBlogPostingSchema({
       name: SITE_CONFIG.author,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_CONFIG.url}${profilePicture.src}`,
+        url: `${origin}${profilePicture.src}`,
       },
     },
     mainEntityOfPage: {

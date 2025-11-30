@@ -85,14 +85,14 @@ const breadcrumbs = [
 
 // Determine social sharing image (use dynamic origin for Netlify previews)
 const siteOrigin = Astro.url.origin;
-const socialImage = data.ogImage || data.cover;
+const socialImage = data.cover;
 const socialImageUrl = socialImage
   ? typeof socialImage === 'string'
     ? socialImage.startsWith('http')
       ? socialImage
       : `${siteOrigin}${socialImage}`
     : `${siteOrigin}${socialImage.src}`
-  : undefined;
+  : `${siteOrigin}/img/blog/default-og-image.jpg`; // Default fallback
 
 // JSON-LD structured data for BlogPosting
 const blogPostingSchema = generateBlogPostingSchema({
@@ -124,12 +124,7 @@ const blogPostingSchema = generateBlogPostingSchema({
   <meta slot="head" property="og:title" content={data.title} />
   <meta slot="head" property="og:description" content={data.description} />
   <meta slot="head" property="og:url" content={postUrl} />
-  <meta
-    slot="head"
-    property="og:image"
-    content={socialImageUrl ||
-      `${siteOrigin}/img/blog/canvas-lms-kit-introduction-cover.jpg`}
-  />
+  <meta slot="head" property="og:image" content={socialImageUrl} />
   <meta slot="head" property="og:image:width" content="1200" />
   <meta slot="head" property="og:image:height" content="630" />
   <meta slot="head" property="article:published_time" content={publishedTime} />
@@ -153,12 +148,7 @@ const blogPostingSchema = generateBlogPostingSchema({
   <meta slot="head" name="twitter:card" content="summary_large_image" />
   <meta slot="head" name="twitter:title" content={data.title} />
   <meta slot="head" name="twitter:description" content={data.description} />
-  <meta
-    slot="head"
-    name="twitter:image"
-    content={socialImageUrl ||
-      `${siteOrigin}/img/blog/canvas-lms-kit-introduction-cover.jpg`}
-  />
+  <meta slot="head" name="twitter:image" content={socialImageUrl} />
   <meta slot="head" name="twitter:image:alt" content={data.title} />
 
   <!-- JSON-LD structured data -->

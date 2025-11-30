@@ -44,7 +44,6 @@ const blog = defineCollection({
         // Images - supports Astro image() or URL strings
         cover: z.union([image(), z.string().url()]).optional(),
         coverAlt: z.string().optional(),
-        ogImage: z.union([image(), z.string().url()]).optional(), // Custom OG image (fallback to cover)
 
         // i18n
         lang: z.enum(['en', 'es', 'pt']),

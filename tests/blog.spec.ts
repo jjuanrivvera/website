@@ -19,7 +19,7 @@ test.describe('Blog', () => {
       expect(response?.status()).toBe(200);
 
       await expect(page).toHaveTitle(/Blog/);
-      await expect(page.locator('h1')).toContainText('Blog');
+      await expect(page.locator('.blog-listing__title')).toContainText('Blog');
       await expect(page.locator('.post-card').first()).toBeVisible();
     });
 
@@ -28,7 +28,7 @@ test.describe('Blog', () => {
       expect(response?.status()).toBe(200);
 
       await expect(page).toHaveTitle(/Blog/);
-      await expect(page.locator('h1')).toContainText('Blog');
+      await expect(page.locator('.blog-listing__title')).toContainText('Blog');
       await expect(page.locator('.post-card').first()).toBeVisible();
     });
 
@@ -123,7 +123,7 @@ test.describe('Blog', () => {
       // Verify tag page displays filtered posts (title includes # symbol)
       const tagName = tagText!.trim(); // Keep the # in the tag name
       // Use case-insensitive check since tag titles are capitalized
-      const h1Text = await page.locator('h1').textContent();
+      const h1Text = await page.locator('.tag-page__title').textContent();
       expect(h1Text?.toLowerCase()).toContain(tagName.toLowerCase());
       await expect(page.locator('.post-card').first()).toBeVisible();
     });
@@ -181,19 +181,24 @@ test.describe('Blog', () => {
       await postLink.click();
 
       // Try to switch to Spanish
-      await page.getByRole('button', { name: 'Change language' }).click();
-      const spanishOption = page.getByRole('menuitem', { name: 'Español' });
+      await page
+        .getByRole('button', { name: 'Change language' })
+        .first()
+        .click();
 
-      // Check if Spanish option is enabled (not disabled)
-      const isEnabled = await spanishOption.isEnabled();
+      // Spanish link should be visible
+      const esLink = page.locator('#navbar a[hreflang="es"]').first();
+      await expect(esLink).toBeVisible();
 
-      if (isEnabled) {
-        await spanishOption.click();
+      const href = await esLink.getAttribute('href');
+      expect(href).toBeTruthy();
 
-        // Should navigate to Spanish version or blog listing
-        await page.waitForURL(/\/(es\/)?blog/);
-        expect(page.url()).toMatch(/\/(es\/)?blog/);
-      }
+      // Click to navigate
+      await esLink.click();
+
+      // Should navigate to Spanish version or blog listing
+      await page.waitForURL(/\/(es\/)?blog/);
+      expect(page.url()).toMatch(/\/(es\/)?blog/);
     });
 
     test('language switcher provides Portuguese option', async ({ page }) => {
@@ -237,7 +242,7 @@ test.describe('Blog', () => {
 
       // Verify navigation to blog
       await expect(page).toHaveURL('/blog');
-      await expect(page.locator('h1')).toContainText('Blog');
+      await expect(page.locator('.blog-listing__title')).toContainText('Blog');
     });
 
     test('navbar blog link works in all languages', async ({ page }) => {

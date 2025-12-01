@@ -7,6 +7,7 @@ import Footer from '@components/layout/Footer.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import type { SupportedLang } from '@models/blog';
 import { SITE_CONFIG } from '@config/site';
+import { blogListingI18n } from '@i18n/blog';
 
 interface Props {
   page: Page<CollectionEntry<'blog'>>;
@@ -15,52 +16,7 @@ interface Props {
 
 const { page, lang } = Astro.props;
 
-// Internationalization strings
-const i18n: Record<
-  SupportedLang,
-  {
-    title: string;
-    description: string;
-    previous: string;
-    next: string;
-    page: string;
-    of: string;
-    paginationLabel: string;
-  }
-> = {
-  en: {
-    title: 'Blog',
-    description:
-      'Articles about web development, software engineering, and technology.',
-    previous: 'Previous',
-    next: 'Next',
-    page: 'Page',
-    of: 'of',
-    paginationLabel: 'Blog pagination',
-  },
-  es: {
-    title: 'Blog',
-    description:
-      'Artículos sobre desarrollo web, ingeniería de software y tecnología.',
-    previous: 'Anterior',
-    next: 'Siguiente',
-    page: 'Página',
-    of: 'de',
-    paginationLabel: 'Paginación del blog',
-  },
-  pt: {
-    title: 'Blog',
-    description:
-      'Artigos sobre desenvolvimento web, engenharia de software e tecnologia.',
-    previous: 'Anterior',
-    next: 'Próximo',
-    page: 'Página',
-    of: 'de',
-    paginationLabel: 'Paginação do blog',
-  },
-};
-
-const t = i18n[lang];
+const t = blogListingI18n[lang];
 const title =
   page.currentPage === 1
     ? t.title

@@ -5,6 +5,7 @@
  */
 
 import type { BreadcrumbItem } from '@models/blog';
+import { SITE_CONFIG } from '@config/site';
 
 interface Props {
   items: BreadcrumbItem[];
@@ -20,7 +21,7 @@ const breadcrumbSchema = {
     '@type': 'ListItem',
     position: item.position,
     name: item.label,
-    item: `https://jjuanrivvera.com${item.url}`,
+    item: `${SITE_CONFIG.url}${item.url}`,
   })),
 };
 ---

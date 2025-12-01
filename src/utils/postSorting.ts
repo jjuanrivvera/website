@@ -7,7 +7,7 @@ export type BlogPost = CollectionEntry<'blog'>;
  * Uses updatedDate if available, otherwise pubDate
  */
 export function sortPostsByDate(posts: BlogPost[]): BlogPost[] {
-  return posts.sort((a, b) => {
+  return [...posts].sort((a, b) => {
     const dateA = a.data.updatedDate || a.data.pubDate;
     const dateB = b.data.updatedDate || b.data.pubDate;
     return dateB.getTime() - dateA.getTime();
@@ -18,7 +18,7 @@ export function sortPostsByDate(posts: BlogPost[]): BlogPost[] {
  * Sort blog posts by date (oldest first)
  */
 export function sortPostsByDateAsc(posts: BlogPost[]): BlogPost[] {
-  return posts.sort((a, b) => {
+  return [...posts].sort((a, b) => {
     const dateA = a.data.updatedDate || a.data.pubDate;
     const dateB = b.data.updatedDate || b.data.pubDate;
     return dateA.getTime() - dateB.getTime();

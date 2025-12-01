@@ -7,6 +7,7 @@ import {
   type Lang,
 } from './ui';
 import { getRelativeLocaleUrl } from 'astro:i18n';
+import { SITE_CONFIG } from '@config/site';
 
 const supportedLanguages = Object.keys(languages) as Lang[];
 const localePrefixRegex = new RegExp(`^/(${supportedLanguages.join('|')})/`);
@@ -80,7 +81,7 @@ export function getLocale(lang: Lang): string {
  * Get canonical URL for the current page
  */
 export function getCanonicalUrl(_lang: Lang, pathname: string): string {
-  const base = 'https://jjuanrivvera.com';
+  const base = SITE_CONFIG.url;
   // Normalize pathname to ensure consistent trailing slash
   const normalizedPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
   return `${base}${normalizedPath}`;
@@ -90,7 +91,7 @@ export function getCanonicalUrl(_lang: Lang, pathname: string): string {
  * Get hreflang URLs for the current page
  */
 export function getHreflangUrls(pathname: string): Record<Lang, string> {
-  const base = 'https://jjuanrivvera.com';
+  const base = SITE_CONFIG.url;
   const basePath = stripLocalePrefix(pathname);
   const normalizedBasePath =
     basePath === '/' ? '/' : basePath.endsWith('/') ? basePath : `${basePath}/`;

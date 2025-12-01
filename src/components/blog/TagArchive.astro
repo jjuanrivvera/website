@@ -5,6 +5,7 @@ import Navbar from '@components/layout/Navbar.astro';
 import Footer from '@components/layout/Footer.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import type { SupportedLang } from '@models/blog';
+import { SITE_CONFIG } from '@config/site';
 
 interface Props {
   tag: string;
@@ -67,7 +68,7 @@ const description = `${tagPosts.length} ${t.taggedAs(tagPosts.length)} "${displa
 // Build URLs
 const basePath = lang === 'en' ? '' : `/${lang}`;
 const blogPath = `${basePath}/blog`;
-const canonicalUrl = `https://jjuanrivvera.com${basePath}/blog/tag/${encodeURIComponent(tag)}`;
+const canonicalUrl = `${SITE_CONFIG.url}${basePath}/blog/tag/${encodeURIComponent(tag)}`;
 
 // Breadcrumb items
 const breadcrumbItems = [

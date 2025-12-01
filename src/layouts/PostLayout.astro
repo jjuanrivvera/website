@@ -27,6 +27,7 @@ import {
 } from '@utils/blogHreflang';
 import { formatDate } from '@utils/dateFormatting';
 import { generateBlogPostingSchema } from '@utils/blogSchema';
+import { SITE_CONFIG } from '@config/site';
 import profilePicture from '@assets/img/profile-picture.webp';
 import '@styles/blog.css';
 
@@ -62,8 +63,8 @@ const languageSwitcherUrls = getBlogLanguageSwitcherUrls(post, allPosts);
 const cleanSlug = post.slug.replace(/^(en|es|pt)\//, '');
 const postUrl =
   data.lang === 'en'
-    ? `https://jjuanrivvera.com/blog/${cleanSlug}`
-    : `https://jjuanrivvera.com/${data.lang}/blog/${cleanSlug}`;
+    ? `${SITE_CONFIG.url}/blog/${cleanSlug}`
+    : `${SITE_CONFIG.url}/${data.lang}/blog/${cleanSlug}`;
 
 // Format dates
 const publishedTime = data.pubDate.toISOString();

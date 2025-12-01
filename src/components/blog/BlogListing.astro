@@ -6,6 +6,7 @@ import Navbar from '@components/layout/Navbar.astro';
 import Footer from '@components/layout/Footer.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import type { SupportedLang } from '@models/blog';
+import { SITE_CONFIG } from '@config/site';
 
 interface Props {
   page: Page<CollectionEntry<'blog'>>;
@@ -69,8 +70,8 @@ const description = t.description;
 // Build canonical URL
 const basePath = lang === 'en' ? '/blog' : `/${lang}/blog`;
 const canonicalUrl = page.url.current
-  ? `https://jjuanrivvera.com${page.url.current}`
-  : `https://jjuanrivvera.com${basePath}`;
+  ? `${SITE_CONFIG.url}${page.url.current}`
+  : `${SITE_CONFIG.url}${basePath}`;
 ---
 
 <Layout
@@ -86,7 +87,7 @@ const canonicalUrl = page.url.current
       <link
         slot="head"
         rel="prev"
-        href={`https://jjuanrivvera.com${page.url.prev}`}
+        href={`${SITE_CONFIG.url}${page.url.prev}`}
       />
     )
   }
@@ -95,7 +96,7 @@ const canonicalUrl = page.url.current
       <link
         slot="head"
         rel="next"
-        href={`https://jjuanrivvera.com${page.url.next}`}
+        href={`${SITE_CONFIG.url}${page.url.next}`}
       />
     )
   }

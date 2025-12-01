@@ -87,8 +87,8 @@ export const ui = {
     // Projects
     'projects.title': 'Featured Projects',
     'projects.subtitle': 'Enterprise solutions & open source contributions',
-    'projects.acuePortal.description':
-      'Enterprise Django application managing 580+ institutional partnerships with faculty enrollment tracking, certificate generation, and cohort management. Built integrations with Salesforce CRM, Canvas LMS, SendGrid, and BigQuery.',
+    'projects.nsseWizard.description':
+      'Django-based interactive wizard guiding higher education institutions through NSSE (National Survey of Student Engagement) data analysis. Built 8-step guided workflow with session-based progress tracking, dynamic PDF generation with xhtml2pdf, and email delivery via SendGrid. Manages hierarchical content branching across 16 institutional challenges with 73 comprehensive tests.',
     'projects.canvasKit.description':
       'Enterprise-grade open-source PHP library for Canvas LMS API integration with 85% API coverage. Architected using Active Record + DTO patterns with PSR-12 compliance. Achieved 95%+ test coverage with 964 tests and 4,430 assertions.',
     'projects.paymentGateway.description':
@@ -239,8 +239,8 @@ export const ui = {
     'projects.title': 'Proyectos Destacados',
     'projects.subtitle':
       'Soluciones empresariales y contribuciones de código abierto',
-    'projects.acuePortal.description':
-      'Aplicación empresarial Django que gestiona más de 580 asociaciones institucionales con seguimiento de inscripción de docentes, generación de certificados y gestión de cohortes. Construí integraciones con Salesforce CRM, Canvas LMS, SendGrid y BigQuery.',
+    'projects.nsseWizard.description':
+      'Asistente interactivo basado en Django que guía a instituciones de educación superior a través del análisis de datos NSSE (National Survey of Student Engagement). Desarrollé un flujo de trabajo guiado de 8 pasos con seguimiento de progreso basado en sesiones, generación dinámica de PDF con xhtml2pdf y entrega de correos vía SendGrid. Gestiona ramificación jerárquica de contenido a través de 16 desafíos institucionales con 73 pruebas exhaustivas.',
     'projects.canvasKit.description':
       'Biblioteca PHP de código abierto de nivel empresarial para integración con la API de Canvas LMS con 85% de cobertura de API. Arquitectura usando patrones Active Record + DTO con cumplimiento PSR-12. Logré más del 95% de cobertura de pruebas con 964 tests y 4,430 aserciones.',
     'projects.paymentGateway.description':
@@ -387,8 +387,8 @@ export const ui = {
     // Projects
     'projects.title': 'Projetos em Destaque',
     'projects.subtitle': 'Soluções empresariais e contribuições open source',
-    'projects.acuePortal.description':
-      'Aplicação Django empresarial que gerencia mais de 580 parcerias institucionais com acompanhamento de matrícula de docentes, geração de certificados e gestão de coortes. Integrações com Salesforce CRM, Canvas LMS, SendGrid e BigQuery.',
+    'projects.nsseWizard.description':
+      'Assistente interativo baseado em Django que orienta instituições de ensino superior através da análise de dados NSSE (National Survey of Student Engagement). Desenvolvi um fluxo de trabalho guiado de 8 etapas com rastreamento de progresso baseado em sessão, geração dinâmica de PDF com xhtml2pdf e entrega de e-mail via SendGrid. Gerencia ramificação hierárquica de conteúdo através de 16 desafios institucionais com 73 testes abrangentes.',
     'projects.canvasKit.description':
       'Biblioteca PHP open source de nível empresarial para integração com a API do Canvas LMS com 85% de cobertura. Arquitetada com padrões Active Record + DTO e conformidade PSR-12. Alcançou mais de 95% de cobertura com 964 testes e 4.430 asserções.',
     'projects.paymentGateway.description':

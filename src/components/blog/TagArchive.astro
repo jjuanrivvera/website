@@ -6,6 +6,7 @@ import Footer from '@components/layout/Footer.astro';
 import PostCard from '@components/blog/PostCard.astro';
 import type { SupportedLang } from '@models/blog';
 import { SITE_CONFIG } from '@config/site';
+import { tagArchiveI18n } from '@i18n/blog';
 
 interface Props {
   tag: string;
@@ -15,52 +16,7 @@ interface Props {
 
 const { tag, tagPosts, lang } = Astro.props;
 
-// Internationalization strings
-const i18n: Record<
-  SupportedLang,
-  {
-    home: string;
-    blog: string;
-    article: string;
-    articles: string;
-    taggedAs: (count: number) => string;
-    about: string;
-    backToAllArticles: string;
-  }
-> = {
-  en: {
-    home: 'Home',
-    blog: 'Blog',
-    article: 'article',
-    articles: 'articles',
-    taggedAs: (count: number) =>
-      count === 1 ? 'article tagged as' : 'articles tagged as',
-    about: 'about',
-    backToAllArticles: 'Back to all articles',
-  },
-  es: {
-    home: 'Inicio',
-    blog: 'Blog',
-    article: 'artículo',
-    articles: 'artículos',
-    taggedAs: (count: number) =>
-      count === 1 ? 'artículo etiquetado como' : 'artículos etiquetados como',
-    about: 'sobre',
-    backToAllArticles: 'Volver a todos los artículos',
-  },
-  pt: {
-    home: 'Início',
-    blog: 'Blog',
-    article: 'artigo',
-    articles: 'artigos',
-    taggedAs: (count: number) =>
-      count === 1 ? 'artigo marcado como' : 'artigos marcados como',
-    about: 'sobre',
-    backToAllArticles: 'Voltar para todos os artigos',
-  },
-};
-
-const t = i18n[lang];
+const t = tagArchiveI18n[lang];
 const displayTag = tag.charAt(0).toUpperCase() + tag.slice(1);
 const title = `${displayTag} - Blog`;
 const description = `${tagPosts.length} ${t.taggedAs(tagPosts.length)} "${displayTag}"`;

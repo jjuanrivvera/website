@@ -1,5 +1,61 @@
 import { test, expect } from '@playwright/test';
 
+type LocaleConfig = {
+  url: string;
+  lang: string;
+  subtitle: string;
+  navItems: {
+    experience: string;
+    skills: string;
+    projects: string;
+    education: string;
+    contact: string;
+    blog: string;
+  };
+};
+
+const locales: LocaleConfig[] = [
+  {
+    url: '/',
+    lang: 'English',
+    subtitle: 'Full Stack Developer',
+    navItems: {
+      experience: 'Experience',
+      skills: 'Skills',
+      projects: 'Projects',
+      education: 'Education',
+      contact: 'Contact',
+      blog: 'Blog',
+    },
+  },
+  {
+    url: '/es/',
+    lang: 'Spanish',
+    subtitle: 'Desarrollador Full Stack',
+    navItems: {
+      experience: 'Experiencia',
+      skills: 'Habilidades',
+      projects: 'Proyectos',
+      education: 'Educación',
+      contact: 'Contacto',
+      blog: 'Blog',
+    },
+  },
+  {
+    url: '/pt/',
+    lang: 'Portuguese',
+    subtitle: 'Desenvolvedor Full Stack',
+    navItems: {
+      experience: 'Experiência',
+      skills: 'Habilidades',
+      projects: 'Projetos',
+      education: 'Educação',
+      contact: 'Contato',
+      blog: 'Blog',
+    },
+  },
+];
+
 test.describe('i18n', () => {
   test('all locale pages load successfully', async ({ page }) => {
     const locales = ['/', '/es/', '/pt/'];
@@ -68,222 +124,91 @@ test.describe('i18n', () => {
     );
   });
 
-  test('hero section displays correct content per locale', async ({ page }) => {
-    // English
-    await page.goto('/');
-    await expect(page.locator('.hero-subtitle')).toContainText(
-      'Full Stack Developer'
-    );
-
-    // Spanish
-    await page.goto('/es/');
-    await expect(page.locator('.hero-subtitle')).toContainText(
-      'Desarrollador Full Stack'
-    );
-
-    // Portuguese
-    await page.goto('/pt/');
-    await expect(page.locator('.hero-subtitle')).toContainText(
-      'Desenvolvedor Full Stack'
-    );
+  locales.forEach(({ url, lang, subtitle }) => {
+    test(`${lang} hero section displays correct content`, async ({ page }) => {
+      await page.goto(url);
+      await expect(page.locator('.hero-subtitle')).toContainText(subtitle);
+    });
   });
 
-  test('navigation labels are translated', async ({ page }) => {
-    // English - use exact match to avoid "View Experience" button
-    await page.goto('/');
-    await expect(
-      page.getByRole('link', { name: 'Experience', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Skills', exact: true })
-    ).toBeVisible();
-
-    // Spanish
-    await page.goto('/es/');
-    await expect(
-      page.getByRole('link', { name: 'Experiencia', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Habilidades', exact: true })
-    ).toBeVisible();
-
-    // Portuguese
-    await page.goto('/pt/');
-    await expect(
-      page.getByRole('link', { name: 'Experiência', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Habilidades', exact: true })
-    ).toBeVisible();
+  locales.forEach(({ url, lang, navItems }) => {
+    test(`${lang} navigation labels are translated`, async ({ page }) => {
+      await page.goto(url);
+      // Use exact match to avoid "View Experience" button
+      await expect(
+        page.getByRole('link', { name: navItems.experience, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.skills, exact: true })
+      ).toBeVisible();
+    });
   });
 
-  test('all navigation items are visible in English', async ({ page }) => {
-    await page.goto('/');
+  locales.forEach(({ url, lang, navItems }) => {
+    test(`${lang} all navigation items are visible`, async ({ page }) => {
+      await page.goto(url);
 
-    // Check all navigation items are visible
-    await expect(
-      page.getByRole('link', { name: 'Experience', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Skills', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Projects', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Education', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Contact', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Blog', exact: true })
-    ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.experience, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.skills, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.projects, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.education, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.contact, exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: navItems.blog, exact: true })
+      ).toBeVisible();
+    });
   });
 
-  test('all navigation items are visible in Spanish', async ({ page }) => {
-    await page.goto('/es/');
-
-    // Check all navigation items are visible
-    await expect(
-      page.getByRole('link', { name: 'Experiencia', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Habilidades', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Proyectos', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Educación', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Contacto', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Blog', exact: true })
-    ).toBeVisible();
+  locales.forEach(({ url, lang }) => {
+    test(`${lang} blog navigation link works`, async ({ page }) => {
+      await page.goto(url);
+      await page
+        .getByRole('link', { name: 'Blog', exact: true })
+        .first()
+        .click();
+      const urlPattern =
+        url === '/' ? /\/blog\/?$/ : new RegExp(`${url}blog/?$`);
+      await expect(page).toHaveURL(urlPattern);
+    });
   });
 
-  test('all navigation items are visible in Portuguese', async ({ page }) => {
-    await page.goto('/pt/');
+  locales.forEach(({ url, lang, navItems }) => {
+    test(`${lang} section navigation anchors work`, async ({ page }) => {
+      const urlBase = url === '/' ? '' : url.replace(/\/$/, '');
 
-    // Check all navigation items are visible
-    await expect(
-      page.getByRole('link', { name: 'Experiência', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Habilidades', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Projetos', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Educação', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Contato', exact: true })
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Blog', exact: true })
-    ).toBeVisible();
-  });
+      // Test Experience navigation
+      await page.goto(url);
+      await page
+        .getByRole('link', { name: navItems.experience, exact: true })
+        .first()
+        .click();
+      await expect(page).toHaveURL(new RegExp(`${urlBase}/?#experience$`));
 
-  test('blog navigation link works in all languages', async ({ page }) => {
-    // English
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
-    await expect(page).toHaveURL(/\/blog\/?$/);
+      // Test Skills navigation
+      await page.goto(url);
+      await page
+        .getByRole('link', { name: navItems.skills, exact: true })
+        .first()
+        .click();
+      await expect(page).toHaveURL(new RegExp(`${urlBase}/?#skills$`));
 
-    // Spanish
-    await page.goto('/es/');
-    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
-    await expect(page).toHaveURL(/\/es\/blog\/?$/);
-
-    // Portuguese
-    await page.goto('/pt/');
-    await page.getByRole('link', { name: 'Blog', exact: true }).first().click();
-    await expect(page).toHaveURL(/\/pt\/blog\/?$/);
-  });
-
-  test('section navigation anchors work in English', async ({ page }) => {
-    await page.goto('/');
-
-    // Test Experience navigation
-    await page
-      .getByRole('link', { name: 'Experience', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/#experience$/);
-
-    // Test Skills navigation
-    await page.goto('/');
-    await page
-      .getByRole('link', { name: 'Skills', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/#skills$/);
-
-    // Test Projects navigation
-    await page.goto('/');
-    await page
-      .getByRole('link', { name: 'Projects', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/#projects$/);
-  });
-
-  test('section navigation anchors work in Spanish', async ({ page }) => {
-    await page.goto('/es/');
-
-    // Test Experience navigation
-    await page
-      .getByRole('link', { name: 'Experiencia', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/es\/?#experience$/);
-
-    // Test Skills navigation
-    await page.goto('/es/');
-    await page
-      .getByRole('link', { name: 'Habilidades', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/es\/?#skills$/);
-
-    // Test Projects navigation
-    await page.goto('/es/');
-    await page
-      .getByRole('link', { name: 'Proyectos', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/es\/?#projects$/);
-  });
-
-  test('section navigation anchors work in Portuguese', async ({ page }) => {
-    await page.goto('/pt/');
-
-    // Test Experience navigation
-    await page
-      .getByRole('link', { name: 'Experiência', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/pt\/?#experience$/);
-
-    // Test Skills navigation
-    await page.goto('/pt/');
-    await page
-      .getByRole('link', { name: 'Habilidades', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/pt\/?#skills$/);
-
-    // Test Projects navigation
-    await page.goto('/pt/');
-    await page
-      .getByRole('link', { name: 'Projetos', exact: true })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/pt\/?#projects$/);
+      // Test Projects navigation
+      await page.goto(url);
+      await page
+        .getByRole('link', { name: navItems.projects, exact: true })
+        .first()
+        .click();
+      await expect(page).toHaveURL(new RegExp(`${urlBase}/?#projects$`));
+    });
   });
 });

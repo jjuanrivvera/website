@@ -1,35 +1,30 @@
 import { test, expect } from '@playwright/test';
 
+type LanguageConfig = {
+  locale: string;
+  lang: string;
+  urlPrefix: string;
+};
+
+const languages: LanguageConfig[] = [
+  { locale: '/blog', lang: 'English', urlPrefix: '' },
+  { locale: '/es/blog', lang: 'Spanish', urlPrefix: '/es' },
+  { locale: '/pt/blog', lang: 'Portuguese', urlPrefix: '/pt' },
+];
+
 test.describe('Blog', () => {
   test.describe('Blog Listing Pages', () => {
-    test('English blog listing loads successfully', async ({ page }) => {
-      const response = await page.goto('/blog');
-      expect(response?.status()).toBe(200);
+    languages.forEach(({ locale, lang }) => {
+      test(`${lang} blog listing loads successfully`, async ({ page }) => {
+        const response = await page.goto(locale);
+        expect(response?.status()).toBe(200);
 
-      // Verify page title and heading
-      await expect(page).toHaveTitle(/Blog/);
-      await expect(page.locator('h1')).toContainText('Blog');
-
-      // Verify at least one blog post is visible
-      await expect(page.locator('.post-card').first()).toBeVisible();
-    });
-
-    test('Spanish blog listing loads successfully', async ({ page }) => {
-      const response = await page.goto('/es/blog');
-      expect(response?.status()).toBe(200);
-
-      await expect(page).toHaveTitle(/Blog/);
-      await expect(page.locator('.blog-listing__title')).toContainText('Blog');
-      await expect(page.locator('.post-card').first()).toBeVisible();
-    });
-
-    test('Portuguese blog listing loads successfully', async ({ page }) => {
-      const response = await page.goto('/pt/blog');
-      expect(response?.status()).toBe(200);
-
-      await expect(page).toHaveTitle(/Blog/);
-      await expect(page.locator('.blog-listing__title')).toContainText('Blog');
-      await expect(page.locator('.post-card').first()).toBeVisible();
+        await expect(page).toHaveTitle(/Blog/);
+        await expect(page.locator('.blog-listing__title, h1')).toContainText(
+          'Blog'
+        );
+        await expect(page.locator('.post-card').first()).toBeVisible();
+      });
     });
 
     test('blog listing displays post metadata', async ({ page }) => {
@@ -245,21 +240,12 @@ test.describe('Blog', () => {
       await expect(page.locator('.blog-listing__title')).toContainText('Blog');
     });
 
-    test('navbar blog link works in all languages', async ({ page }) => {
-      // English
-      await page.goto('/');
-      await page.getByRole('link', { name: 'Blog', exact: true }).click();
-      await expect(page).toHaveURL('/blog');
-
-      // Spanish
-      await page.goto('/es/');
-      await page.getByRole('link', { name: 'Blog', exact: true }).click();
-      await expect(page).toHaveURL('/es/blog');
-
-      // Portuguese
-      await page.goto('/pt/');
-      await page.getByRole('link', { name: 'Blog', exact: true }).click();
-      await expect(page).toHaveURL('/pt/blog');
+    languages.forEach(({ urlPrefix, lang }) => {
+      test(`${lang} navbar blog link works`, async ({ page }) => {
+        await page.goto(`${urlPrefix}/`);
+        await page.getByRole('link', { name: 'Blog', exact: true }).click();
+        await expect(page).toHaveURL(`${urlPrefix}/blog`);
+      });
     });
 
     test('navbar blog link is active on blog pages', async ({ page }) => {
@@ -496,18 +482,11 @@ test.describe('Blog', () => {
       expect(contentType).toContain('xml');
     });
 
-    test('RSS feeds exist for all languages', async ({ page }) => {
-      // English
-      let response = await page.goto('/rss.xml');
-      expect(response?.status()).toBe(200);
-
-      // Spanish
-      response = await page.goto('/es/rss.xml');
-      expect(response?.status()).toBe(200);
-
-      // Portuguese
-      response = await page.goto('/pt/rss.xml');
-      expect(response?.status()).toBe(200);
+    languages.forEach(({ urlPrefix, lang }) => {
+      test(`${lang} RSS feed exists`, async ({ page }) => {
+        const response = await page.goto(`${urlPrefix}/rss.xml`);
+        expect(response?.status()).toBe(200);
+      });
     });
   });
 

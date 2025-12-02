@@ -4,7 +4,7 @@
  * Displays a blog post card with image optimization and metadata
  */
 
-import { Image } from 'astro:assets';
+import { Image, Picture } from 'astro:assets';
 import type { BlogPost } from '@models/blog';
 import { getReadingTime } from '@utils/readingTime';
 import { formatDate } from '@utils/dateFormatting';
@@ -52,12 +52,12 @@ const formattedDate = formatDate(data.pubDate, lang);
             loading="lazy"
           />
         ) : (
-          <Image
+          <Picture
             src={data.cover}
             alt={data.coverAlt || data.title}
             width={800}
             height={450}
-            format="webp"
+            formats={['avif', 'webp']}
             quality={80}
             class="post-card__image"
             loading="lazy"

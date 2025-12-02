@@ -24,6 +24,8 @@ A modern, responsive personal portfolio website built with Astro, featuring inte
 - **TypeScript** - Type-safe translations and utilities
 - **CSS3** - Custom properties, flexbox, grid, animations
 - **AOS** - Animate On Scroll library
+- **Vitest** - Unit testing framework for utilities and components
+- **Playwright** - E2E testing framework
 - **Inter Font** - Self-hosted web font
 - **Netlify** - Hosting with automatic deployments
 
@@ -118,17 +120,88 @@ pnpm astro check
 
 ### Available Scripts
 
-| Command             | Description                          |
-| ------------------- | ------------------------------------ |
-| `pnpm dev`          | Start dev server at `localhost:4321` |
-| `pnpm build`        | Type-check and build for production  |
-| `pnpm preview`      | Preview production build locally     |
-| `pnpm check`        | Run TypeScript diagnostics           |
-| `pnpm format`       | Format code with Prettier            |
-| `pnpm format:check` | Check code formatting                |
-| `pnpm lint`         | Lint code with ESLint                |
-| `pnpm test`         | Run Playwright E2E tests             |
-| `pnpm test:ui`      | Run Playwright tests with UI         |
+| Command                | Description                             |
+| ---------------------- | --------------------------------------- |
+| `pnpm dev`             | Start dev server at `localhost:4321`    |
+| `pnpm build`           | Type-check and build for production     |
+| `pnpm preview`         | Preview production build locally        |
+| `pnpm check`           | Run TypeScript diagnostics              |
+| `pnpm format`          | Format code with Prettier               |
+| `pnpm format:check`    | Check code formatting                   |
+| `pnpm lint`            | Lint code with ESLint                   |
+| `pnpm test`            | Run all tests (unit + E2E sequentially) |
+| `pnpm test:unit`       | Run Vitest unit tests                   |
+| `pnpm test:unit:watch` | Run unit tests in watch mode            |
+| `pnpm test:unit:ui`    | Open Vitest UI                          |
+| `pnpm test:e2e`        | Run Playwright E2E tests                |
+| `pnpm test:e2e:ui`     | Open Playwright UI                      |
+| `pnpm test:coverage`   | Generate test coverage report           |
+
+## Testing
+
+The project uses a comprehensive testing strategy with both unit and E2E tests:
+
+### Test Structure
+
+```
+tests/
+├── unit/                       # Vitest unit tests (~1s execution)
+│   ├── components/
+│   │   └── blog/               # Component tests using Astro Container API
+│   ├── i18n/                   # Internationalization utilities
+│   └── utils/                  # Pure utility functions
+└── e2e/                        # Playwright E2E tests (~10s execution)
+    ├── blog.spec.ts            # Blog functionality tests
+    ├── i18n.spec.ts            # Language switching tests
+    └── global-setup.ts         # Test configuration
+```
+
+### Unit Tests (Vitest)
+
+**115 tests** covering:
+
+- **Utility Functions** - Reading time calculation, date formatting, related posts algorithm
+- **i18n Utilities** - Language detection, URL generation, translations
+- **Blog Utilities** - Hreflang generation, tag filtering, post sorting
+- **Components** - ReadingTime and TagList components using Astro Container API
+
+```bash
+# Run unit tests
+pnpm test:unit
+
+# Watch mode for development
+pnpm test:unit:watch
+
+# Open Vitest UI
+pnpm test:unit:ui
+```
+
+### E2E Tests (Playwright)
+
+**59 tests** covering:
+
+- Homepage rendering and navigation across all languages
+- Language switcher functionality
+- Mobile menu interactions
+- Section visibility and content
+- 404 page handling
+- Blog listing, post rendering, and navigation
+- SEO meta tags and hreflang tags
+
+```bash
+# Run E2E tests
+pnpm test:e2e
+
+# Open Playwright UI
+pnpm test:e2e:ui
+```
+
+### Test Strategy
+
+- **Unit tests** run first in CI for fast feedback on logic errors
+- **E2E tests** run in parallel with unit tests for faster CI execution
+- **Coverage reporting** available via `pnpm test:coverage`
+- All tests must pass before deployment
 
 ## Internationalization
 

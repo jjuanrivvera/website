@@ -5,7 +5,7 @@
  */
 
 import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from './Layout.astro';
 import Navbar from '@components/layout/Navbar.astro';
@@ -27,6 +27,7 @@ import {
 } from '@utils/blogHreflang';
 import { formatDate } from '@utils/dateFormatting';
 import { generateBlogPostingSchema } from '@utils/blogSchema';
+import { cleanBlogPostSlug } from '@utils/slug';
 import { SITE_CONFIG } from '@config/site';
 import profilePicture from '@assets/img/profile-picture.webp';
 import '@styles/blog.css';
@@ -41,10 +42,16 @@ const { data } = post;
 // Get all posts for related posts and hreflang
 const allPosts = await getCollection('blog');
 
-// Render post content
-const { Content, headings } = await post.render();
+// Render post content using render() helper from astro:content
+const { Content } = await render(post);
 
-// Calculate reading time
+// Calculate reading time (body should exist for Markdown/MDX)
+if (!post.body) {
+  throw new Error(
+    `Post ${post.id} has no body content. This is required for reading time calculation and table of contents generation. ` +
+      `Ensure the post file exists and contains Markdown/MDX content.`
+  );
+}
 const readingTime = getReadingTime(post.body);
 
 // Extract TOC from content
@@ -59,8 +66,8 @@ const hreflangLinks = generateHreflangLinks(post, allPosts);
 // Generate language switcher URLs (for translation navigation)
 const languageSwitcherUrls = getBlogLanguageSwitcherUrls(post, allPosts);
 
-// Build post URL
-const cleanSlug = post.slug.replace(/^(en|es|pt)\//, '');
+// Build post URL using Content Layer API ID
+const cleanSlug = cleanBlogPostSlug(post.id);
 const postUrl =
   data.lang === 'en'
     ? `${SITE_CONFIG.url}/blog/${cleanSlug}`

@@ -8,6 +8,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import type { APIContext } from 'astro';
+import { cleanBlogPostSlug } from '@utils/slug';
 import { SITE_CONFIG } from '@config/site';
 
 export async function GET(context: APIContext) {
@@ -34,7 +35,7 @@ export async function GET(context: APIContext) {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.pubDate,
-        link: `/es/blog/${post.slug.replace(/^es\//, '')}`,
+        link: `/es/blog/${cleanBlogPostSlug(post.id)}`,
         author: `${post.data.author} <noreply@jjuanrivvera.com>`,
         categories: post.data.tags,
         customData: `

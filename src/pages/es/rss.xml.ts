@@ -34,7 +34,7 @@ export async function GET(context: APIContext) {
         title: post.data.title,
         description: post.data.description,
         pubDate: post.data.pubDate,
-        link: `/es/blog/${post.slug.replace(/^es\//, '')}`,
+        link: `/es/blog/${post.id.replace(/^es\//, '').replace(/\.(md|mdx)$/, '')}`,
         author: `${post.data.author} <noreply@jjuanrivvera.com>`,
         categories: post.data.tags,
         customData: `

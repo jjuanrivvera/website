@@ -5,7 +5,7 @@
  */
 
 import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from './Layout.astro';
 import Navbar from '@components/layout/Navbar.astro';
@@ -41,10 +41,13 @@ const { data } = post;
 // Get all posts for related posts and hreflang
 const allPosts = await getCollection('blog');
 
-// Render post content
-const { Content, headings } = await post.render();
+// Render post content using render() helper from astro:content
+const { Content } = await render(post);
 
-// Calculate reading time
+// Calculate reading time (body should exist for Markdown/MDX)
+if (!post.body) {
+  throw new Error(`Post ${post.id} has no body content`);
+}
 const readingTime = getReadingTime(post.body);
 
 // Extract TOC from content
@@ -59,8 +62,10 @@ const hreflangLinks = generateHreflangLinks(post, allPosts);
 // Generate language switcher URLs (for translation navigation)
 const languageSwitcherUrls = getBlogLanguageSwitcherUrls(post, allPosts);
 
-// Build post URL
-const cleanSlug = post.slug.replace(/^(en|es|pt)\//, '');
+// Build post URL (id contains file path like "en/post-slug.md")
+const cleanSlug = post.id
+  .replace(/^(en|es|pt)\//, '')
+  .replace(/\.(md|mdx)$/, '');
 const postUrl =
   data.lang === 'en'
     ? `${SITE_CONFIG.url}/blog/${cleanSlug}`

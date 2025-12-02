@@ -15,7 +15,7 @@ export const getStaticPaths = (async () => {
   });
 
   return posts.map((post) => ({
-    params: { slug: post.slug.replace(/^en\//, '') },
+    params: { slug: post.id.replace(/^en\//, '').replace(/\.(md|mdx)$/, '') },
     props: { post },
   }));
 }) satisfies GetStaticPaths;

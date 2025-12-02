@@ -1,12 +1,21 @@
 /**
- * Content Collections Configuration
- * Defines the schema for blog posts with enhanced SEO and i18n support
+ * Content Layer Configuration
+ * Migrated from legacy Content Collections to Content Layer API for improved performance
+ *
+ * Benefits:
+ * - 5x faster builds for Markdown content
+ * - Up to 50% memory usage reduction
+ * - Future-proof architecture for CMS integration
  */
 
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/blog',
+  }),
   schema: ({ image }) =>
     z
       .object({

@@ -16,8 +16,10 @@ import { SITE_CONFIG, LOCALE_MAP } from '@config/site';
  * buildPostUrl('my-post', 'es') // => 'https://jjuanrivvera.com/es/blog/my-post'
  */
 function buildPostUrl(slug: string, lang: SupportedLang): string {
-  // Remove language prefix from slug if present (safe regex)
-  const cleanSlug = slug.replace(/^(en|es|pt)\//, '');
+  // Remove language prefix and file extension from slug (Content Layer API uses file paths)
+  const cleanSlug = slug
+    .replace(/^(en|es|pt)\//, '')
+    .replace(/\.(md|mdx)$/, '');
 
   // English posts don't have language prefix
   if (lang === 'en') {
@@ -42,7 +44,7 @@ export function generateHreflangLinks(
   // Add current post's language
   links.push({
     lang: LOCALE_MAP[currentPost.data.lang],
-    url: buildPostUrl(currentPost.slug, currentPost.data.lang),
+    url: buildPostUrl(currentPost.id, currentPost.data.lang),
   });
 
   // If post has translationKey, find all translations
@@ -57,7 +59,7 @@ export function generateHreflangLinks(
     translations.forEach((translation) => {
       links.push({
         lang: LOCALE_MAP[translation.data.lang],
-        url: buildPostUrl(translation.slug, translation.data.lang),
+        url: buildPostUrl(translation.id, translation.data.lang),
       });
     });
   }
@@ -76,7 +78,7 @@ export function generateHreflangLinks(
   if (englishVersion) {
     links.push({
       lang: 'x-default',
-      url: buildPostUrl(englishVersion.slug, 'en'),
+      url: buildPostUrl(englishVersion.id, 'en'),
     });
   }
 
@@ -196,7 +198,9 @@ export function getBlogLanguageSwitcherUrls(
   languages.forEach((lang) => {
     if (lang === currentPost.data.lang) {
       // Current language - use current post URL (relative)
-      const cleanSlug = currentPost.slug.replace(/^(en|es|pt)\//, '');
+      const cleanSlug = currentPost.id
+        .replace(/^(en|es|pt)\//, '')
+        .replace(/\.(md|mdx)$/, '');
       urls[lang] =
         lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
     } else if (currentPost.data.translationKey) {
@@ -210,7 +214,9 @@ export function getBlogLanguageSwitcherUrls(
 
       if (translation) {
         // Translation exists - link to it (relative)
-        const cleanSlug = translation.slug.replace(/^(en|es|pt)\//, '');
+        const cleanSlug = translation.id
+          .replace(/^(en|es|pt)\//, '')
+          .replace(/\.(md|mdx)$/, '');
         urls[lang] =
           lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
       } else {

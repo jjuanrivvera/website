@@ -9,6 +9,10 @@ const site = process.env.URL || 'https://jjuanrivvera.com';
 
 export default defineConfig({
   site,
+  image: {
+    layout: 'constrained',
+    responsiveStyles: true,
+  },
   integrations: [
     mdx({
       syntaxHighlight: 'shiki',

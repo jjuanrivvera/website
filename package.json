@@ -36,7 +36,6 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "remark-smartypants": "^3.0.2",
-    "sanitize-html": "^2.17.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
@@ -45,7 +44,6 @@
     "@playwright/test": "^1.57.0",
     "@types/aos": "^3.0.7",
     "@types/github-slugger": "^2.0.0",
-    "@types/sanitize-html": "^2.16.0",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
     "eslint": "^9.39.1",

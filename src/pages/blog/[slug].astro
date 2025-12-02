@@ -5,6 +5,7 @@
 
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
+import { cleanBlogPostSlug } from '@utils/slug';
 import PostLayout from '@layouts/PostLayout.astro';
 
 export const getStaticPaths = (async () => {
@@ -15,7 +16,7 @@ export const getStaticPaths = (async () => {
   });
 
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/^en\//, '').replace(/\.(md|mdx)$/, '') },
+    params: { slug: cleanBlogPostSlug(post.id) },
     props: { post },
   }));
 }) satisfies GetStaticPaths;

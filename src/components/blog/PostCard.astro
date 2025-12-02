@@ -8,6 +8,7 @@ import { Image } from 'astro:assets';
 import type { BlogPost } from '@models/blog';
 import { getReadingTime } from '@utils/readingTime';
 import { formatDate } from '@utils/dateFormatting';
+import { cleanBlogPostSlug } from '@utils/slug';
 import ReadingTime from './ReadingTime.astro';
 import TagList from './TagList.astro';
 
@@ -19,14 +20,17 @@ interface Props {
 const { post, lang } = Astro.props;
 const { data, id } = post;
 
-// Build post URL (id contains file path like "en/post-slug.md")
-const cleanSlug = id.replace(/^(en|es|pt)\//, '').replace(/\.(md|mdx)$/, '');
+// Build post URL using Content Layer API ID
+const cleanSlug = cleanBlogPostSlug(id);
 const postUrl =
   lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
 
 // Calculate reading time from post body
 if (!post.body) {
-  throw new Error(`Post ${post.id} has no body content`);
+  throw new Error(
+    `Post ${post.id} has no body content. This is required for reading time calculation. ` +
+      `Ensure the post file exists and contains Markdown/MDX content.`
+  );
 }
 const readingTime = getReadingTime(post.body);
 

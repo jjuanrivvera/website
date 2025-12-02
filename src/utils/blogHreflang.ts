@@ -5,28 +5,27 @@
 
 import type { BlogPost, HreflangLink, SupportedLang } from '@models/blog';
 import { SITE_CONFIG, LOCALE_MAP } from '@config/site';
+import { cleanBlogPostSlug } from './slug';
 
 /**
  * Build blog post URL for a specific language
- * @param slug - The post slug (with or without language prefix)
+ * @param id - The post ID from Content Layer API (file path like "en/post-slug.md")
  * @param lang - The target language code
  * @returns Full URL to the blog post
  * @example
- * buildPostUrl('my-post', 'en') // => 'https://jjuanrivvera.com/blog/my-post'
- * buildPostUrl('my-post', 'es') // => 'https://jjuanrivvera.com/es/blog/my-post'
+ * buildPostUrl('en/my-post.md', 'en') // => 'https://jjuanrivvera.com/blog/my-post'
+ * buildPostUrl('es/mi-post.md', 'es') // => 'https://jjuanrivvera.com/es/blog/mi-post'
  */
-function buildPostUrl(slug: string, lang: SupportedLang): string {
-  // Remove language prefix and file extension from slug (Content Layer API uses file paths)
-  const cleanSlug = slug
-    .replace(/^(en|es|pt)\//, '')
-    .replace(/\.(md|mdx)$/, '');
+function buildPostUrl(id: string, lang: SupportedLang): string {
+  // Clean the Content Layer API ID to get URL-friendly slug
+  const slug = cleanBlogPostSlug(id);
 
   // English posts don't have language prefix
   if (lang === 'en') {
-    return `${SITE_CONFIG.url}/blog/${cleanSlug}`;
+    return `${SITE_CONFIG.url}/blog/${slug}`;
   }
 
-  return `${SITE_CONFIG.url}/${lang}/blog/${cleanSlug}`;
+  return `${SITE_CONFIG.url}/${lang}/blog/${slug}`;
 }
 
 /**
@@ -198,11 +197,8 @@ export function getBlogLanguageSwitcherUrls(
   languages.forEach((lang) => {
     if (lang === currentPost.data.lang) {
       // Current language - use current post URL (relative)
-      const cleanSlug = currentPost.id
-        .replace(/^(en|es|pt)\//, '')
-        .replace(/\.(md|mdx)$/, '');
-      urls[lang] =
-        lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
+      const slug = cleanBlogPostSlug(currentPost.id);
+      urls[lang] = lang === 'en' ? `/blog/${slug}` : `/${lang}/blog/${slug}`;
     } else if (currentPost.data.translationKey) {
       // Try to find translation
       const translation = allPosts.find(
@@ -214,11 +210,8 @@ export function getBlogLanguageSwitcherUrls(
 
       if (translation) {
         // Translation exists - link to it (relative)
-        const cleanSlug = translation.id
-          .replace(/^(en|es|pt)\//, '')
-          .replace(/\.(md|mdx)$/, '');
-        urls[lang] =
-          lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
+        const slug = cleanBlogPostSlug(translation.id);
+        urls[lang] = lang === 'en' ? `/blog/${slug}` : `/${lang}/blog/${slug}`;
       } else {
         // No translation - link to blog listing page (relative)
         urls[lang] = lang === 'en' ? '/blog' : `/${lang}/blog`;

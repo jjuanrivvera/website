@@ -27,6 +27,7 @@ import {
 } from '@utils/blogHreflang';
 import { formatDate } from '@utils/dateFormatting';
 import { generateBlogPostingSchema } from '@utils/blogSchema';
+import { cleanBlogPostSlug } from '@utils/slug';
 import { SITE_CONFIG } from '@config/site';
 import profilePicture from '@assets/img/profile-picture.webp';
 import '@styles/blog.css';
@@ -46,7 +47,10 @@ const { Content } = await render(post);
 
 // Calculate reading time (body should exist for Markdown/MDX)
 if (!post.body) {
-  throw new Error(`Post ${post.id} has no body content`);
+  throw new Error(
+    `Post ${post.id} has no body content. This is required for reading time calculation and table of contents generation. ` +
+      `Ensure the post file exists and contains Markdown/MDX content.`
+  );
 }
 const readingTime = getReadingTime(post.body);
 
@@ -62,10 +66,8 @@ const hreflangLinks = generateHreflangLinks(post, allPosts);
 // Generate language switcher URLs (for translation navigation)
 const languageSwitcherUrls = getBlogLanguageSwitcherUrls(post, allPosts);
 
-// Build post URL (id contains file path like "en/post-slug.md")
-const cleanSlug = post.id
-  .replace(/^(en|es|pt)\//, '')
-  .replace(/\.(md|mdx)$/, '');
+// Build post URL using Content Layer API ID
+const cleanSlug = cleanBlogPostSlug(post.id);
 const postUrl =
   data.lang === 'en'
     ? `${SITE_CONFIG.url}/blog/${cleanSlug}`

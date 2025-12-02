@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import { getLangFromUrl, useTranslations } from '@i18n/utils';
 import profilePicture from '@assets/img/profile-picture.webp';
 
@@ -9,11 +9,12 @@ const t = useTranslations(lang);
 
 <section class="hero" id="hero">
   <div class="hero-content">
-    <Image
+    <Picture
       src={profilePicture}
       alt={t('hero.imageAlt')}
       width={200}
       height={200}
+      formats={['avif', 'webp']}
       loading="eager"
       fetchpriority="high"
       class="profile-image"

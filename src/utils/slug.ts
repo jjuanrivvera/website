@@ -6,12 +6,13 @@
  */
 
 /**
- * Cleans a blog post ID (file path) to create a URL-friendly slug
+ * Cleans a blog post ID (file path) to create a URL-encoded slug
  *
- * Removes language prefix and file extension from Content Layer API IDs.
+ * Removes language prefix and file extension from Content Layer API IDs,
+ * then URL-encodes the result for safe use in URLs.
  *
  * @param id - The post ID from Content Layer API (e.g., "en/my-post.md")
- * @returns Clean slug suitable for URLs (e.g., "my-post")
+ * @returns URL-encoded slug suitable for URLs (e.g., "my-post")
  *
  * @example
  * ```ts
@@ -26,7 +27,8 @@
  * ```
  */
 export function cleanBlogPostSlug(id: string): string {
-  return id
+  const cleaned = id
     .replace(/^(en|es|pt)\//, '') // Remove language prefix
     .replace(/\.(md|mdx)$/, ''); // Remove file extension
+  return encodeURIComponent(cleaned);
 }

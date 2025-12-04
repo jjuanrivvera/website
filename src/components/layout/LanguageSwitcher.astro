@@ -162,16 +162,23 @@ const currentLang = languageMeta[lang];
     });
   }
 
+  // Prevent multiple initializations to avoid accumulating global event listeners
+  if (
+    typeof window !== 'undefined' &&
+    !(window as any).languageSwitcherInitialized
+  ) {
+    (window as any).languageSwitcherInitialized = true;
+
+    // Re-run after View Transitions
+    document.addEventListener('astro:after-swap', initLanguageDropdowns);
+
+    // Cleanup before navigation to prevent memory leaks
+    document.addEventListener(
+      'astro:before-preparation',
+      cleanupLanguageDropdowns
+    );
+  }
+
   // Run on initial load
   initLanguageDropdowns();
-
-  // Re-run after View Transitions
-  document.addEventListener('astro:after-swap', initLanguageDropdowns);
-
-  // Cleanup before navigation to prevent memory leaks
-  document.addEventListener(
-    'astro:before-preparation',
-    cleanupLanguageDropdowns,
-    { once: true }
-  );
 </script>

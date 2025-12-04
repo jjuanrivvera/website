@@ -366,9 +366,16 @@ const {
         ];
         document.querySelectorAll('a[href^="https://"]').forEach((link) => {
           const href = link.getAttribute('href') || '';
-          const socialDomain = socialDomains.find((domain) =>
-            href.includes(domain)
-          );
+          const socialDomain = socialDomains.find((domain) => {
+            try {
+              const url = new URL(href);
+              return (
+                url.hostname === domain || url.hostname.endsWith('.' + domain)
+              );
+            } catch {
+              return false;
+            }
+          });
           if (socialDomain) {
             link.addEventListener('click', () => {
               gtag('event', 'social_click', {

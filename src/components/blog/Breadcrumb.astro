@@ -81,22 +81,22 @@ const breadcrumbSchema = {
   }
 
   .breadcrumb__link {
-    color: rgba(156, 163, 175, 0.9); /* Light gray for dark backgrounds */
+    color: var(--text-secondary);
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color var(--transition-fast);
   }
 
   .breadcrumb__link:hover {
-    color: rgb(147, 197, 253); /* Light blue for dark backgrounds */
+    color: var(--accent-secondary);
     text-decoration: underline;
   }
 
   .breadcrumb__separator {
-    color: rgba(156, 163, 175, 0.5); /* Muted gray */
+    color: var(--text-tertiary);
   }
 
   .breadcrumb__current {
-    color: rgb(229, 231, 235); /* Light color for dark backgrounds */
+    color: var(--text-primary);
     font-weight: 500;
   }
 

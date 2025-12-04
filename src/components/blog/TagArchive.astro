@@ -4,6 +4,7 @@ import Layout from '@layouts/Layout.astro';
 import Navbar from '@components/layout/Navbar.astro';
 import Footer from '@components/layout/Footer.astro';
 import PostCard from '@components/blog/PostCard.astro';
+import Breadcrumb from '@components/blog/Breadcrumb.astro';
 import type { SupportedLang } from '@models/blog';
 import { SITE_CONFIG } from '@config/site';
 import { tagArchiveI18n } from '@i18n/blog';
@@ -28,9 +29,9 @@ const canonicalUrl = `${SITE_CONFIG.url}${basePath}/blog/tag/${encodeURIComponen
 
 // Breadcrumb items
 const breadcrumbItems = [
-  { text: t.home, href: `${basePath}/` },
-  { text: t.blog, href: blogPath },
-  { text: `#${displayTag}`, href: '' },
+  { label: t.home, url: `${basePath}/`, position: 1 },
+  { label: t.blog, url: blogPath, position: 2 },
+  { label: `#${displayTag}`, url: '', position: 3 },
 ];
 ---
 
@@ -52,22 +53,7 @@ const breadcrumbItems = [
   <main id="main-content" class="blog-main">
     <div class="tag-page">
       <div class="tag-page__container">
-        <nav class="tag-page__breadcrumb">
-          {
-            breadcrumbItems.map((item, index) => (
-              <>
-                {item.href ? (
-                  <a href={item.href}>{item.text}</a>
-                ) : (
-                  <span>{item.text}</span>
-                )}
-                {index < breadcrumbItems.length - 1 && (
-                  <span aria-hidden="true">/</span>
-                )}
-              </>
-            ))
-          }
-        </nav>
+        <Breadcrumb items={breadcrumbItems} />
 
         <header class="tag-page__header">
           <h1 class="tag-page__title">#{displayTag}</h1>
@@ -102,25 +88,6 @@ const breadcrumbItems = [
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
-  }
-
-  .tag-page__breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.875rem;
-    color: var(--color-text-secondary, #666);
-    margin-bottom: 24px;
-  }
-
-  .tag-page__breadcrumb a {
-    color: var(--color-text-secondary, #666);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .tag-page__breadcrumb a:hover {
-    color: var(--color-accent, #0066cc);
   }
 
   .tag-page__header {

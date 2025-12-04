@@ -95,6 +95,9 @@ if (headings.length === 0) {
               block: 'start',
             });
 
+            // Move focus to target heading for accessibility
+            targetElement.focus();
+
             // Update URL without triggering navigation
             window.history.pushState({}, '', `#${targetId}`);
           }

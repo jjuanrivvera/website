@@ -123,6 +123,7 @@ export const ui = {
     'footer.languages': 'Languages:',
     'footer.spanish': 'Spanish (Native)',
     'footer.english': 'English (Advanced)',
+    'footer.portuguese': 'Portuguese (Intermediate)',
     'footer.copyright': 'All rights reserved.',
 
     // Schema
@@ -136,6 +137,7 @@ export const ui = {
       'Articles about web development, software engineering, and technology.',
     'blog.readingTime': 'min read',
     'blog.readMore': 'Read more',
+    'blog.readAriaLabel': 'Read',
     'blog.relatedPosts': 'Related Posts',
     'blog.relatedPostsSubtitle': 'You might also like',
     'blog.sharePost': 'Share this post',
@@ -275,6 +277,7 @@ export const ui = {
     'footer.languages': 'Idiomas:',
     'footer.spanish': 'Español (Nativo)',
     'footer.english': 'Inglés (Avanzado)',
+    'footer.portuguese': 'Portugués (Intermedio)',
     'footer.copyright': 'Todos los derechos reservados.',
 
     // Schema
@@ -288,6 +291,7 @@ export const ui = {
       'Artículos sobre desarrollo web, ingeniería de software y tecnología.',
     'blog.readingTime': 'min de lectura',
     'blog.readMore': 'Leer más',
+    'blog.readAriaLabel': 'Leer',
     'blog.relatedPosts': 'Artículos Relacionados',
     'blog.relatedPostsSubtitle': 'También te puede interesar',
     'blog.sharePost': 'Compartir este artículo',
@@ -423,6 +427,7 @@ export const ui = {
     'footer.languages': 'Idiomas:',
     'footer.spanish': 'Espanhol (Nativo)',
     'footer.english': 'Inglês (Avançado)',
+    'footer.portuguese': 'Português (Intermediário)',
     'footer.copyright': 'Todos os direitos reservados.',
 
     // Schema
@@ -436,6 +441,7 @@ export const ui = {
       'Artigos sobre desenvolvimento web, engenharia de software e tecnologia.',
     'blog.readingTime': 'min de leitura',
     'blog.readMore': 'Leia mais',
+    'blog.readAriaLabel': 'Leia',
     'blog.relatedPosts': 'Artigos Relacionados',
     'blog.relatedPostsSubtitle': 'Você também pode gostar',
     'blog.sharePost': 'Compartilhar este artigo',

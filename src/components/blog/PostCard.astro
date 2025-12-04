@@ -4,11 +4,12 @@
  * Displays a blog post card with image optimization and metadata
  */
 
-import { Image, Picture } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import type { BlogPost } from '@models/blog';
 import { getReadingTime } from '@utils/readingTime';
 import { formatDate } from '@utils/dateFormatting';
 import { cleanBlogPostSlug } from '@utils/slug';
+import { useTranslations } from '@i18n/utils';
 import ReadingTime from './ReadingTime.astro';
 import TagList from './TagList.astro';
 
@@ -19,6 +20,7 @@ interface Props {
 
 const { post, lang } = Astro.props;
 const { data, id } = post;
+const t = useTranslations(lang);
 
 // Build post URL using Content Layer API ID
 const cleanSlug = cleanBlogPostSlug(id);
@@ -26,13 +28,7 @@ const postUrl =
   lang === 'en' ? `/blog/${cleanSlug}` : `/${lang}/blog/${cleanSlug}`;
 
 // Calculate reading time from post body
-if (!post.body) {
-  throw new Error(
-    `Post ${post.id} has no body content. This is required for reading time calculation. ` +
-      `Ensure the post file exists and contains Markdown/MDX content.`
-  );
-}
-const readingTime = getReadingTime(post.body);
+const readingTime = post.body ? getReadingTime(post.body) : { minutes: 0 };
 
 // Format date
 const formattedDate = formatDate(data.pubDate, lang);
@@ -96,9 +92,9 @@ const formattedDate = formatDate(data.pubDate, lang);
     <a
       href={postUrl}
       class="post-card__read-more"
-      aria-label={`Read ${data.title}`}
+      aria-label={`${t('blog.readAriaLabel')} ${data.title}`}
     >
-      {lang === 'en' ? 'Read more' : lang === 'es' ? 'Leer más' : 'Ler mais'}
+      {t('blog.readMore')}
       <span aria-hidden="true">→</span>
     </a>
   </div>

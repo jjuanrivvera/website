@@ -4,6 +4,8 @@
  * Share buttons for social media platforms
  */
 
+import { useTranslations } from '@i18n/utils';
+
 interface Props {
   url: string;
   title: string;
@@ -12,6 +14,7 @@ interface Props {
 }
 
 const { url, title, description = '', lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
 
 // Encode for URL
 const encodedUrl = encodeURIComponent(url);
@@ -26,17 +29,10 @@ const shareUrls = {
   reddit: `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`,
   email: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`,
 };
-
-// Labels by language
-const labels = {
-  en: 'Share this post',
-  es: 'Compartir este artículo',
-  pt: 'Compartilhar este artigo',
-};
 ---
 
-<div class="social-share" aria-label={labels[lang]}>
-  <span class="social-share__label">{labels[lang]}:</span>
+<div class="social-share" aria-label={t('blog.sharePost')}>
+  <span class="social-share__label">{t('blog.sharePost')}:</span>
 
   <div class="social-share__buttons">
     <a
@@ -44,7 +40,7 @@ const labels = {
       target="_blank"
       rel="noopener noreferrer"
       class="social-share__button"
-      aria-label="Share on Twitter"
+      aria-label={t('blog.shareTwitter')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +62,7 @@ const labels = {
       target="_blank"
       rel="noopener noreferrer"
       class="social-share__button"
-      aria-label="Share on Facebook"
+      aria-label={t('blog.shareFacebook')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +84,7 @@ const labels = {
       target="_blank"
       rel="noopener noreferrer"
       class="social-share__button"
-      aria-label="Share on LinkedIn"
+      aria-label={t('blog.shareLinkedIn')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +106,7 @@ const labels = {
       target="_blank"
       rel="noopener noreferrer"
       class="social-share__button"
-      aria-label="Share on Reddit"
+      aria-label={t('blog.shareReddit')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +126,7 @@ const labels = {
     <a
       href={shareUrls.email}
       class="social-share__button"
-      aria-label="Share via email"
+      aria-label={t('blog.shareEmail')}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

@@ -94,6 +94,82 @@ test.describe('Blog', () => {
       await expect(socialShare).toBeVisible();
     });
 
+    test('social share buttons have localized aria-labels', async ({
+      page,
+    }) => {
+      // Test English
+      await page.goto('/blog');
+      await page.locator('.post-card__title a').first().click();
+
+      await expect(page.locator('.social-share')).toHaveAttribute(
+        'aria-label',
+        'Share this post'
+      );
+      await expect(
+        page.locator('a[aria-label="Share on Twitter"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Share on Facebook"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Share on LinkedIn"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Share on Reddit"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Share via Email"]')
+      ).toBeVisible();
+
+      // Test Spanish
+      await page.goto('/es/blog');
+      await page.locator('.post-card__title a').first().click();
+
+      await expect(page.locator('.social-share')).toHaveAttribute(
+        'aria-label',
+        'Compartir este artículo'
+      );
+      await expect(
+        page.locator('a[aria-label="Compartir en Twitter"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartir en Facebook"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartir en LinkedIn"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartir en Reddit"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartir por Email"]')
+      ).toBeVisible();
+
+      // Test Portuguese
+      await page.goto('/pt/blog');
+      await page.locator('.post-card__title a').first().click();
+
+      await expect(page.locator('.social-share')).toHaveAttribute(
+        'aria-label',
+        'Compartilhar este artigo'
+      );
+      await expect(
+        page.locator('a[aria-label="Compartilhar no Twitter"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartilhar no Facebook"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartilhar no LinkedIn"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartilhar no Reddit"]')
+      ).toBeVisible();
+      await expect(
+        page.locator('a[aria-label="Compartilhar por E-mail"]')
+      ).toBeVisible();
+    });
+
     test('blog post displays reading time', async ({ page }) => {
       await page.goto('/blog');
       await page.locator('.post-card__title a').first().click();

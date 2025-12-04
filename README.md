@@ -3,7 +3,7 @@
 [![CI](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml/badge.svg)](https://github.com/jjuanrivvera/website/actions/workflows/ci.yml)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/8a070b98-08e4-4765-94a5-3c0aef85a461/deploy-status)](https://app.netlify.com/sites/jjuanrivvera99/deploys)
 
-A modern, responsive personal portfolio website built with Astro, featuring internationalization (English/Spanish/Portuguese), optimized performance, and comprehensive SEO.
+A modern, responsive personal portfolio and blog website built with Astro, featuring internationalization (English/Spanish/Portuguese), optimized performance, and comprehensive SEO.
 
 **Live Site:** [jjuanrivvera.com](https://jjuanrivvera.com)
 
@@ -17,6 +17,7 @@ A modern, responsive personal portfolio website built with Astro, featuring inte
 - **Accessibility** - Skip link, keyboard navigation (Escape to close menu), focus styles, reduced motion support
 - **Performance Optimized** - Image optimization, font preloading, LCP preload, CSS/JS bundling
 - **SEO Ready** - Open Graph, Twitter Cards, JSON-LD structured data, dynamic hreflang, sitemap
+- **Blog System** - MDX-powered blog with pagination, tags, related posts, reading time, table of contents, and RSS feeds
 
 ## Tech Stack
 
@@ -59,11 +60,60 @@ website/
 │   │   ├── es/
 │   │   │   ├── index.astro         # Spanish homepage
 │   │   │   └── 404.astro           # Spanish 404 page
+│   │   │   ├── blog/
+│   │   │   │   ├── [...page].astro # Spanish blog listing
+│   │   │   │   ├── [slug].astro     # Spanish blog posts
+│   │   │   │   └── tag/
+│   │   │   │       └── [tag].astro # Spanish tag archives
+│   │   │   └── rss.xml.ts          # Spanish RSS feed
 │   │   └── pt/
 │   │       ├── index.astro         # Portuguese homepage
 │   │       └── 404.astro           # Portuguese 404 page
+│   │       ├── blog/
+│   │       │   ├── [...page].astro # Portuguese blog listing
+│   │       │   ├── [slug].astro     # Portuguese blog posts
+│   │       │   └── tag/
+│   │       │       └── [tag].astro # Portuguese tag archives
+│   │       └── rss.xml.ts          # Portuguese RSS feed
 │   └── styles/
 │       └── global.css              # Global styles
+├── content/
+│   └── blog/
+│       ├── en/                     # English blog posts (MDX)
+│       ├── es/                     # Spanish blog posts (MDX)
+│       └── pt/                     # Portuguese blog posts (MDX)
+├── config/
+│   ├── blog.ts                     # Blog configuration
+│   └── site.ts                     # Site configuration
+├── types/
+│   └── blog.ts                     # Blog type definitions
+├── utils/
+│   ├── blogHreflang.ts             # Cross-language blog linking
+│   ├── blogSchema.ts               # JSON-LD schema generation
+│   ├── dateFormatting.ts           # Localized date formatting
+│   ├── postSorting.ts              # Blog post sorting utilities
+│   ├── readingTime.ts              # Reading time calculation
+│   ├── relatedPosts.ts             # Related posts algorithm
+│   ├── slug.ts                     # URL slug generation
+│   └── toc.ts                      # Table of contents parsing
+├── content.config.ts               # Content collections configuration
+├── tests/
+│   ├── e2e/
+│   │   ├── blog.spec.ts            # Blog E2E tests
+│   │   ├── global-setup.ts         # Test configuration
+│   │   └── i18n.spec.ts            # i18n E2E tests
+│   └── unit/
+│       ├── components/
+│       │   └── blog/
+│       │       ├── ReadingTime.test.ts
+│       │       └── TagList.test.ts
+│       ├── i18n/
+│       │   └── utils.test.ts
+│       └── utils/
+│           ├── blogHreflang.test.ts
+│           ├── dateFormatting.test.ts
+│           ├── readingTime.test.ts
+│           └── relatedPosts.test.ts
 ├── public/
 │   ├── css/
 │   │   └── fonts.css               # Font-face declarations
@@ -83,14 +133,16 @@ website/
 
 ## Sections
 
-| Section        | Description                                                                 |
-| -------------- | --------------------------------------------------------------------------- |
-| **Hero**       | Introduction with profile image, title, CTAs, and social links              |
-| **Experience** | Professional work history timeline with tech tags                           |
-| **Skills**     | Technical skills organized by category (Frontend, Backend, Database, Cloud) |
-| **Projects**   | Featured projects with descriptions and technologies                        |
-| **Education**  | Academic background                                                         |
-| **Contact**    | Contact information with email, phone, and location                         |
+| Section        | Description                                                                    |
+| -------------- | ------------------------------------------------------------------------------ |
+| **Hero**       | Introduction with profile image, title, CTAs, and social links                 |
+| **Experience** | Professional work history timeline with tech tags                              |
+| **Skills**     | Technical skills organized by category (Frontend, Backend, Database, Cloud)    |
+| **Projects**   | Featured projects with descriptions and technologies                           |
+| **Education**  | Academic background                                                            |
+| **Contact**    | Contact information with email, phone, and location                            |
+| **Blog**       | Blog post listings with pagination, tag filtering, and search                  |
+| **Post**       | Individual blog posts with reading time, table of contents, and social sharing |
 
 ## Development
 
@@ -117,6 +169,14 @@ pnpm preview
 # Type checking
 pnpm astro check
 ```
+
+### Environment Variables
+
+The site uses the following environment variables:
+
+- `URL`: Base URL for the site (used for canonical URLs and sitemaps). Set to your production domain (e.g., `https://jjuanrivvera.com`)
+
+In development, Astro uses `localhost:4321` by default. For production builds, set the `URL` environment variable.
 
 ### Available Scripts
 
@@ -203,6 +263,48 @@ pnpm test:e2e:ui
 - **Coverage reporting** available via `pnpm test:coverage`
 - All tests must pass before deployment
 
+## Content Management
+
+The blog uses Astro's content collections API with MDX for rich content authoring.
+
+### Blog Posts
+
+Blog posts are written in MDX and stored in `src/content/blog/{lang}/` with the following frontmatter:
+
+```yaml
+---
+title: 'Post Title'
+description: 'Post description for SEO'
+pubDate: 2024-01-01
+author: 'Juan Felipe Rivera'
+tags: ['tag1', 'tag2']
+cover:
+  src: '/img/blog/covers/post-cover.jpg'
+  alt: 'Cover image alt text'
+language: 'en'
+translationKey: 'post-slug'
+featured: false
+---
+```
+
+### Content Features
+
+- **Pagination**: 12 posts per page with navigation
+- **Tags**: Filter posts by tags with dedicated archive pages
+- **Related Posts**: Algorithm-based recommendations using tags and recency
+- **Reading Time**: Automatic calculation based on word count
+- **Table of Contents**: Generated from headings with anchor links
+- **Social Sharing**: Twitter, LinkedIn, and copy link buttons
+- **RSS Feeds**: Auto-generated per language at `/rss.xml`
+
+### Writing Posts
+
+1. Create a new `.md` file in the appropriate language folder
+2. Use standard Markdown with optional JSX components
+3. Add frontmatter with required fields
+4. For translations, use the same `translationKey` across languages
+5. Run `pnpm build` to validate content
+
 ## Internationalization
 
 The site supports English (default), Spanish, and Portuguese with URL-based routing:
@@ -215,7 +317,7 @@ The site supports English (default), Spanish, and Portuguese with URL-based rout
 
 ### Translation System
 
-Translations are defined in `src/i18n/ui.ts` with TypeScript for type safety:
+Translations are defined in `src/i18n/ui.ts` (UI elements) and `src/i18n/blog.ts` (blog-specific strings) with TypeScript for type safety:
 
 ```typescript
 // Access translations in components
@@ -298,6 +400,28 @@ pnpm build
 - X-Frame-Options: DENY
 - X-Content-Type-Options: nosniff
 - Referrer-Policy: strict-origin-when-cross-origin
+
+## Contributing
+
+### Adding Content
+
+1. **Blog Posts**: Follow the content management guidelines above
+2. **Translations**: Add new keys to all language objects in `src/i18n/ui.ts` and `src/i18n/blog.ts`
+3. **Components**: Use existing patterns and run `pnpm lint` and `pnpm format`
+
+### Development Workflow
+
+1. Create a feature branch from `main`
+2. Make changes and test locally
+3. Run `pnpm build` and `pnpm test` to ensure everything works
+4. Commit with conventional style (e.g., `feat: add new blog feature`)
+5. Open a PR with description and screenshots if UI changes
+
+### Guidelines
+
+- Add tests for new features
+- Update this README if adding new features
+- Ensure accessibility and i18n coverage
 
 ## License
 

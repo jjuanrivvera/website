@@ -101,14 +101,13 @@ if (headings.length === 0) {
         });
       });
 
-      // Cleanup on navigation
-      document.addEventListener(
-        'astro:before-preparation',
-        () => {
-          observer.disconnect();
-        },
-        { once: true }
-      );
+      // Cleanup on navigation or page unload
+      const cleanup = () => observer.disconnect();
+
+      document.addEventListener('astro:before-preparation', cleanup, {
+        once: true,
+      });
+      document.addEventListener('pagehide', cleanup, { once: true });
     } catch (error) {
       console.error('Error initializing TOC:', error);
     }

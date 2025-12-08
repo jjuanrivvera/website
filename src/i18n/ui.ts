@@ -123,7 +123,6 @@ export const ui = {
     'footer.languages': 'Languages:',
     'footer.spanish': 'Spanish (Native)',
     'footer.english': 'English (Advanced)',
-    'footer.portuguese': 'Portuguese (Intermediate)',
     'footer.copyright': 'All rights reserved.',
 
     // Schema
@@ -277,7 +276,6 @@ export const ui = {
     'footer.languages': 'Idiomas:',
     'footer.spanish': 'Español (Nativo)',
     'footer.english': 'Inglés (Avanzado)',
-    'footer.portuguese': 'Portugués (Intermedio)',
     'footer.copyright': 'Todos los derechos reservados.',
 
     // Schema
@@ -427,7 +425,6 @@ export const ui = {
     'footer.languages': 'Idiomas:',
     'footer.spanish': 'Espanhol (Nativo)',
     'footer.english': 'Inglês (Avançado)',
-    'footer.portuguese': 'Português (Intermediário)',
     'footer.copyright': 'Todos os direitos reservados.',
 
     // Schema

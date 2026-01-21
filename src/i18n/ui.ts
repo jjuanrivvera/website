@@ -45,6 +45,7 @@ export const ui = {
     'nav.experience': 'Experience',
     'nav.skills': 'Skills',
     'nav.projects': 'Projects',
+    'nav.projectsPage': 'All Projects',
     'nav.education': 'Education',
     'nav.contact': 'Contact',
     'nav.blog': 'Blog',
@@ -87,10 +88,40 @@ export const ui = {
     // Projects
     'projects.title': 'Featured Projects',
     'projects.subtitle': 'Enterprise solutions & open source contributions',
+    'projects.viewAll': 'View All Projects',
+    'projects.viewDemo': 'Live Demo',
+    'projects.viewCode': 'View Code',
+    'projects.featured': 'Featured',
+
+    // Projects Page
+    'projectsPage.title': 'Projects',
+    'projectsPage.subtitle':
+      'A collection of enterprise solutions, open source contributions, and personal projects showcasing my expertise in full-stack development.',
+    'projectsPage.metaTitle': 'Projects | Juan Felipe Rivera González',
+    'projectsPage.metaDescription':
+      'Explore my portfolio of projects including enterprise web applications, open source libraries, microservices, and cloud infrastructure solutions.',
+
+    // Project descriptions
     'projects.nsseWizard.description':
       'Django-based interactive wizard guiding higher education institutions through NSSE (National Survey of Student Engagement) data analysis. Built 8-step guided workflow with session-based progress tracking, dynamic PDF generation with xhtml2pdf, and email delivery via SendGrid. Manages hierarchical content branching across 16 institutional challenges with 73 comprehensive tests.',
     'projects.canvasKit.description':
       'Enterprise-grade open-source PHP library for Canvas LMS API integration with 85% API coverage. Architected using Active Record + DTO patterns with PSR-12 compliance. Achieved 95%+ test coverage with 964 tests and 4,430 assertions.',
+    'projects.canvasCli.description':
+      'Powerful command-line interface for Canvas LMS built with Go. Features OAuth 2.0 with PKCE authentication, system keyring integration, multi-instance support, adaptive rate limiting, and 280+ commands covering all Canvas LMS resources. Includes interactive REPL mode with command history and completion.',
+    'projects.canvasMcp.description':
+      'TypeScript implementation of Model Context Protocol (MCP) server for Canvas LMS integration. Enables AI assistants to interact with educational platforms through 70+ type-safe workflow tools. Features Zod validation, neverthrow error handling, LRU caching, and intelligent rate limiting.',
+    'projects.canvasKitLaravel.description':
+      'Minimal Laravel integration package for Canvas LMS Kit with zero configuration. Features multi-tenant support for switching between Canvas instances, testing utilities for mocking API calls, and native Laravel integration with config, logging, and testing systems.',
+    'projects.financeFlow.description':
+      'Comprehensive personal finance management application designed for contractors in Colombia. Features multi-currency tracking, credit card debt optimization, tax calculations, and financial goal planning with React frontend and FastAPI backend.',
+    'projects.cvOptimizer.description':
+      'AI-powered system using Claude Code to intelligently customize CVs for job applications. Maximizes ATS compatibility while maintaining authenticity by reorganizing and emphasizing existing experience without fabricating information.',
+    'projects.todoWizard.description':
+      'Modern full-stack task management application with React 18, TypeScript, FastAPI, and PostgreSQL. Features project organization, priorities, tags, markdown support, drag-and-drop ordering, real-time updates, and dark mode.',
+    'projects.jwDiscordBot.description':
+      'Discord bot providing daily texts, news, and topic search from JW.org. Supports multiple servers with per-server language configuration (Spanish, English, Portuguese), scheduled posts, and MongoDB-backed settings.',
+    'projects.dailyTextConverter.description':
+      'EPUB to JSON converter for daily text publications with web interface, REST API, and CLI tool. Features real-time progress updates via Server-Sent Events, automatic year detection, and dual parsing strategy with MongoDB storage option.',
     'projects.paymentGateway.description':
       'Microservice enabling users to receive payments through configurable providers including PayPal, RappiPay, Nequi, PayU, Tpaga, SrPago, VisaNet, and MercadoPago.',
     'projects.ecommerceGateway.description':
@@ -196,6 +227,7 @@ export const ui = {
     'nav.experience': 'Experiencia',
     'nav.skills': 'Habilidades',
     'nav.projects': 'Proyectos',
+    'nav.projectsPage': 'Todos los Proyectos',
     'nav.education': 'Educación',
     'nav.contact': 'Contacto',
     'nav.blog': 'Blog',
@@ -240,10 +272,40 @@ export const ui = {
     'projects.title': 'Proyectos Destacados',
     'projects.subtitle':
       'Soluciones empresariales y contribuciones de código abierto',
+    'projects.viewAll': 'Ver Todos los Proyectos',
+    'projects.viewDemo': 'Demo en Vivo',
+    'projects.viewCode': 'Ver Código',
+    'projects.featured': 'Destacado',
+
+    // Projects Page
+    'projectsPage.title': 'Proyectos',
+    'projectsPage.subtitle':
+      'Una colección de soluciones empresariales, contribuciones de código abierto y proyectos personales que demuestran mi experiencia en desarrollo full-stack.',
+    'projectsPage.metaTitle': 'Proyectos | Juan Felipe Rivera González',
+    'projectsPage.metaDescription':
+      'Explora mi portafolio de proyectos que incluye aplicaciones web empresariales, bibliotecas de código abierto, microservicios y soluciones de infraestructura en la nube.',
+
+    // Project descriptions
     'projects.nsseWizard.description':
       'Asistente interactivo basado en Django que guía a instituciones de educación superior a través del análisis de datos NSSE (National Survey of Student Engagement). Desarrollé un flujo de trabajo guiado de 8 pasos con seguimiento de progreso basado en sesiones, generación dinámica de PDF con xhtml2pdf y entrega de correos vía SendGrid. Gestiona ramificación jerárquica de contenido a través de 16 desafíos institucionales con 73 pruebas exhaustivas.',
     'projects.canvasKit.description':
       'Biblioteca PHP de código abierto de nivel empresarial para integración con la API de Canvas LMS con 85% de cobertura de API. Arquitectura usando patrones Active Record + DTO con cumplimiento PSR-12. Logré más del 95% de cobertura de pruebas con 964 tests y 4,430 aserciones.',
+    'projects.canvasCli.description':
+      'Potente interfaz de línea de comandos para Canvas LMS construida con Go. Incluye autenticación OAuth 2.0 con PKCE, integración con keyring del sistema, soporte multi-instancia, limitación de tasa adaptativa y más de 280 comandos. Modo REPL interactivo con historial y autocompletado.',
+    'projects.canvasMcp.description':
+      'Implementación en TypeScript de servidor Model Context Protocol (MCP) para integración con Canvas LMS. Permite a asistentes de IA interactuar con plataformas educativas a través de más de 70 herramientas de flujo de trabajo con tipado seguro. Incluye validación Zod, manejo de errores con neverthrow y caché LRU.',
+    'projects.canvasKitLaravel.description':
+      'Paquete de integración Laravel mínimo para Canvas LMS Kit con configuración cero. Soporte multi-tenant para cambiar entre instancias de Canvas, utilidades de pruebas para simular llamadas API e integración nativa con config, logging y testing de Laravel.',
+    'projects.financeFlow.description':
+      'Aplicación integral de gestión de finanzas personales diseñada para contratistas en Colombia. Incluye seguimiento multi-moneda, optimización de deuda de tarjetas de crédito, cálculos de impuestos y planificación de metas financieras con frontend React y backend FastAPI.',
+    'projects.cvOptimizer.description':
+      'Sistema impulsado por IA usando Claude Code para personalizar CVs inteligentemente para aplicaciones de trabajo. Maximiza compatibilidad con ATS manteniendo autenticidad al reorganizar y enfatizar experiencia existente sin fabricar información.',
+    'projects.todoWizard.description':
+      'Aplicación moderna de gestión de tareas full-stack con React 18, TypeScript, FastAPI y PostgreSQL. Incluye organización por proyectos, prioridades, etiquetas, soporte markdown, ordenamiento drag-and-drop, actualizaciones en tiempo real y modo oscuro.',
+    'projects.jwDiscordBot.description':
+      'Bot de Discord que proporciona textos diarios, noticias y búsqueda de temas de JW.org. Soporta múltiples servidores con configuración de idioma por servidor (español, inglés, portugués), publicaciones programadas y configuración respaldada por MongoDB.',
+    'projects.dailyTextConverter.description':
+      'Convertidor de EPUB a JSON para publicaciones de texto diario con interfaz web, API REST y herramienta CLI. Incluye actualizaciones de progreso en tiempo real vía Server-Sent Events, detección automática de año y estrategia de parseo dual con opción de almacenamiento MongoDB.',
     'projects.paymentGateway.description':
       'Microservicio que permite a los usuarios recibir pagos a través de proveedores configurables incluyendo PayPal, RappiPay, Nequi, PayU, Tpaga, SrPago, VisaNet y MercadoPago.',
     'projects.ecommerceGateway.description':
@@ -347,6 +409,7 @@ export const ui = {
     'nav.experience': 'Experiência',
     'nav.skills': 'Habilidades',
     'nav.projects': 'Projetos',
+    'nav.projectsPage': 'Todos os Projetos',
     'nav.education': 'Educação',
     'nav.contact': 'Contato',
     'nav.blog': 'Blog',
@@ -389,10 +452,40 @@ export const ui = {
     // Projects
     'projects.title': 'Projetos em Destaque',
     'projects.subtitle': 'Soluções empresariais e contribuições open source',
+    'projects.viewAll': 'Ver Todos os Projetos',
+    'projects.viewDemo': 'Demo ao Vivo',
+    'projects.viewCode': 'Ver Código',
+    'projects.featured': 'Destaque',
+
+    // Projects Page
+    'projectsPage.title': 'Projetos',
+    'projectsPage.subtitle':
+      'Uma coleção de soluções empresariais, contribuições open source e projetos pessoais demonstrando minha expertise em desenvolvimento full-stack.',
+    'projectsPage.metaTitle': 'Projetos | Juan Felipe Rivera González',
+    'projectsPage.metaDescription':
+      'Explore meu portfólio de projetos incluindo aplicações web empresariais, bibliotecas open source, microserviços e soluções de infraestrutura em nuvem.',
+
+    // Project descriptions
     'projects.nsseWizard.description':
       'Assistente interativo baseado em Django que orienta instituições de ensino superior através da análise de dados NSSE (National Survey of Student Engagement). Desenvolvi um fluxo de trabalho guiado de 8 etapas com rastreamento de progresso baseado em sessão, geração dinâmica de PDF com xhtml2pdf e entrega de e-mail via SendGrid. Gerencia ramificação hierárquica de conteúdo através de 16 desafios institucionais com 73 testes abrangentes.',
     'projects.canvasKit.description':
       'Biblioteca PHP open source de nível empresarial para integração com a API do Canvas LMS com 85% de cobertura. Arquitetada com padrões Active Record + DTO e conformidade PSR-12. Alcançou mais de 95% de cobertura com 964 testes e 4.430 asserções.',
+    'projects.canvasCli.description':
+      'Poderosa interface de linha de comando para Canvas LMS construída com Go. Inclui autenticação OAuth 2.0 com PKCE, integração com keyring do sistema, suporte multi-instância, limitação de taxa adaptativa e mais de 280 comandos. Modo REPL interativo com histórico e autocompletar.',
+    'projects.canvasMcp.description':
+      'Implementação em TypeScript de servidor Model Context Protocol (MCP) para integração com Canvas LMS. Permite que assistentes de IA interajam com plataformas educacionais através de mais de 70 ferramentas de fluxo de trabalho com tipagem segura. Inclui validação Zod, tratamento de erros com neverthrow e cache LRU.',
+    'projects.canvasKitLaravel.description':
+      'Pacote de integração Laravel mínimo para Canvas LMS Kit com configuração zero. Suporte multi-tenant para alternar entre instâncias Canvas, utilitários de teste para simular chamadas de API e integração nativa com config, logging e testing do Laravel.',
+    'projects.financeFlow.description':
+      'Aplicação abrangente de gestão de finanças pessoais projetada para contratados na Colômbia. Inclui rastreamento multi-moeda, otimização de dívidas de cartão de crédito, cálculos de impostos e planejamento de metas financeiras com frontend React e backend FastAPI.',
+    'projects.cvOptimizer.description':
+      'Sistema impulsionado por IA usando Claude Code para personalizar CVs inteligentemente para candidaturas de emprego. Maximiza compatibilidade com ATS mantendo autenticidade ao reorganizar e enfatizar experiência existente sem fabricar informações.',
+    'projects.todoWizard.description':
+      'Aplicação moderna de gerenciamento de tarefas full-stack com React 18, TypeScript, FastAPI e PostgreSQL. Inclui organização por projetos, prioridades, tags, suporte markdown, ordenação drag-and-drop, atualizações em tempo real e modo escuro.',
+    'projects.jwDiscordBot.description':
+      'Bot do Discord que fornece textos diários, notícias e busca de tópicos do JW.org. Suporta múltiplos servidores com configuração de idioma por servidor (espanhol, inglês, português), posts programados e configurações com MongoDB.',
+    'projects.dailyTextConverter.description':
+      'Conversor de EPUB para JSON para publicações de texto diário com interface web, API REST e ferramenta CLI. Inclui atualizações de progresso em tempo real via Server-Sent Events, detecção automática de ano e estratégia de parsing dual com opção de armazenamento MongoDB.',
     'projects.paymentGateway.description':
       'Microserviço que permite aos usuários receber pagamentos por provedores configuráveis incluindo PayPal, RappiPay, Nequi, PayU, Tpaga, SrPago, VisaNet e MercadoPago.',
     'projects.ecommerceGateway.description':

@@ -17,8 +17,9 @@ interface Props {
 const { project, lang } = Astro.props;
 const t = useTranslations(lang);
 
-// Get the translated description
+// Get the translated description and featured label
 const description = t(`projects.${project.key}.description` as TranslationKey);
+const featuredLabel = t('projects.featured');
 ---
 
 <article
@@ -49,8 +50,8 @@ const description = t(`projects.${project.key}.description` as TranslationKey);
           />
         )}
         {project.featured && (
-          <span class="project-card__badge" aria-label="Featured project">
-            Featured
+          <span class="project-card__badge" aria-label={featuredLabel}>
+            {featuredLabel}
           </span>
         )}
       </div>
@@ -63,7 +64,7 @@ const description = t(`projects.${project.key}.description` as TranslationKey);
       {
         project.featured && !project.image && (
           <span class="project-card__badge project-card__badge--inline">
-            Featured
+            {featuredLabel}
           </span>
         )
       }

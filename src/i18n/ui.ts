@@ -91,6 +91,7 @@ export const ui = {
     'projects.viewAll': 'View All Projects',
     'projects.viewDemo': 'Live Demo',
     'projects.viewCode': 'View Code',
+    'projects.featured': 'Featured',
 
     // Projects Page
     'projectsPage.title': 'Projects',
@@ -274,6 +275,7 @@ export const ui = {
     'projects.viewAll': 'Ver Todos los Proyectos',
     'projects.viewDemo': 'Demo en Vivo',
     'projects.viewCode': 'Ver Código',
+    'projects.featured': 'Destacado',
 
     // Projects Page
     'projectsPage.title': 'Proyectos',
@@ -453,6 +455,7 @@ export const ui = {
     'projects.viewAll': 'Ver Todos os Projetos',
     'projects.viewDemo': 'Demo ao Vivo',
     'projects.viewCode': 'Ver Código',
+    'projects.featured': 'Destaque',
 
     // Projects Page
     'projectsPage.title': 'Projetos',

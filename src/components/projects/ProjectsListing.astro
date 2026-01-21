@@ -24,7 +24,7 @@ const projects = getAllProjects();
 
 // Build URLs
 const basePath = lang === 'en' ? '/projects' : `/${lang}/projects`;
-const canonicalUrl = `${SITE_CONFIG.url}${basePath}/`;
+const canonicalUrl = new URL(`${basePath}/`, SITE_CONFIG.url).toString();
 
 // Get hreflang URLs for all languages
 const hreflangUrls = getHreflangUrls('/projects');

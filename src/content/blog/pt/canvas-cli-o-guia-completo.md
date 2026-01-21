@@ -756,7 +756,7 @@ echo "$courses" | xargs -P 4 -I {} sh -c '
 
 O Canvas CLI se adapta automaticamente aos limites da API:
 
-```
+```text
 Cota > 50%  → 5 requisições/segundo
 Cota 20-50% → 2 requisições/segundo
 Cota < 20%  → 1 requisição/segundo

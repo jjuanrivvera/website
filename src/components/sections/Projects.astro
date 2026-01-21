@@ -1,62 +1,13 @@
 ---
 import { getLangFromUrl, useTranslations } from '@i18n/utils';
 import type { TranslationKey } from '@i18n/ui';
+import { getHomepageProjects } from '@config/projects';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const projects = [
-  {
-    key: 'portfolio',
-    title: 'Personal Portfolio',
-    featured: true,
-    techTags: ['Astro', 'TypeScript', 'i18n', 'Netlify'],
-    link: 'https://github.com/jjuanrivvera/website',
-  },
-  {
-    key: 'nsseWizard',
-    title: 'Student Voice Navigator',
-    featured: true,
-    techTags: ['Django', 'Python', 'MySQL', 'GCP', 'SendGrid'],
-  },
-  {
-    key: 'canvasKit',
-    title: 'Canvas LMS PHP SDK',
-    featured: true,
-    techTags: ['PHP', 'PHPUnit', 'Open Source', 'Packagist'],
-    link: 'https://github.com/jjuanrivvera/canvas-lms-kit',
-  },
-  {
-    key: 'paymentGateway',
-    title: 'Payment Gateway',
-    featured: false,
-    techTags: ['Laravel', 'PHP', '8+ Providers'],
-  },
-  {
-    key: 'ecommerceGateway',
-    title: 'E-commerce Gateway',
-    featured: false,
-    techTags: ['Laravel', 'Vue.js', 'Shopify'],
-  },
-  {
-    key: 'courseBuilder',
-    title: 'Course Builder 2.0',
-    featured: false,
-    techTags: ['Canvas LMS', 'PHP', 'Automation'],
-  },
-  {
-    key: 'serverlessEvents',
-    title: 'Serverless Event Management',
-    featured: false,
-    techTags: ['GCP Functions', 'Pub/Sub', 'Serverless'],
-  },
-  {
-    key: 'infraLab',
-    title: 'Multi-Environment Infrastructure Lab',
-    featured: false,
-    techTags: ['Docker', 'Homelab', 'Nginx', 'Tailscale'],
-  },
-];
+const projects = getHomepageProjects();
+const projectsPageUrl = lang === 'en' ? '/projects' : `/${lang}/projects`;
 ---
 
 <section class="projects" id="projects">
@@ -75,9 +26,9 @@ const projects = [
           >
             <div class="project-header">
               <h3 class="project-title">{project.title}</h3>
-              {project.link && (
+              {project.githubUrl && (
                 <a
-                  href={project.link}
+                  href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   class="project-link"
@@ -101,5 +52,25 @@ const projects = [
         ))
       }
     </div>
+
+    <div class="projects-cta" data-aos="fade-up">
+      <a href={projectsPageUrl} class="btn btn-secondary">
+        {t('projects.viewAll')}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
   </div>
 </section>
+
+<style>
+  .projects-cta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .projects-cta .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+</style>

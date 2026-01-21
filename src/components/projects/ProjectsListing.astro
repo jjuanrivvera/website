@@ -1,0 +1,149 @@
+---
+/**
+ * ProjectsListing Component
+ * Main page component for displaying all projects
+ */
+
+import Layout from '@layouts/Layout.astro';
+import Navbar from '@components/layout/Navbar.astro';
+import Footer from '@components/layout/Footer.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getAllProjects } from '@config/projects';
+import { SITE_CONFIG } from '@config/site';
+import { useTranslations, getHreflangUrls } from '@i18n/utils';
+import type { Lang } from '@i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const projects = getAllProjects();
+
+// Build URLs
+const basePath = lang === 'en' ? '/projects' : `/${lang}/projects`;
+const canonicalUrl = `${SITE_CONFIG.url}${basePath}/`;
+
+// Get hreflang URLs for all languages
+const hreflangUrls = getHreflangUrls('/projects');
+const hreflangEntries = Object.entries(hreflangUrls) as [Lang, string][];
+
+// Custom language URLs for the language switcher
+const customLanguageUrls = {
+  en: '/projects/',
+  es: '/es/projects/',
+  pt: '/pt/projects/',
+};
+---
+
+<Layout
+  title={t('projectsPage.metaTitle')}
+  description={t('projectsPage.metaDescription')}
+  noCanonical={true}
+  noOpenGraph={true}
+>
+  <link slot="head" rel="canonical" href={canonicalUrl} />
+
+  {
+    hreflangEntries.map(([hrefLang, url]) => (
+      <link slot="head" rel="alternate" hreflang={hrefLang} href={url} />
+    ))
+  }
+
+  <meta slot="head" property="og:type" content="website" />
+  <meta slot="head" property="og:title" content={t('projectsPage.metaTitle')} />
+  <meta
+    slot="head"
+    property="og:description"
+    content={t('projectsPage.metaDescription')}
+  />
+  <meta slot="head" property="og:url" content={canonicalUrl} />
+
+  <Navbar customLanguageUrls={customLanguageUrls} />
+
+  <main id="main-content" class="projects-main">
+    <div class="projects-listing">
+      <div class="projects-listing__container">
+        <header class="projects-listing__header">
+          <h1 class="projects-listing__title">{t('projectsPage.title')}</h1>
+          <p class="projects-listing__description">
+            {t('projectsPage.subtitle')}
+          </p>
+        </header>
+
+        <div class="projects-listing__grid">
+          {
+            projects.map((project) => (
+              <ProjectCard project={project} lang={lang} />
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <Footer showLanguages={false} />
+</Layout>
+
+<style>
+  .projects-listing {
+    padding: 96px 0 48px 0;
+  }
+
+  .projects-listing__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .projects-listing__header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .projects-listing__title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .projects-listing__description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .projects-listing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 32px;
+    margin-bottom: 64px;
+  }
+
+  @media (max-width: 768px) {
+    .projects-listing {
+      padding: 80px 0 32px 0;
+    }
+
+    .projects-listing__header {
+      margin-bottom: 48px;
+    }
+
+    .projects-listing__title {
+      font-size: 2.5rem;
+    }
+
+    .projects-listing__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

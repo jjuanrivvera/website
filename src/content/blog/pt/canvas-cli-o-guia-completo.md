@@ -4,7 +4,7 @@ description: 'Domine a automação do Canvas LMS com Canvas CLI. Aprenda instala
 pubDate: 2025-01-20
 author: 'Juan Felipe Rivera González'
 tags: ['go', 'canvas-lms', 'cli', 'automation', 'ai-agents']
-cover: '@assets/blog/covers/canvas-cli-guide-cover.png'
+cover: '@assets/blog/covers/canvas-cli-guide-cover.jpg'
 coverAlt: 'Interface de terminal mostrando comandos do Canvas CLI com saída colorida, elementos de design inspirados em Go e nós conectados representando automação de API'
 lang: 'pt'
 translationKey: 'canvas-cli-guide'

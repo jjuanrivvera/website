@@ -144,6 +144,22 @@ export const projects: Project[] = [
     featured: false,
     techTags: ['Docker', 'Homelab', 'Nginx', 'Tailscale'],
   },
+  {
+    key: 'riveraRefrigeracion',
+    title: 'Rivera Refrigeración',
+    featured: false,
+    showOnHomepage: false,
+    techTags: ['Astro', 'TypeScript', 'Tailwind CSS', 'Netlify'],
+    demoUrl: 'https://rivera-refrigeracion.com',
+  },
+  {
+    key: 'roperoDeSuenos',
+    title: 'Ropero de Sueños',
+    featured: false,
+    showOnHomepage: false,
+    techTags: ['Astro', 'Tailwind CSS', 'Alpine.js', 'TypeScript'],
+    demoUrl: 'https://roperodesuenos.com',
+  },
 ];
 
 /**

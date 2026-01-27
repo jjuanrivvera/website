@@ -134,6 +134,10 @@ export const ui = {
       'Comprehensive homelab spanning Raspberry Pi, VPS, and development workstation with 20+ containerized services. Includes Nginx reverse proxy with 22 SSL-enabled hosts.',
     'projects.portfolio.description':
       'Modern portfolio website built with Astro featuring internationalization (EN/ES/PT), View Transitions for SPA-like navigation, AOS animations, and comprehensive SEO with Open Graph and JSON-LD structured data. Deployed on Netlify with CI/CD.',
+    'projects.riveraRefrigeracion.description':
+      'Professional website for Rivera Refrigeración, a family-owned appliance repair business in Cali, Colombia with over 30 years of experience. Built with Astro and Tailwind CSS, featuring a blog system, SEO optimization, and WhatsApp integration. Deployed on Netlify.',
+    'projects.roperoDeSuenos.description':
+      'E-commerce website for Ropero de Sueños, showcasing handcrafted MDF closets for fashion dolls. Features product gallery, testimonials, FAQ section, blog system, and WhatsApp integration for orders. Built with Astro, Tailwind CSS, and Alpine.js.',
 
     // Education
     'education.title': 'Education',
@@ -318,6 +322,10 @@ export const ui = {
       'Laboratorio completo que abarca Raspberry Pi, VPS y estación de trabajo de desarrollo con más de 20 servicios en contenedores. Incluye proxy reverso Nginx con 22 hosts habilitados para SSL.',
     'projects.portfolio.description':
       'Sitio web de portafolio moderno construido con Astro con internacionalización (EN/ES/PT), View Transitions para navegación tipo SPA, animaciones AOS y SEO completo con Open Graph y datos estructurados JSON-LD. Desplegado en Netlify con CI/CD.',
+    'projects.riveraRefrigeracion.description':
+      'Sitio web profesional para Rivera Refrigeración, un negocio familiar de reparación de electrodomésticos en Cali, Colombia con más de 30 años de experiencia. Construido con Astro y Tailwind CSS, con sistema de blog, optimización SEO e integración con WhatsApp. Desplegado en Netlify.',
+    'projects.roperoDeSuenos.description':
+      'Sitio web de comercio electrónico para Ropero de Sueños, mostrando closets artesanales de MDF para muñecas de moda. Incluye galería de productos, testimonios, sección de preguntas frecuentes, sistema de blog e integración con WhatsApp para pedidos. Construido con Astro, Tailwind CSS y Alpine.js.',
 
     // Education
     'education.title': 'Educación',
@@ -498,6 +506,10 @@ export const ui = {
       'Homelab completo abrangendo Raspberry Pi, VPS e estação de trabalho de desenvolvimento com mais de 20 serviços em contêineres. Inclui proxy reverso Nginx com 22 hosts com SSL.',
     'projects.portfolio.description':
       'Site de portfólio moderno construído com Astro com internacionalização (EN/ES/PT), View Transitions para navegação estilo SPA, animações AOS e SEO completo com Open Graph e dados estruturados JSON-LD. Implantado na Netlify com CI/CD.',
+    'projects.riveraRefrigeracion.description':
+      'Site profissional para Rivera Refrigeración, um negócio familiar de reparos de eletrodomésticos em Cali, Colômbia, com mais de 30 anos de experiência. Construído com Astro e Tailwind CSS, com sistema de blog, otimização de SEO e integração com WhatsApp. Implantado na Netlify.',
+    'projects.roperoDeSuenos.description':
+      'Site de e-commerce para Ropero de Sueños, apresentando closets artesanais de MDF para bonecas de moda. Inclui galeria de produtos, depoimentos, seção de FAQ, sistema de blog e integração com WhatsApp para pedidos. Construído com Astro, Tailwind CSS e Alpine.js.',
 
     // Education
     'education.title': 'Educação',

@@ -128,6 +128,10 @@ export const ui = {
       'Microservice allowing users to sync their E-commerce platforms with the accounting system. Integrated with Shopify and Mercado Libre marketplaces.',
     'projects.courseBuilder.description':
       "Robust tool for ACUE's Canvas LMS improving course creation efficiency. Introduced centralized workflow, improved error tracking, and eliminated redundant tasks.",
+    'projects.acueChatbots.description':
+      'AI-powered chatbot platform for ACUE using hybrid RAG search with vector similarity and BM25 keyword matching. Features automated knowledge base ingestion, visual workflow engine with n8n, security guardrails, and multi-bot support powered by Google Vertex AI.',
+    'projects.acueCli.description':
+      'Unified command-line interface for managing ACUE infrastructure across Cloud Run and VM-based systems. Features multi-environment management, AES-256-GCM encrypted credentials, audit logging, and smart auto-detection with dry-run mode and automatic rollback.',
     'projects.serverlessEvents.description':
       'Innovative solution for handling live events in Canvas LMS using GCP serverless functions. Features JWT decoding, MySQL storage, and Pub/Sub topics for scalable processing.',
     'projects.infraLab.description':
@@ -316,6 +320,10 @@ export const ui = {
       'Microservicio que permite a los usuarios sincronizar sus plataformas de comercio electrónico con el sistema contable. Integrado con Shopify y Mercado Libre.',
     'projects.courseBuilder.description':
       'Herramienta robusta para el Canvas LMS de ACUE que mejora la eficiencia en la creación de cursos. Introduje flujo de trabajo centralizado, seguimiento de errores mejorado y eliminación de tareas redundantes.',
+    'projects.acueChatbots.description':
+      'Plataforma de chatbots impulsada por IA para ACUE usando búsqueda RAG híbrida con similitud vectorial y coincidencia de palabras clave BM25. Incluye ingesta automatizada de base de conocimiento, motor de flujos de trabajo visual con n8n, guardas de seguridad y soporte multi-bot con Google Vertex AI.',
+    'projects.acueCli.description':
+      'Interfaz de línea de comandos unificada para gestionar la infraestructura de ACUE en sistemas Cloud Run y basados en VM. Incluye gestión multi-entorno, credenciales cifradas con AES-256-GCM, registro de auditoría y auto-detección con modo dry-run y rollback automático.',
     'projects.serverlessEvents.description':
       'Solución innovadora para manejar eventos en vivo en Canvas LMS usando funciones serverless de GCP. Incluye decodificación JWT, almacenamiento MySQL y topics Pub/Sub para procesamiento escalable.',
     'projects.infraLab.description':
@@ -500,6 +508,10 @@ export const ui = {
       'Microserviço que sincroniza plataformas de e-commerce com o sistema contábil. Integrado com os marketplaces Shopify e Mercado Livre.',
     'projects.courseBuilder.description':
       'Ferramenta robusta para o Canvas LMS da ACUE que melhora a eficiência na criação de cursos. Introduz fluxo centralizado, melhor rastreamento de erros e elimina tarefas redundantes.',
+    'projects.acueChatbots.description':
+      'Plataforma de chatbots com IA para ACUE usando busca RAG híbrida com similaridade vetorial e correspondência de palavras-chave BM25. Inclui ingestão automatizada de base de conhecimento, motor de fluxos de trabalho visual com n8n, proteções de segurança e suporte multi-bot com Google Vertex AI.',
+    'projects.acueCli.description':
+      'Interface de linha de comando unificada para gerenciar a infraestrutura da ACUE em sistemas Cloud Run e baseados em VM. Inclui gerenciamento multi-ambiente, credenciais criptografadas com AES-256-GCM, registro de auditoria e auto-detecção com modo dry-run e rollback automático.',
     'projects.serverlessEvents.description':
       'Solução inovadora para lidar com eventos ao vivo no Canvas LMS usando funções serverless da GCP. Inclui decodificação JWT, armazenamento MySQL e tópicos Pub/Sub para processamento escalável.',
     'projects.infraLab.description':

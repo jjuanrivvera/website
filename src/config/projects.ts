@@ -133,9 +133,23 @@ export const projects: Project[] = [
     techTags: ['Canvas LMS', 'PHP', 'Automation'],
   },
   {
+    key: 'acueChatbots',
+    title: 'ACUE Chatbots & Integrations',
+    featured: true,
+    techTags: ['Python', 'FastAPI', 'n8n', 'GCP', 'Vertex AI'],
+  },
+  {
+    key: 'acueCli',
+    title: 'ACUE CLI',
+    featured: false,
+    showOnHomepage: false,
+    techTags: ['Go', 'GCP', 'Cloud Run', 'CLI'],
+  },
+  {
     key: 'serverlessEvents',
     title: 'Serverless Event Management',
     featured: false,
+    showOnHomepage: false,
     techTags: ['GCP Functions', 'Pub/Sub', 'Serverless'],
   },
   {

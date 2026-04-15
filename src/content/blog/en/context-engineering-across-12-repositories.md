@@ -11,6 +11,8 @@ tags:
     'developer-tools',
     'productivity',
   ]
+cover: '@assets/blog/covers/context-engineering-12-repos-cover.jpg'
+coverAlt: 'A glowing cyan folder at the center of a dark midnight blue scene, connected by thin neon lines to twelve smaller repository nodes orbiting around it. Above the central folder, three stacked horizontal layers represent a hierarchy of context, each containing a small markdown file icon. Faint code symbols drift in the background.'
 lang: 'en'
 translationKey: 'context-engineering-12-repos'
 draft: false

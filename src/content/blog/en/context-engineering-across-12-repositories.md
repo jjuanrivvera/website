@@ -13,7 +13,7 @@ tags:
   ]
 lang: 'en'
 translationKey: 'context-engineering-12-repos'
-draft: true
+draft: false
 featured: false
 ---
 

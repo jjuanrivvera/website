@@ -23,7 +23,7 @@ Working with a client that runs 12 projects across different stacks (PHP service
 
 Claude Code, Codex, Cursor, and Opencode all solve the "how does this project work" problem with instruction files: CLAUDE.md for Claude Code, AGENTS.md for the others, loaded at session start. This is the starting point for context engineering: giving the agent the context it needs to solve the task, and no more than that.
 
-A single instruction file is enough when you only touch one project. It starts to show seams when the same engineer has to operate across an entire organization. Some rules apply everywhere (how to write a commit, what linter to trust, which tool preferences to follow). Some apply only inside one client's ecosystem (the migration direction, the shared database topology, the event bus conventions). Some apply only to one repo. Writing everything into one flat file duplicates the cross-project rules across 12 repos, or drops them entirely. And stuffing everything into a single giant file isn't a solution either. Research from ETH Zurich on bloated agent context shows that oversized instruction files increase inference costs while reducing task success rates. HumanLayer observed something stronger: Claude Code's system prompt tells the model to disregard CLAUDE.md content that isn't directly relevant to the current task. Padding the file doesn't just waste tokens. It competes with the rules that matter.
+A single instruction file is enough when you only touch one project. It starts to show seams when the same engineer has to operate across an entire organization. Some rules apply everywhere (how to write a commit, what linter to trust, which tool preferences to follow). Some apply only to one repo. Writing everything into one flat file duplicates the cross-project rules across 12 repos, or drops them entirely. And stuffing everything into a single giant file isn't a solution either. Research from ETH Zurich on bloated agent context shows that oversized instruction files increase inference costs while reducing task success rates. HumanLayer observed something stronger: Claude Code's system prompt tells the model to disregard CLAUDE.md content that isn't directly relevant to the current task. Padding the file doesn't just waste tokens. It competes with the rules that matter.
 
 So the problem becomes: how do you give an agent the same onboarding context a new engineer gets (company-wide conventions, how the systems relate, specific-project details) without exploding the context window or duplicating content across every repo?
 
@@ -69,7 +69,7 @@ Context files should shrink over time, not grow. Martin Fowler's point applies: 
 
 ## Skills as Auto-Discoverable Context
 
-Instruction files have one structural limitation: they're loaded for every session, regardless of what the session is about. The longer they get, the more irrelevant content the model wades through on every turn. That's why the filter above matters.
+Instruction files have one structural limitation: they're loaded for every session, regardless of what the session is about. The longer they get, the more irrelevant content loads on every turn. That's why the filter above matters.
 
 Skills solve the other half of the problem. A skill is a markdown file with YAML frontmatter at the top describing when it should be activated, and a body describing the steps. Unlike instruction files, skills are not loaded all at once. The agent scans the frontmatter descriptions of available skills and decides which one to load based on the task at hand. Irrelevant skills stay cold.
 
@@ -79,12 +79,12 @@ So a surprising amount of content that people put in CLAUDE.md should move out. 
 
 Skills live at two levels, the same way instruction files do:
 
-- **Personal skills** (Google Workspace automations, daily digest, media transcription) sit in `~/.claude/skills/`. Available on any machine.
-- **Organization skills** (course building, database tools, deployment scripts) need to reach every repo inside the client's workspace.
+- **Personal skills** like Google Workspace automations, daily digest, or media transcription sit in `~/.claude/skills/`. Available on any machine.
+- **Organization skills** like course building, database tools, or deployment scripts need to reach every repo inside the client's workspace.
 
-The next question is where organization-level skills live on disk, because each tool reads from its own path. Claude Code reads `.claude/skills/`. Cursor, Codex, Copilot, and the rest of the AGENTS.md-aligned ecosystem read from `.agents/` variants. If I put skills in one place, only half my tools can use them.
+The question becomes where organization-level skills physically live. Each tool discovers skills from its own path, so committing to one path locks out the others. The next section covers the layout I use to avoid that.
 
-## The `.agents/` Folder as the Source of Truth
+## The .agents/ Folder as the Source of Truth
 
 The shape I settled on: a single `.agents/` folder at the organization root, with everything shared underneath it.
 

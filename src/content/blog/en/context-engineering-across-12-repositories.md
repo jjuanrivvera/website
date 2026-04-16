@@ -16,7 +16,7 @@ coverAlt: 'A glowing cyan folder at the center of a dark midnight blue scene, co
 lang: 'en'
 translationKey: 'context-engineering-12-repos'
 draft: false
-featured: false
+featured: true
 ---
 
 Working with a client that runs 12 projects across different stacks (PHP services, a Django portal, Go CLIs, Python cloud functions, a JavaScript layer injected into an LMS) is a harder problem for AI assistants than it looks. Each repo carries its own conventions, testing setup, and deployment flow. At the same time, they share databases, send events to each other, and sit on top of a live migration from a legacy backend to a newer one. A change in one system often needs a matching change in another. An engineer joining the team doesn't learn one codebase. They learn how the codebases interact.

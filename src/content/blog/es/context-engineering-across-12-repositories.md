@@ -16,7 +16,7 @@ coverAlt: 'Un folder cyan brillante en el centro de una escena azul oscuro, cone
 lang: 'es'
 translationKey: 'context-engineering-12-repos'
 draft: false
-featured: false
+featured: true
 ---
 
 Trabajar con un cliente que tiene 12 proyectos en diferentes stacks (servicios en PHP, un portal en Django, CLIs en Go, cloud functions en Python, una capa de JavaScript inyectada en un LMS) es un problema más complicado para los asistentes de IA de lo que parece. Cada repo tiene sus propias convenciones, su propio setup de pruebas, su propio flujo de deployment. Al mismo tiempo, comparten bases de datos, se mandan eventos entre sí, y están encima de una migración en vivo de un backend legacy a uno nuevo. Un cambio en un sistema suele requerir un cambio correspondiente en otro. Un ingeniero que se une al equipo no aprende una base de código. Aprende cómo las bases de código interactúan entre sí.

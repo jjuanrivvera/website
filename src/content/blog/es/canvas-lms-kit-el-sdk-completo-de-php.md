@@ -9,7 +9,7 @@ coverAlt: 'Visualización técnica moderna mostrando la arquitectura del SDK Can
 lang: 'es'
 translationKey: 'canvas-lms-kit-introduction'
 draft: false
-featured: true
+featured: false
 ---
 
 Canvas LMS es un sistema de gestión de aprendizaje potente utilizado por miles de instituciones educativas en todo el mundo. Pero si alguna vez has intentado integrarte con su API directamente, conoces el desafío: flujos de autenticación complejos, manejo manual de paginación, configuración verbosa del cliente HTTP y un sinfín de casos especiales que gestionar.

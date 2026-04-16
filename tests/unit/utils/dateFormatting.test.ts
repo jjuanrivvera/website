@@ -93,7 +93,9 @@ describe('formatRelativeTime', () => {
 
   it('formats months ago in English', () => {
     const twoMonthsAgo = new Date();
-    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+    // Use 65 days to ensure Math.floor(diffDays / 30) === 2 regardless of
+    // the current calendar month's length (setMonth(-2) can yield 59 days).
+    twoMonthsAgo.setDate(twoMonthsAgo.getDate() - 65);
     const formatted = formatRelativeTime(twoMonthsAgo, 'en');
     expect(formatted).toContain('2 months ago');
   });

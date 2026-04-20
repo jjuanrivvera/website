@@ -18,6 +18,7 @@ Let readers subscribe to blog updates by email. When a new post is published, su
 
 - **Self-host-first** when the tradeoff is reasonable.
 - **Low monthly cost** at 100–1000 subscribers.
+- **No Google Workspace** — personal Gmail only. That rules out using Gmail SMTP with a custom `From` address for the newsletter because DKIM cannot be aligned for `jjuanrivvera.com` via personal Gmail.
 - **Data portability**: the subscriber list must be exportable and movable at any time.
 - **Gmail/Yahoo 2026 compliance**: SPF, DKIM, DMARC, and one-click `List-Unsubscribe` are mandatory for any non-trivial sender; missing any of them gets filtered.
 - **Astro/Netlify compatibility**: the site is static. Any subscribe form has to POST to an endpoint reachable from the public internet or from a Netlify Function.
@@ -25,82 +26,89 @@ Let readers subscribe to blog updates by email. When a new post is published, su
 
 ## Options Considered
 
-### Option A — Listmonk (self-hosted) + AWS SES
+### Option A — Listmonk (self-hosted) + Resend SMTP
 
-Listmonk is a Go-based single-binary newsletter platform (`knadh/listmonk`). Runs as one container with Postgres. Sends via SMTP (AWS SES recommended). Exposed publicly at `newsletter.jjuanrivvera.com` so the subscribe form can POST directly to its public subscription API.
+Listmonk is a Go-based single-binary newsletter platform (`knadh/listmonk`). Runs as one container with Postgres. Sends via Resend's SMTP relay. Resend's free tier covers 3,000 emails per month with custom domain + automatic DKIM and SPF setup through their DNS wizard — no Workspace needed.
 
-- Pros: full ownership, Postgres-backed subscriber DB, double opt-in + GDPR + one-click `List-Unsubscribe` built in, multi-list (one per locale), API-first (scriptable), ~57 MB RAM footprint.
-- Cons: upfront setup (~6 hours), SES production-access request (24h wait), DNS records to get right.
-- Monthly cost: ~$0 at 100 subs, ~$0.40 at 1000 subs (SES `$0.10/1000`), ~$10 at 5000 subs.
+- Pros: full ownership of the subscriber list, Postgres-backed, double opt-in + GDPR + one-click `List-Unsubscribe` built in, multi-list (one per locale), $0 incremental cost at expected volume, Resend handles DKIM alignment automatically, modern dev-friendly interface.
+- Cons: Resend free tier caps at 3,000 emails/month (100/day). Past that, $20/mo for 50,000 emails. Resend is US-hosted, so send-time metadata (not the list itself) flows through them.
+- Monthly cost at expected scale (100/1000/5000 subs, 4 sends each): $0 / $0 / $0–$20 depending on volume.
+- Setup cost: ~3h.
 
-### Option B — Listmonk (self-hosted) + Gmail SMTP relay
+### Option B — Listmonk (self-hosted) + Brevo SMTP
 
-Same platform as Option A, but send through Gmail/Google Workspace SMTP instead of a transactional provider. Gmail personal allows ~500 messages/day; Google Workspace allows ~2000/day with the ability to send from a verified alias at the custom domain.
+Same self-hosted platform, different transactional relay. Brevo (formerly SendinBlue) free tier: 300 emails per day (~9,000/month), custom domain with DKIM, EU-hosted.
 
-- Pros: no SES setup, no approval wait, excellent deliverability (Gmail's IPs), DKIM alignment through Workspace, $0 incremental cost if Workspace is already in use.
-- Cons: daily rate limit. Once the list outgrows ~1500 sends in a day, needs a separate transactional provider. Gmail can throttle or suspend if bounce/complaint rates spike.
-- Monthly cost: $0 up to ~45,000 emails/month (1500/day × 30). Past that, switch SMTP host to SES/Brevo/Postmark and restart.
-- Setup cost: under 2h (Listmonk install + Workspace app password + SMTP config).
+- Pros: higher free-tier ceiling than Resend (9k/mo vs 3k/mo), EU data residency, established deliverability.
+- Cons: UI less pleasant than Resend, SMTP setup more paperwork, company is larger and occasionally changes terms.
+- Monthly cost: $0 up to ~300/day. Past that, Starter plan $9/mo for unlimited daily sends up to 5k contacts.
+- Setup cost: ~3h.
 
-### Option C — Buttondown (SaaS)
+### Option C — Listmonk + AWS SES
+
+Send via Amazon SES. $0.10 per 1,000 emails, cheapest at scale.
+
+- Pros: cheapest by far at high volume, battle-tested deliverability.
+- Cons: 24h production-access wait, DNS verification is fiddly, sandbox-by-default. Not worth the friction for a blog at starting volume.
+- Monthly cost: ~$0 at 100 subs, ~$0.40 at 1000 subs, ~$10 at 5000 subs (with 4 sends each).
+- Setup cost: ~6h (plus 24h SES sandbox wait).
+
+**Recommended as upgrade path** from A or B when list outgrows their free tiers.
+
+### Option D — Buttondown (SaaS)
 
 Writer-focused newsletter SaaS. Markdown-native, clean API, active maintenance, straightforward export.
 
 - Pros: zero ops, live in 1–2h, Gmail compliance handled, clean export if migration is ever needed.
-- Cons: $9/month past 100 subs, $29/month at 5000 subs. Subscriber data lives on their servers.
+- Cons: $9/month past 100 subs, $29/month at 5000 subs. Subscriber data lives on their servers. Goes against the self-host-first preference.
 - Monthly cost: $0 → $9 → $29 across 100/1000/5000 subs.
 
-### Option D — Cloudflare-based stack
+### Option E — Cloudflare-based stack (supporting role, not main)
 
-Cloudflare is infrastructure, not a newsletter platform. Worth evaluating because it can play a supporting role:
+Cloudflare is infrastructure, not a newsletter platform. Role is complementary to whatever option is chosen:
 
 - **Cloudflare Email Routing** (free): inbound only. Receives mail to `anything@jjuanrivvera.com` and forwards to another address. Useful for DMARC aggregate reports, subscriber replies, and bounces. Cannot send.
-- **Cloudflare Workers Send Email binding**: can send transactional email but restricted to verified destination addresses per zone. Designed for password resets and similar, not bulk newsletter campaigns.
-- **Cloudflare Workers + Resend** (or Postmark/SES) **+ D1/KV**: a fully custom newsletter built on Workers, storing subscribers in D1 (SQLite), sending through a third-party transactional API. Achievable but reimplements Listmonk poorly.
+- **Cloudflare Workers Send Email binding**: can send transactional email but restricted to verified destination addresses per zone. Designed for password resets, not bulk newsletter campaigns.
+- **Cloudflare Workers + Resend + D1/KV**: a fully custom newsletter built on Workers, storing subscribers in D1 (SQLite), sending through Resend. Achievable but reimplements Listmonk poorly.
 
-Verdict: Cloudflare does not replace a newsletter platform for outbound bulk. It **does** add value in the stack as:
+Verdict: Cloudflare adds value as Email Routing for DMARC reports and Turnstile for bot protection on the subscribe form. Not a replacement for a newsletter platform.
 
-- Inbound mail handling for DMARC reports and bounce catching (free).
-- Turnstile widget on the subscribe form to stop bot signups (free).
-- Optional alternative compute layer if the site ever leaves Netlify.
-
-Cloudflare's role here is complementary to whatever option is chosen, not a replacement.
-
-### Option E — n8n workflow + subscriber database + SMTP relay
+### Option F — n8n workflow + subscriber database + SMTP relay
 
 Custom workflow using existing automation components: webhook → state machine → MySQL → n8n email node.
 
 - Pros: reuses existing automation stack.
-- Cons: ~15 hours to build all edge cases (double opt-in tokens, unsubscribe URLs, bounce handling, `List-Unsubscribe` header, template rendering, multi-language). High ongoing maintenance burden. Every bug risks Gmail spam reputation.
-- Monthly cost: near $0, but real cost is engineering time.
+- Cons: ~15 hours to build all edge cases (double opt-in tokens, unsubscribe URLs, bounce handling, `List-Unsubscribe` header, template rendering, multi-language). High ongoing maintenance burden. Every bug risks spam reputation.
+- Monthly cost: near $0, but the real cost is engineering time.
 
-### Option F — Netlify Forms only
+### Option G — Netlify Forms only
 
 Netlify's built-in form handling (100 submissions/month free, $19/mo past that) to collect emails, then manual CSV export to send campaigns with another tool.
 
 - Pros: near-zero setup.
-- Cons: no double opt-in, no `List-Unsubscribe`, no campaign sending. Export then use another tool anyway. Gmail will flag as soon as volume grows.
+- Cons: no double opt-in, no `List-Unsubscribe`, no campaign sending. Export then use another tool anyway.
 
 ## Recommendation
 
-**Option B — Listmonk self-hosted, sending through Gmail/Workspace SMTP, with a documented upgrade path to AWS SES.**
+**Option A — Listmonk self-hosted + Resend SMTP.**
 
 Reasoning:
 
 - Listmonk covers every required feature: double opt-in, per-locale lists, one-click `List-Unsubscribe`, GDPR-grade data handling, public subscription API, campaign composer.
-- Gmail/Workspace SMTP reaches the 2026 deliverability bar without extra work because DKIM, SPF, and IP reputation are already handled by Google.
-- $0 incremental cost at realistic starting volumes.
-- Setup time is the shortest of the self-hosted options (no SES approval wait).
-- When the list outgrows Workspace's daily limit, migration to SES is a one-line SMTP host change in Listmonk — no architectural rework.
-- Cloudflare plays a complementary role: Email Routing for DMARC reports and bounce capture, Turnstile on the subscribe form for bot protection. Both free.
+- Resend's free tier covers 3,000 emails/month with custom domain support and automatic DKIM/SPF through their DNS wizard. No Workspace required, no 24h approval wait, no sandbox.
+- $0 incremental cost at starting volume. At 1,000 subscribers × 4 sends/month (~4,000 emails), Resend's $20/mo Starter covers it, or we move to Option B (Brevo, 9k/mo free) or Option C (AWS SES, ~$0.40/mo at that volume).
+- Migration between SMTP providers is a one-line change in Listmonk config. No architectural rework when the list grows.
+- Cloudflare plays a complementary role: Email Routing for DMARC reports and Turnstile on the subscribe form. Both free.
 
-Why not Option A (SES from day one): the SES production-access request is a blocking 24h wait and adds DNS/verification work that isn't needed at starting volume. Defer it to when list size justifies it.
+Why not Option B (Brevo) as primary: Resend's UX is better and their free tier, while smaller (3k vs 9k/mo), is more than enough for the first year. Brevo stays as a documented fallback if Resend's pricing or policies change.
 
-Why not Option C (Buttondown): good SaaS, but $108/year starting at 100 subs and subscriber data residency outside of direct control.
+Why not Option C (SES) from day one: the 24h sandbox approval wait plus DNS verification friction isn't worth it at starting volume. Resend gives the same deliverability with zero setup friction.
 
-Why not Option E (n8n homebrew): Gmail's November 2025 enforcement punishes amateur implementations. The maintenance burden outweighs Listmonk's install cost.
+Why not Option D (Buttondown): $108/year at 100 subs, subscriber data outside direct control. The blog's positioning on self-hosted tooling would be undermined by a SaaS newsletter.
 
-Why not Option F (Netlify Forms only): not a newsletter, just a form collector.
+Why not Option F (n8n homebrew): the maintenance burden outweighs Listmonk's install cost. Gmail's November 2025 enforcement punishes amateur implementations.
+
+Why not Option G (Netlify Forms only): not a newsletter, just a form collector.
 
 ## Architecture Overview
 
@@ -119,43 +127,50 @@ Why not Option F (Netlify Forms only): not a newsletter, just a form collector.
   - Double opt-in enabled per list
   - One-click List-Unsubscribe header on all campaigns
           │
-          │  SMTP  (smtp.gmail.com:587, app password)
+          │  SMTP  (smtp.resend.com:465, API key as SMTP password)
           ▼
-[ Gmail / Google Workspace ]
-  - From: juan@jjuanrivvera.com  (Workspace alias) or jjuanrivvera@gmail.com (personal)
-  - Hard cap: 2000/day (Workspace), 500/day (personal)
+[ Resend ]
+  - From: hello@jjuanrivvera.com  (verified via DNS, DKIM auto-aligned)
+  - 3,000 emails/month free
+  - $20/mo at 50k emails (upgrade trigger)
 
 Cloudflare (complementary):
   - Email Routing: DMARC aggregate reports + bounce capture -> Gmail
-  - Turnstile widget on subscribe form
+  - Turnstile widget on subscribe form (anti-bot)
 ```
 
 ## DNS Setup
 
+With Resend as the sender, the DNS records are generated in their dashboard. The typical shape:
+
 ```
-SPF:    v=spf1 include:_spf.google.com ~all
-DKIM:   managed by Google Workspace (enable in admin console, publish CNAMEs)
-DMARC:  v=DMARC1; p=none; rua=mailto:dmarc@jjuanrivvera.com
-List-Unsubscribe: handled by Listmonk on every campaign send
+SPF:    v=spf1 include:_spf.mx.cloudflare.net include:amazonses.com ~all
+        (merge with existing CF Email Routing SPF; Resend uses Amazon SES under the hood for delivery)
+DKIM:   resend._domainkey                          TXT   (generated by Resend dashboard)
+DMARC:  _dmarc.jjuanrivvera.com                    TXT   "v=DMARC1; p=none; rua=mailto:dmarc@jjuanrivvera.com"
+MX (inbound only — already set for CF Email Routing):
+        isaac.mx.cloudflare.net, amir.mx.cloudflare.net, linda.mx.cloudflare.net
 ```
 
 Tighten DMARC to `p=quarantine` after 2 weeks of clean aggregate reports, `p=reject` after 6 weeks.
 
 ## Implementation Phases
 
-### Phase 1 — DNS + Gmail/Workspace setup (~1h)
+### Phase 1 — Resend signup + DNS (~1h)
 
-1. Add SPF record including Google's relay: `v=spf1 include:_spf.google.com ~all`.
-2. Enable DKIM signing for the domain in Google Workspace admin (or skip if using personal Gmail and accept that From must be `@gmail.com`).
-3. Add DMARC record at `p=none` with an aggregate report address.
-4. Configure Cloudflare Email Routing to forward `dmarc@jjuanrivvera.com` (and any bounce catch-all) to a personal inbox.
-5. Generate a Gmail app password for the sending account (requires 2FA).
+1. Sign up at resend.com with `jjuanrivvera@gmail.com`.
+2. Add `jjuanrivvera.com` as a verified domain in their dashboard.
+3. Copy the DKIM CNAME records they generate into the Cloudflare zone (via the `cf-cli` skill).
+4. Merge the SPF record to add `include:amazonses.com` alongside the existing `_spf.mx.cloudflare.net`.
+5. Add DMARC `_dmarc` TXT at `p=none` with aggregate report address.
+6. Create a Cloudflare Email Routing rule to capture `dmarc@jjuanrivvera.com` and forward to Gmail.
+7. Generate a Resend API key for Listmonk (scoped to "send only").
 
 ### Phase 2 — Listmonk deploy (~1.5h)
 
-1. Docker Compose (Postgres + Listmonk). Single host deployment behind the existing reverse proxy.
-2. Expose at `newsletter.jjuanrivvera.com` with SSL. Basic auth on `/admin` at the proxy layer.
-3. Configure SMTP in Listmonk → smtp.gmail.com:587 with the app password from Phase 1.
+1. Docker Compose on the VPS (Postgres + Listmonk binary container).
+2. Expose at `newsletter.jjuanrivvera.com` via the reverse proxy with SSL and basic auth on `/admin`.
+3. Configure SMTP in Listmonk → `smtp.resend.com:465` with `resend` as username and the API key as password.
 4. Create three lists (`en-newsletter`, `es-newsletter`, `pt-newsletter`), all double-opt-in.
 5. Customize default templates with site branding and multi-language copy.
 6. Enable the one-click `List-Unsubscribe` header.
@@ -171,9 +186,10 @@ Tighten DMARC to `p=quarantine` after 2 weeks of clean aggregate reports, `p=rej
 
 ### Phase 4 — Content workflow (~1h)
 
-1. Automation: on new blog post (GitHub webhook on merged PR or build webhook from Astro), call `POST /api/campaigns` on Listmonk to draft a campaign in the right language.
-2. Does **not** auto-send — requires manual confirmation in the Listmonk admin to avoid accidental broadcasts.
-3. RSS feed already exists; use it as the source of truth for post metadata.
+1. Automation: triggered by the Astro build webhook or a GitHub webhook on merged blog PR.
+2. Fetches the new post metadata (title, excerpt, URL, language).
+3. Calls `POST /api/campaigns` on Listmonk to draft a campaign in the matching language.
+4. Does **not** auto-send — requires manual confirmation in the Listmonk admin to avoid accidental broadcasts.
 
 ### Phase 5 — Hardening (~30 min, 6 weeks out)
 
@@ -181,24 +197,24 @@ Tighten DMARC to `p=quarantine` after 2 weeks of clean aggregate reports, `p=rej
 2. Move DMARC to `p=quarantine`.
 3. After six weeks of clean traffic, move DMARC to `p=reject`.
 4. Run `mail-tester.com` — target 10/10.
-5. If list volume is approaching Workspace's daily limit, file AWS SES production access request now (24h wait) so the upgrade path is ready.
-6. Document the runbook in `docs/runbooks/newsletter.md`.
+5. Document the runbook in `docs/runbooks/newsletter.md`.
 
-### Phase 6 (future, when needed) — Upgrade to SES
+### Phase 6 (future, when needed) — Upgrade path
 
-1. Verify domain in SES (`us-east-1`), add DKIM CNAMEs.
-2. Request SES production access.
-3. Update Listmonk SMTP host/port/credentials → `email-smtp.us-east-1.amazonaws.com:587` with SES SMTP credentials.
-4. No other changes required.
+If monthly volume crosses ~50,000 emails:
 
-Total active work for Phases 1–5: ~6h spread across a focused afternoon and a maintenance window.
+- **Option A**: move SMTP to Brevo (stays free at 300/day, ~9k/mo). One-line config change.
+- **Option B**: move SMTP to AWS SES ($0.10/1000, verified domain DKIM). File production-access request, update SMTP host.
+- No other changes required.
+
+Total active work for Phases 1–5: ~5.5h spread across a focused afternoon.
 
 ## Open Questions
 
-- **Personal Gmail vs Google Workspace as sender.** Workspace lets the `From` be `juan@jjuanrivvera.com` (professional, matches domain). Personal Gmail forces `From: jjuanrivvera@gmail.com` which reads as less polished for a custom-domain blog. If Workspace is already in use, use it. If not, either accept the personal-Gmail appearance for v1 or jump to SES directly.
+- **`From` address.** Options: `hello@jjuanrivvera.com`, `juan@jjuanrivvera.com`, `newsletter@jjuanrivvera.com`. Preference leans `juan@` (personal, matches blog voice) unless Resend flags it for being a single-sender address.
 - **Campaign cadence.** Per new post or a weekly/monthly digest. Initial lean: per-post given low publishing frequency; revisit if output increases.
 - **Welcome email style.** One generic per-language template, or a teaser of the latest post in that language. Initial lean: simple welcome with a pointer to the latest post.
-- **List segmentation.** Three language lists cover the main split. No further segmentation at v1.
+- **Bot protection widget.** Turnstile on the form from day one, or defer until spam signups appear. Low-cost to add early.
 
 ## Out of Scope (for this PR)
 
@@ -209,14 +225,14 @@ Total active work for Phases 1–5: ~6h spread across a focused afternoon and a 
 
 ## Risks and Mitigations
 
-| Risk                                     | Mitigation                                                                                                                                                                              |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Gmail/Workspace throttling or suspension | Low bounce rate discipline (double opt-in + automatic hard-bounce unsubscribe). Monitor complaint rate. SES upgrade path ready if issues surface.                                       |
-| DNS misconfig (DKIM/SPF)                 | Validate with `mail-tester.com` before announcing the newsletter. Any score under 9/10 delays the launch.                                                                               |
-| Host outage                              | Postgres daily backups. Listmonk subscriber CSV export weekly to a separate storage destination.                                                                                        |
-| Subscriber list leak                     | Basic auth on `/admin` at the proxy layer. API key in environment variable (not in git). Only `/api/public/subscription` is reachable without auth, and it is rate-limited by Listmonk. |
-| Compliance regression                    | DMARC staged rollout (`p=none` → `p=quarantine` → `p=reject`). Monitor aggregate reports before tightening.                                                                             |
-| Bot-spam signups                         | Listmonk's built-in rate limiting + Turnstile widget on the subscribe form.                                                                                                             |
+| Risk                                        | Mitigation                                                                                                                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resend pricing changes or free tier shrinks | SMTP host is a one-line change. Fall back to Brevo, AWS SES, or self-hosted Postfix.                                                                                                    |
+| DNS misconfig (DKIM/SPF)                    | Validate with `mail-tester.com` before announcing the newsletter. Any score under 9/10 delays the launch.                                                                               |
+| Host outage                                 | Postgres daily backups. Listmonk subscriber CSV export weekly to a separate storage destination.                                                                                        |
+| Subscriber list leak                        | Basic auth on `/admin` at the proxy layer. API key in environment variable (not in git). Only `/api/public/subscription` is reachable without auth, and it is rate-limited by Listmonk. |
+| Compliance regression                       | DMARC staged rollout (`p=none` → `p=quarantine` → `p=reject`). Monitor aggregate reports before tightening.                                                                             |
+| Bot-spam signups                            | Listmonk's built-in rate limiting + Turnstile widget on the subscribe form.                                                                                                             |
 
 ## Success Criteria
 
@@ -224,20 +240,21 @@ Total active work for Phases 1–5: ~6h spread across a focused afternoon and a 
 - Confirmed subscribers receive the next post automatically after a manual send confirmation from the admin.
 - `mail-tester.com` score 9/10 or higher.
 - Unsubscribe works in one click from any email client, including Gmail's built-in unsubscribe button.
-- Zero subscriber data leaves self-hosted infrastructure except the chosen SMTP relay (send only, transactional, no retention of content by the relay).
+- Zero subscriber data leaves self-hosted infrastructure except the chosen SMTP relay (send only, transactional, no list retention by the relay).
 
 ## Decision Requested
 
-Approve Option B (Listmonk + Gmail/Workspace SMTP, SES deferred as upgrade path) as the direction, or call out a constraint that rules it out. If approved, this doc breaks down into per-phase tasks and Phase 1 (DNS + Workspace setup) starts first.
+Approve Option A as the direction, or call out a constraint that rules it out. If approved, this doc breaks down into per-phase tasks and Phase 1 (Resend signup + DNS) starts first.
 
 ## References
 
 - [Listmonk docs](https://listmonk.app/docs/)
 - [Listmonk GitHub (knadh/listmonk)](https://github.com/knadh/listmonk)
-- [Gmail bulk sender requirements](https://support.google.com/a/answer/14229414)
-- [Google Workspace SMTP relay settings](https://support.google.com/a/answer/176600)
+- [Resend docs](https://resend.com/docs)
+- [Resend pricing](https://resend.com/pricing)
+- [Brevo pricing](https://www.brevo.com/pricing/)
 - [AWS SES production access docs](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html)
+- [Gmail bulk sender requirements](https://support.google.com/a/answer/14229414)
 - [Astro Netlify adapter docs](https://docs.astro.build/en/guides/integrations-guide/netlify/)
 - [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/)
-- [Cloudflare Workers Send Email binding](https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/)
 - [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)

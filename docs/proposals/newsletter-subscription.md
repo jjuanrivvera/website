@@ -1,193 +1,243 @@
 # Proposal: Newsletter Subscription
 
 **Status**: Draft
-**Author**: Juan Felipe Rivera
 **Date**: 2026-04-20
 **Target**: `main`
 
 ## Goal
 
-Let readers subscribe to blog updates by email. When a new post is published, subscribers get an email in their preferred language. Comply with GDPR and the Gmail/Yahoo 2026 bulk-sender rules. Own the subscriber list.
+Let readers subscribe to blog updates by email. When a new post is published, subscribers get an email in their preferred language. Comply with GDPR and the Gmail/Yahoo 2026 bulk-sender rules. Keep full control of the subscriber list so it is portable at any time.
 
-## Current Architecture
+## Architecture Context
 
-- Astro static site, i18n (`en`, `es`, `pt`), deployed on Netlify
-- Multi-language blog under `/blog`, `/es/blog`, `/pt/blog`
-- Homelab for backend: Raspberry Pi 4B (8GB RAM, 2TB storage, Docker, Mosquitto, n8n, Home Assistant, Nginx Proxy Manager)
-- VPS (Contabo, 48GB RAM, 240GB NVMe, x86_64, Ubuntu 22.04) on Tailscale
-- Public subdomains routed via NPM on Pi (`*.jjuanrivvera.com`)
+- Astro static site with i18n (`en`, `es`, `pt`), deployed on Netlify.
+- Multi-language blog under `/blog`, `/es/blog`, `/pt/blog`.
+- Small self-hosted backend reachable over a private mesh network, with selected services exposed publicly through a reverse proxy under `*.jjuanrivvera.com` with SSL.
 
 ## Constraints
 
-- **Local-first preference** over SaaS where the cost-quality tradeoff is reasonable
-- **Cost-conscious**: pick paths with near-zero monthly cost at 100–1000 subscribers
-- **Data ownership**: subscriber list must be exportable and movable at any time
-- **Gmail/Yahoo 2026 compliance**: SPF, DKIM, DMARC, one-click `List-Unsubscribe` header are mandatory for any non-trivial sender, strongly filtered if missing
-- **Astro/Netlify compatibility**: the site is static; any subscribe form has to POST somewhere reachable from the browser or from a Netlify Function
-- **Critical technical constraint**: Netlify Functions run on AWS Lambda and cannot reach Tailscale-only backends. Any self-hosted newsletter backend must be publicly addressable (via NPM with SSL) or fronted by a SaaS tier
+- **Self-host-first** when the tradeoff is reasonable.
+- **Low monthly cost** at 100–1000 subscribers.
+- **Data portability**: the subscriber list must be exportable and movable at any time.
+- **Gmail/Yahoo 2026 compliance**: SPF, DKIM, DMARC, and one-click `List-Unsubscribe` are mandatory for any non-trivial sender; missing any of them gets filtered.
+- **Astro/Netlify compatibility**: the site is static. Any subscribe form has to POST to an endpoint reachable from the public internet or from a Netlify Function.
+- **Critical technical constraint**: Netlify Functions run on AWS Lambda. They cannot reach private mesh networks. Any self-hosted backend must be publicly addressable (via the existing reverse proxy) or fronted by a SaaS tier.
 
 ## Options Considered
 
-### Option A — Self-hosted Listmonk on VPS + AWS SES + NPM
+### Option A — Listmonk (self-hosted) + AWS SES
 
-Listmonk is a Go-based single-binary newsletter platform (active, `knadh/listmonk`). Runs in one container with Postgres. Sends via SMTP (AWS SES recommended). Exposed publicly at `newsletter.jjuanrivvera.com` via NPM with SSL so the Astro subscribe form can POST directly to its public subscription API.
+Listmonk is a Go-based single-binary newsletter platform (`knadh/listmonk`). Runs as one container with Postgres. Sends via SMTP (AWS SES recommended). Exposed publicly at `newsletter.jjuanrivvera.com` so the subscribe form can POST directly to its public subscription API.
 
-- Pros: full ownership, Postgres-backed subscriber DB, double opt-in + GDPR + one-click `List-Unsubscribe` built in, multi-list (one per locale), API-first (scriptable from n8n), ~57 MB RAM footprint
-- Cons: upfront setup (~6 hours), SES production-access request (24h wait), DNS records to get right
-- Monthly cost: ~$0 at 100 subs, ~$0.40 at 1000 subs (SES `$0.10/1000`), ~$10 at 5000 subs
+- Pros: full ownership, Postgres-backed subscriber DB, double opt-in + GDPR + one-click `List-Unsubscribe` built in, multi-list (one per locale), API-first (scriptable), ~57 MB RAM footprint.
+- Cons: upfront setup (~6 hours), SES production-access request (24h wait), DNS records to get right.
+- Monthly cost: ~$0 at 100 subs, ~$0.40 at 1000 subs (SES `$0.10/1000`), ~$10 at 5000 subs.
 
-### Option B — Buttondown (SaaS)
+### Option B — Listmonk (self-hosted) + Gmail SMTP relay
 
-Writer-focused newsletter SaaS. Markdown-native, clean API, responsive founder, easy CSV export.
+Same platform as Option A, but send through Gmail/Google Workspace SMTP instead of a transactional provider. Gmail personal allows ~500 messages/day; Google Workspace allows ~2000/day with the ability to send from a verified alias at the custom domain.
 
-- Pros: zero ops, live in 1–2 hours, Gmail compliance handled, clean export path if migration needed later
-- Cons: $9/month past 100 subs, $29/month at 5000 subs, subscriber data lives on their servers
-- Monthly cost: $0 → $9 → $29 across 100/1000/5000 subs
+- Pros: no SES setup, no approval wait, excellent deliverability (Gmail's IPs), DKIM alignment through Workspace, $0 incremental cost if Workspace is already in use.
+- Cons: daily rate limit. Once the list outgrows ~1500 sends in a day, needs a separate transactional provider. Gmail can throttle or suspend if bounce/complaint rates spike.
+- Monthly cost: $0 up to ~45,000 emails/month (1500/day × 30). Past that, switch SMTP host to SES/Brevo/Postmark and restart.
+- Setup cost: under 2h (Listmonk install + Workspace app password + SMTP config).
 
-### Option C — n8n workflow + MySQL on Pi + SMTP relay
+### Option C — Buttondown (SaaS)
 
-Custom workflow using existing homelab components: webhook into n8n, subscriber state machine in MySQL, transactional email via Brevo or SES.
+Writer-focused newsletter SaaS. Markdown-native, clean API, active maintenance, straightforward export.
 
-- Pros: reuses existing stack, deep integration with site automations possible
-- Cons: ~15 hours to build all edge cases (double opt-in, unsubscribe tokens, bounce handling, `List-Unsubscribe` header, template rendering), high ongoing maintenance burden, every bug risks Gmail spam reputation
-- Monthly cost: near $0, but the real cost is engineering time both upfront and recurring
+- Pros: zero ops, live in 1–2h, Gmail compliance handled, clean export if migration is ever needed.
+- Cons: $9/month past 100 subs, $29/month at 5000 subs. Subscriber data lives on their servers.
+- Monthly cost: $0 → $9 → $29 across 100/1000/5000 subs.
 
-### Option D — Netlify Forms only
+### Option D — Cloudflare-based stack
 
-Netlify's built-in form handling (100 submissions/month free, $19/mo past that) to collect emails, then manual CSV export to send campaigns.
+Cloudflare is infrastructure, not a newsletter platform. Worth evaluating because it can play a supporting role:
 
-- Pros: near-zero setup
-- Cons: no double opt-in, no `List-Unsubscribe`, no campaign sending (export and use another tool anyway), Gmail will flag this as soon as volume grows
+- **Cloudflare Email Routing** (free): inbound only. Receives mail to `anything@jjuanrivvera.com` and forwards to another address. Useful for DMARC aggregate reports, subscriber replies, and bounces. Cannot send.
+- **Cloudflare Workers Send Email binding**: can send transactional email but restricted to verified destination addresses per zone. Designed for password resets and similar, not bulk newsletter campaigns.
+- **Cloudflare Workers + Resend** (or Postmark/SES) **+ D1/KV**: a fully custom newsletter built on Workers, storing subscribers in D1 (SQLite), sending through a third-party transactional API. Achievable but reimplements Listmonk poorly.
+
+Verdict: Cloudflare does not replace a newsletter platform for outbound bulk. It **does** add value in the stack as:
+
+- Inbound mail handling for DMARC reports and bounce catching (free).
+- Turnstile widget on the subscribe form to stop bot signups (free).
+- Optional alternative compute layer if the site ever leaves Netlify.
+
+Cloudflare's role here is complementary to whatever option is chosen, not a replacement.
+
+### Option E — n8n workflow + subscriber database + SMTP relay
+
+Custom workflow using existing automation components: webhook → state machine → MySQL → n8n email node.
+
+- Pros: reuses existing automation stack.
+- Cons: ~15 hours to build all edge cases (double opt-in tokens, unsubscribe URLs, bounce handling, `List-Unsubscribe` header, template rendering, multi-language). High ongoing maintenance burden. Every bug risks Gmail spam reputation.
+- Monthly cost: near $0, but real cost is engineering time.
+
+### Option F — Netlify Forms only
+
+Netlify's built-in form handling (100 submissions/month free, $19/mo past that) to collect emails, then manual CSV export to send campaigns with another tool.
+
+- Pros: near-zero setup.
+- Cons: no double opt-in, no `List-Unsubscribe`, no campaign sending. Export then use another tool anyway. Gmail will flag as soon as volume grows.
 
 ## Recommendation
 
-**Option A: Listmonk on the VPS, fronted by NPM at `newsletter.jjuanrivvera.com`, sending through AWS SES.**
+**Option B — Listmonk self-hosted, sending through Gmail/Workspace SMTP, with a documented upgrade path to AWS SES.**
 
-Why this over Buttondown: the blog is partly _about_ owning the homelab and building things locally. Shipping a SaaS-backed newsletter undermines that positioning for readers of the Context Engineering and CLIs-over-MCPs posts. Cost at 5000 subs is ~$10 self-hosted vs $29 SaaS, and at 1000 subs the self-hosted path is essentially free.
+Reasoning:
 
-Why not n8n-homebrew: Gmail's November 2025 enforcement punishes amateur implementations. The 15+ hours to build the subscription state machine, unsubscribe token flow, bounce parser, and `List-Unsubscribe` header all correctly — plus the ongoing reputation risk — outweigh Listmonk's install cost. n8n still has a role here: scheduled triggers that call the Listmonk API (e.g., "RSS feed update → draft a campaign in Listmonk").
+- Listmonk covers every required feature: double opt-in, per-locale lists, one-click `List-Unsubscribe`, GDPR-grade data handling, public subscription API, campaign composer.
+- Gmail/Workspace SMTP reaches the 2026 deliverability bar without extra work because DKIM, SPF, and IP reputation are already handled by Google.
+- $0 incremental cost at realistic starting volumes.
+- Setup time is the shortest of the self-hosted options (no SES approval wait).
+- When the list outgrows Workspace's daily limit, migration to SES is a one-line SMTP host change in Listmonk — no architectural rework.
+- Cloudflare plays a complementary role: Email Routing for DMARC reports and bounce capture, Turnstile on the subscribe form for bot protection. Both free.
 
-Why not Netlify Forms: not a newsletter, just a form. Still requires a separate sender tool to send campaigns.
+Why not Option A (SES from day one): the SES production-access request is a blocking 24h wait and adds DNS/verification work that isn't needed at starting volume. Defer it to when list size justifies it.
+
+Why not Option C (Buttondown): good SaaS, but $108/year starting at 100 subs and subscriber data residency outside of direct control.
+
+Why not Option E (n8n homebrew): Gmail's November 2025 enforcement punishes amateur implementations. The maintenance burden outweighs Listmonk's install cost.
+
+Why not Option F (Netlify Forms only): not a newsletter, just a form collector.
 
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Astro site on Netlify (jjuanrivvera.com)                │
-│ - Subscribe component in blog post layouts + footer     │
-│ - Form POST → Astro endpoint (Netlify Functions adapter)│
-└─────────────────────────────────────────────────────────┘
-                       │ HTTPS POST
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│ newsletter.jjuanrivvera.com (public)                    │
-│ - NPM on Pi, SSL via Let's Encrypt                      │
-│ - /api/public/subscription (rate-limited by Listmonk)   │
-│ - /admin (basic auth at NPM layer)                      │
-└─────────────────────────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│ Listmonk container (VPS or Pi, Docker Compose)          │
-│ - Postgres 16 for subscribers                           │
-│ - 3 lists: en-newsletter, es-newsletter, pt-newsletter  │
-│ - Double opt-in enabled per list                        │
-│ - One-click List-Unsubscribe header on all campaigns    │
-└─────────────────────────────────────────────────────────┘
-                       │ SMTP
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│ AWS SES (us-east-1)                                     │
-│ - DKIM, SPF, DMARC aligned for jjuanrivvera.com         │
-│ - $0.10 per 1000 emails                                 │
-└─────────────────────────────────────────────────────────┘
+[ Astro site on Netlify ]
+          │
+          │  HTTPS POST  (via a Netlify Function or Astro server endpoint)
+          ▼
+[ newsletter.jjuanrivvera.com  (public, SSL via reverse proxy) ]
+  - /api/public/subscription   (rate-limited by Listmonk)
+  - /admin                     (basic auth at proxy layer)
+          │
+          ▼
+[ Listmonk container + Postgres ]
+  - 3 lists: en-newsletter, es-newsletter, pt-newsletter
+  - Double opt-in enabled per list
+  - One-click List-Unsubscribe header on all campaigns
+          │
+          │  SMTP  (smtp.gmail.com:587, app password)
+          ▼
+[ Gmail / Google Workspace ]
+  - From: juan@jjuanrivvera.com  (Workspace alias) or jjuanrivvera@gmail.com (personal)
+  - Hard cap: 2000/day (Workspace), 500/day (personal)
+
+Cloudflare (complementary):
+  - Email Routing: DMARC aggregate reports + bounce capture -> Gmail
+  - Turnstile widget on subscribe form
 ```
+
+## DNS Setup
+
+```
+SPF:    v=spf1 include:_spf.google.com ~all
+DKIM:   managed by Google Workspace (enable in admin console, publish CNAMEs)
+DMARC:  v=DMARC1; p=none; rua=mailto:dmarc@jjuanrivvera.com
+List-Unsubscribe: handled by Listmonk on every campaign send
+```
+
+Tighten DMARC to `p=quarantine` after 2 weeks of clean aggregate reports, `p=reject` after 6 weeks.
 
 ## Implementation Phases
 
-### Phase 1 — DNS and SES foundation (~1.5h active + 24h SES approval wait)
+### Phase 1 — DNS + Gmail/Workspace setup (~1h)
 
-1. Add SPF record: `v=spf1 include:amazonses.com -all`
-2. Add DMARC record at `p=none` initially: `v=DMARC1; p=none; rua=mailto:dmarc@jjuanrivvera.com`
-3. Create AWS account (if not already), verify `jjuanrivvera.com` in SES (`us-east-1`), add the three DKIM CNAMEs SES generates
-4. Send a test email from the SES sandbox to a verified personal address
-5. File the SES production access request with honest description: personal tech blog, transactional + opt-in newsletter, <1000/day, double opt-in enforced, one-click unsubscribe
+1. Add SPF record including Google's relay: `v=spf1 include:_spf.google.com ~all`.
+2. Enable DKIM signing for the domain in Google Workspace admin (or skip if using personal Gmail and accept that From must be `@gmail.com`).
+3. Add DMARC record at `p=none` with an aggregate report address.
+4. Configure Cloudflare Email Routing to forward `dmarc@jjuanrivvera.com` (and any bounce catch-all) to a personal inbox.
+5. Generate a Gmail app password for the sending account (requires 2FA).
 
 ### Phase 2 — Listmonk deploy (~1.5h)
 
-1. Docker Compose on the VPS (Postgres 16 + Listmonk binary container)
-2. Expose at `newsletter.jjuanrivvera.com` via NPM with SSL, basic auth on `/admin`
-3. Configure SMTP settings pointing at SES
-4. Create three lists (en-newsletter, es-newsletter, pt-newsletter), all double-opt-in
-5. Import default templates, customize header/footer with site branding
-6. Enable the one-click `List-Unsubscribe` header in Listmonk settings
+1. Docker Compose (Postgres + Listmonk). Single host deployment behind the existing reverse proxy.
+2. Expose at `newsletter.jjuanrivvera.com` with SSL. Basic auth on `/admin` at the proxy layer.
+3. Configure SMTP in Listmonk → smtp.gmail.com:587 with the app password from Phase 1.
+4. Create three lists (`en-newsletter`, `es-newsletter`, `pt-newsletter`), all double-opt-in.
+5. Customize default templates with site branding and multi-language copy.
+6. Enable the one-click `List-Unsubscribe` header.
 
 ### Phase 3 — Astro integration (~2h)
 
-1. Build a `<SubscribeForm lang={lang} />` component
-2. Place it in blog post layouts (bottom) and site footer
-3. Submit via `fetch` to an Astro server endpoint (Astro 5 server actions or a POST route with the Netlify Functions adapter)
-4. The endpoint proxies to `https://newsletter.jjuanrivvera.com/api/public/subscription` with the Listmonk API key held as a Netlify environment variable (never exposed to the browser)
-5. Language detection from the current locale; submit to the right list automatically
+1. Build a `<SubscribeForm lang={lang} />` component.
+2. Place it in blog post layouts (bottom) and the site footer.
+3. Submit via `fetch` to an Astro server endpoint (Astro 5 server actions or a POST route with the Netlify Functions adapter).
+4. The endpoint proxies to `https://newsletter.jjuanrivvera.com/api/public/subscription`, with the Listmonk API key held as a Netlify environment variable (never exposed to the browser).
+5. Language detection from the current locale; submit to the matching list automatically.
+6. Optional: Cloudflare Turnstile on the form for bot protection.
 
 ### Phase 4 — Content workflow (~1h)
 
-1. n8n workflow: triggered by the Astro build webhook or a GitHub webhook on merged blog PR
-2. Fetches the new post metadata (title, excerpt, URL, language)
-3. Calls `POST /api/campaigns` on Listmonk to draft a campaign in the matching language
-4. Does NOT auto-send — requires manual confirmation in the Listmonk admin to avoid accidental broadcasts
+1. Automation: on new blog post (GitHub webhook on merged PR or build webhook from Astro), call `POST /api/campaigns` on Listmonk to draft a campaign in the right language.
+2. Does **not** auto-send — requires manual confirmation in the Listmonk admin to avoid accidental broadcasts.
+3. RSS feed already exists; use it as the source of truth for post metadata.
 
 ### Phase 5 — Hardening (~30 min, 6 weeks out)
 
-1. Review DMARC `rua` aggregate reports after two weeks of clean traffic
-2. Move DMARC to `p=quarantine`
-3. After six weeks of clean traffic, move DMARC to `p=reject`
-4. Run `mail-tester.com` target 10/10
-5. Document the runbook in `docs/runbooks/newsletter.md`
+1. Review DMARC `rua` aggregate reports after two weeks of clean traffic.
+2. Move DMARC to `p=quarantine`.
+3. After six weeks of clean traffic, move DMARC to `p=reject`.
+4. Run `mail-tester.com` — target 10/10.
+5. If list volume is approaching Workspace's daily limit, file AWS SES production access request now (24h wait) so the upgrade path is ready.
+6. Document the runbook in `docs/runbooks/newsletter.md`.
 
-Total active work: ~6 hours, spread across a focused afternoon with a 24h pause after Phase 1.
+### Phase 6 (future, when needed) — Upgrade to SES
+
+1. Verify domain in SES (`us-east-1`), add DKIM CNAMEs.
+2. Request SES production access.
+3. Update Listmonk SMTP host/port/credentials → `email-smtp.us-east-1.amazonaws.com:587` with SES SMTP credentials.
+4. No other changes required.
+
+Total active work for Phases 1–5: ~6h spread across a focused afternoon and a maintenance window.
 
 ## Open Questions
 
-- **Where does Listmonk live — VPS or Pi?** VPS makes more sense (more RAM/CPU headroom, Listmonk has a tiny footprint but the choice also covers future growth). The Pi already carries Home Assistant, Frigate, n8n, MySQL, and others. Preference: VPS.
-- **Double opt-in welcome email**: one generic per-language template, or a first-post teaser? Preference: simple welcome with a pointer to the latest post in that language.
-- **Campaign cadence**: on every new post, or batched (weekly/monthly digest)? Preference: per-post for now given low publishing frequency; revisit if output increases.
-- **From address**: `newsletter@jjuanrivvera.com` or `juan@jjuanrivvera.com`? Preference: the latter — personal, single-sender — unless Gmail flags it.
+- **Personal Gmail vs Google Workspace as sender.** Workspace lets the `From` be `juan@jjuanrivvera.com` (professional, matches domain). Personal Gmail forces `From: jjuanrivvera@gmail.com` which reads as less polished for a custom-domain blog. If Workspace is already in use, use it. If not, either accept the personal-Gmail appearance for v1 or jump to SES directly.
+- **Campaign cadence.** Per new post or a weekly/monthly digest. Initial lean: per-post given low publishing frequency; revisit if output increases.
+- **Welcome email style.** One generic per-language template, or a teaser of the latest post in that language. Initial lean: simple welcome with a pointer to the latest post.
+- **List segmentation.** Three language lists cover the main split. No further segmentation at v1.
 
 ## Out of Scope (for this PR)
 
-- Newsletter-specific analytics dashboard (Listmonk's built-in is enough for v1)
-- A/B testing of subject lines
-- Subscriber segmentation by topic/tag (i18n lists cover the main split)
-- SMS or push notification channel (not requested)
+- Newsletter-specific analytics dashboard (Listmonk's built-in is enough).
+- A/B testing of subject lines.
+- Subscriber segmentation by topic/tag (i18n lists cover the main split).
+- SMS or push notification channels.
 
 ## Risks and Mitigations
 
-| Risk                     | Mitigation                                                                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| SES sandbox rejection    | Backup path: Brevo SMTP relay (300 emails/day free). Switch SMTP host in Listmonk config — zero architectural change.                                                                |
-| DNS misconfig (DKIM/SPF) | Validate with `mail-tester.com` before announcing the newsletter. Any score under 9/10 delays the launch.                                                                            |
-| VPS outage               | Backups: daily Postgres dump to Pi via rsync. Listmonk subscriber data export (CSV) weekly to Google Drive via n8n.                                                                  |
-| Subscriber list leak     | Basic auth on `/admin` at NPM layer, API key stored in Netlify env vars (not in git), no public write endpoints except `/api/public/subscription` which is rate-limited by Listmonk. |
-| Compliance regression    | `p=none` → `p=quarantine` → `p=reject` staged rollout; monitor DMARC aggregate reports before tightening.                                                                            |
+| Risk                                     | Mitigation                                                                                                                                                                              |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gmail/Workspace throttling or suspension | Low bounce rate discipline (double opt-in + automatic hard-bounce unsubscribe). Monitor complaint rate. SES upgrade path ready if issues surface.                                       |
+| DNS misconfig (DKIM/SPF)                 | Validate with `mail-tester.com` before announcing the newsletter. Any score under 9/10 delays the launch.                                                                               |
+| Host outage                              | Postgres daily backups. Listmonk subscriber CSV export weekly to a separate storage destination.                                                                                        |
+| Subscriber list leak                     | Basic auth on `/admin` at the proxy layer. API key in environment variable (not in git). Only `/api/public/subscription` is reachable without auth, and it is rate-limited by Listmonk. |
+| Compliance regression                    | DMARC staged rollout (`p=none` → `p=quarantine` → `p=reject`). Monitor aggregate reports before tightening.                                                                             |
+| Bot-spam signups                         | Listmonk's built-in rate limiting + Turnstile widget on the subscribe form.                                                                                                             |
 
 ## Success Criteria
 
-- A reader on any `/blog/*` page can enter their email, pick implied-by-locale language, and receive a double opt-in email within 30 seconds
-- Confirmed subscribers receive the next post automatically (after manual send confirmation from admin)
-- `mail-tester.com` score 9/10 or higher
-- Unsubscribe works in one click from any email client, including Gmail's built-in unsubscribe button
-- Zero subscriber data leaves self-hosted infrastructure except SES (transactional send only)
+- A reader on any `/blog/*` page can enter their email, pick (implied by locale) language, and receive a double opt-in email within 30 seconds.
+- Confirmed subscribers receive the next post automatically after a manual send confirmation from the admin.
+- `mail-tester.com` score 9/10 or higher.
+- Unsubscribe works in one click from any email client, including Gmail's built-in unsubscribe button.
+- Zero subscriber data leaves self-hosted infrastructure except the chosen SMTP relay (send only, transactional, no retention of content by the relay).
 
 ## Decision Requested
 
-Approve Option A as the direction, or call out a constraint that rules it out. If approved, I'll break this doc into sub-issues (one per phase) and start Phase 1 (DNS + SES verification) since it has a 24h blocking wait on AWS.
+Approve Option B (Listmonk + Gmail/Workspace SMTP, SES deferred as upgrade path) as the direction, or call out a constraint that rules it out. If approved, this doc breaks down into per-phase tasks and Phase 1 (DNS + Workspace setup) starts first.
 
 ## References
 
-- [Listmonk docs — concepts, double opt-in, GDPR](https://listmonk.app/docs/concepts/)
+- [Listmonk docs](https://listmonk.app/docs/)
 - [Listmonk GitHub (knadh/listmonk)](https://github.com/knadh/listmonk)
+- [Gmail bulk sender requirements](https://support.google.com/a/answer/14229414)
+- [Google Workspace SMTP relay settings](https://support.google.com/a/answer/176600)
 - [AWS SES production access docs](https://docs.aws.amazon.com/ses/latest/dg/request-production-access.html)
-- [Gmail bulk sender requirements 2026](https://support.google.com/a/answer/14229414)
 - [Astro Netlify adapter docs](https://docs.astro.build/en/guides/integrations-guide/netlify/)
-- [Netlify Private Connectivity docs (confirms no Tailscale reachability from Functions)](https://docs.netlify.com/manage/security/private-connectivity/)
+- [Cloudflare Email Routing](https://developers.cloudflare.com/email-routing/)
+- [Cloudflare Workers Send Email binding](https://developers.cloudflare.com/email-routing/email-workers/send-email-workers/)
+- [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)

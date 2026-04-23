@@ -1,6 +1,6 @@
 ---
 title: 'CLIs Over MCPs for AI Tool Integration'
-description: 'MCP servers put credentials in JSON configs. CLIs keep them in a keyring. After six months using both, I replaced most MCPs with Go CLIs. Here is why.'
+description: 'MCP servers put credentials in JSON configs. CLIs keep them in a keyring. After six months using both, I moved most of my integrations off MCP. Here is why.'
 pubDate: 2026-05-04
 author: 'Juan Felipe Rivera González'
 tags: ['claude-code', 'mcp', 'cli', 'go', 'security']
@@ -16,7 +16,7 @@ Model Context Protocol (MCP) is the standard way to give AI coding assistants ac
 
 The pattern is useful. It also ships with problems that compound at scale: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
 
-After six months running both in production, I replaced most of my MCP servers with custom Go CLIs. Cloudflare's `cf` CLI, launched April 2026 with 3,000+ operations across 100+ products, validates the same direction: AI agents do well with consistent CLIs, and CLIs scale better than hand-rolled MCP servers when the surface is large.
+After six months running both in production, I moved off most of my MCP servers. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool. Cloudflare's `cf` CLI, launched April 2026 with 3,000+ operations across 100+ products, validates the same direction: AI agents do well with consistent CLIs, and CLIs scale better than hand-rolled MCP servers when the surface is large.
 
 This post covers what goes wrong with MCPs at scale, what a CLI fixes, the single case where I kept an MCP, and a Go library that lets one binary be both.
 
@@ -79,7 +79,7 @@ No protocol-specific configuration, no special runtime. A single statically link
 
 ## Internal CLIs With Safety Rails
 
-For my day job I also maintain a Go CLI that handles deployments, database queries, health checks, and service management. It is not open source because it is specific to my work environment, but the safety patterns generalize:
+For my day-to-day work with a client I also maintain a Go CLI that handles deployments, database queries, health checks, and service management. It is not open source because it is specific to that environment, but the safety patterns generalize:
 
 - **`--dry-run`** shows what a command would do without doing it. The agent runs it first on any destructive operation.
 - **`--explain`** describes the operation in plain language: which services are affected, what order things happen in, what depends on what.

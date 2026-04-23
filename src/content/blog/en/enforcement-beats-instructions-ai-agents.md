@@ -1,5 +1,5 @@
 ---
-title: 'Why Enforcement Beats Instructions for AI Coding Agents'
+title: 'Ship Fast and Safe with AI Agents: The Enforcement Layer'
 description: 'AI coding agents cheat tests and can stage secrets. Enforcement at the hook and commit layer is what keeps quality, speed, and security together.'
 pubDate: 2026-04-27
 author: 'Juan Felipe Rivera González'

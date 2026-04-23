@@ -16,9 +16,11 @@ Model Context Protocol (MCP) is the standard way to give AI coding assistants ac
 
 The pattern is useful. It also ships with problems that compound at scale: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
 
-After six months running both in production, I moved off most of my MCP servers. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool. Cloudflare's `cf` CLI, launched April 2026 with 3,000+ operations across 100+ products, validates the same direction: AI agents do well with consistent CLIs, and CLIs scale better than hand-rolled MCP servers when the surface is large.
+After six months running both in production, I moved off most of my MCP servers. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
-This post covers what goes wrong with MCPs at scale, what a CLI fixes, the single case where I kept an MCP, and a Go library that lets one binary be both.
+The shift is not just mine. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. The CLI approach is being adopted at company scale for the reasons laid out below.
+
+The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why the standard MCP pattern has the wrong security model for that job.
 
 ## What Breaks First: Credentials
 
@@ -62,6 +64,7 @@ Each one is a small inefficiency. Across hundreds of calls a day, they add up.
 A CLI sits between the agent and the service. Auth, rate limiting, caching, pagination, and error translation all live in the CLI. The agent runs commands and reads structured output.
 
 - **Auth stays out of context.** Tokens live in the system keyring. The agent runs `canvas courses list` and never sees an OAuth token. Token refresh, 401 retries, device flows all happen inside the CLI.
+- **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. Ten MCPs can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
 - **Rate limiting is built in.** Adaptive throttling based on the API's quota headers.
 - **Caching is automatic.** Data that does not change within a session (course metadata, user profiles) comes from a local cache after the first fetch.
 - **Pagination disappears.** `canvas assignments list --course 12345` returns all assignments. The agent does not know `per_page` exists.
@@ -104,7 +107,7 @@ An MCP server exposes raw access. If the agent can call `mysql_query`, it can ru
 
 A CLI encapsulates that boundary. The agent gets capability without credentials: it can read courses without touching the OAuth configuration, read rows without running DDL, deploy a service without modifying the pipeline. The boundary between what the agent can do and what still requires a human lives in the command structure itself.
 
-Paired with a permission allowlist (`Bash(canvas courses get:*)` allowed, `Bash(canvas admin:*)` not allowed), that boundary becomes two layers. The allowlist controls which commands are reachable. The CLI controls what those commands can actually do.
+Combined with a permission allowlist from the [enforcement post](/blog/ship-fast-and-safe-with-ai-agents) (`Bash(canvas courses get:*)` allowed, `Bash(canvas admin:*)` not), the boundary becomes two layers. The allowlist controls which commands are reachable. The CLI controls what those commands can actually do.
 
 ## Writing a CLI With Agents in Mind
 

@@ -8,7 +8,7 @@ cover: '@assets/blog/covers/enforcement-layer-cover.jpg'
 coverAlt: 'A large hexagonal cyan shield at the center of a dark midnight blue scene. Inside the shield, a stylized humanoid AI figure in cyan neon lines works calmly at a glowing terminal. Outside the shield, muted red-orange threat icons bounce off its surface with small impact sparks: a skull in the upper left, a cracked key in the upper right, a small flame in the lower left, a broken padlock in the lower right. Faint cyan code symbols drift softly in the background.'
 lang: 'en'
 translationKey: 'enforcing-quality'
-draft: true
+draft: false
 featured: false
 ---
 

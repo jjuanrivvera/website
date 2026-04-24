@@ -44,7 +44,9 @@ A typical MySQL MCP configuration:
 }
 ```
 
-The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user, including the agent. Whatever safety the MCP layer adds on top (read-only mode, allowlisted tables, query-length limits) stops being a gate once the agent can open the config and use the credential directly. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but the MCPs I was using shipped env-var auth because it is the simplest thing for a maintainer to implement.
+The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user, including the agent. Whatever safety the MCP layer adds on top (read-only mode, allowlisted tables, query-length limits) stops being a gate once the agent can open the config and use the credential directly.
+
+Not every service has an OAuth flow available. MySQL, Redis, raw cloud storage buckets, and legacy APIs require an API key or username/password to authenticate. When the service needs a shared secret, that secret has to sit somewhere the client can read. In the MCPs I was using, that somewhere was the agent's config file. Services that do support OAuth (Atlassian's MCP, for example) sidestep this entirely, but for the rest, the credential lives with the integration and therefore within reach of the agent.
 
 I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
 

@@ -115,7 +115,7 @@ Go es un buen lenguaje para este tipo de CLI: binario único enlazado estáticam
 
 ## Un binario, dos interfaces
 
-La dicotomía CLI-versus-MCP resulta ser una falsa elección. Puedes entregar un binario que se presente como ambos.
+El framing CLI-versus-MCP resulta ser una falsa elección. Puedes entregar un binario que se presente como ambos.
 
 Una librería de Go llamada [ophis](https://github.com/njayp/ophis) recorre el árbol de comandos de Cobra y convierte cada comando en una herramienta MCP. Integrarla en el Canvas CLI tomó 18 líneas:
 

@@ -54,8 +54,9 @@ A CLI sits between the agent and the service. The agent runs commands and reads 
 
 - **Auth stays out of context.** Tokens live in the system keyring. The agent runs `canvas courses list` and never sees an OAuth token. Token refresh, 401 retries, device flows all happen inside the CLI.
 - **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. Ten MCPs can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. And that output is composable: the agent can pipe it through `jq`, `grep`, `head`, or `awk` to drop fields and trim size before anything reaches context. Modern CLIs are built with this in mind, shipping LLM-friendly output formats (stable JSON, optional compact modes, terse flags, opt-in verbosity). With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
+- **The direction is one-way.** A CLI can be wrapped as an MCP server later (ophis does this for Cobra-based CLIs in a single library call, shown further down in this post). Going the other direction is harder. MCP servers expect the protocol runtime, not a terminal, so turning one into a usable shell command means rewriting most of it. Building the CLI first keeps both options open and lets you expose the MCP surface when a client actually asks for it, not before.
 
-A CLI can also ship rate limiting, caching, pagination, and cleaner error messages. Those are implementation choices, not structural advantages. MCPs can add them too. The auth and context wins above are the ones baked into the shape of each approach.
+A CLI can also ship rate limiting, caching, pagination, and cleaner error messages. Those are implementation choices, not structural advantages. MCPs can add them too. The three wins above are the ones baked into the shape of each approach.
 
 ## canvas-cli as the Open Source Example
 
@@ -133,7 +134,7 @@ canvas courses list --instance prod -o json
 canvas mcp start
 ```
 
-The CLI keeps its advantages: auth, credential security, rate limiting, structured output. MCP mode adds discoverability and schema validation for clients that prefer it. Same binary, same security model, no duplication.
+The CLI keeps its advantages: auth in the keyring, no credentials in context, structured output. MCP mode adds discoverability and schema validation for clients that prefer it. Same binary, same security model, no duplication.
 
 Any other Cobra-based CLI can get the same treatment. If you have a well-structured CLI, exposing it as an MCP is a single library call rather than a rewrite.
 

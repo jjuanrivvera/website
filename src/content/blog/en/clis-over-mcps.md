@@ -18,7 +18,7 @@ The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a 
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
-The same move is happening at major vendors. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out below.
+The same move is happening at major vendors. Cloudflare shipped `cf` in April 2026 as a technical preview, explicitly positioned as the path for AI-agent access to their platform. Current scope is a subset of their products. Full coverage (thousands of operations across 100+ products) is the target. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out below.
 
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why the standard MCP pattern has the wrong security model for that job.
 
@@ -58,7 +58,7 @@ A CLI sits between the agent and the service. The agent runs commands and reads 
 
 A well-built CLI can also ship rate limiting, caching, pagination, and cleaner error messages. MCPs can ship the same things. The three wins above are the only ones baked into the shape of each approach.
 
-## canvas-cli as the Open Source Example
+## canvas-cli as the Open-Source Example
 
 [canvas-cli](https://github.com/jjuanrivvera/canvas-cli) is a Go CLI I maintain for Canvas LMS. It started as a personal tool and now exposes 280+ commands covering courses, assignments, modules, enrollments, submissions, and more.
 
@@ -81,7 +81,7 @@ The agent cannot accidentally run a destructive operation because the CLI reject
 
 I did not replace everything. Jira stayed as an MCP.
 
-The reason is functional coverage. My Jira workflow uses worklogs, ADF-formatted comments (bold, multi-paragraph), user account lookups, issue type metadata for programmatic ticket creation, and Rovo AI search. I evaluated both the official Atlassian CLI (ACLI) and the strong open source option (ankitpokhrel/jira-cli, ~5K stars). Neither covers all of those. jira-cli has no worklog support. ACLI has not confirmed it either. Both only support plain text comments, no ADF. Neither exposes issue type field metadata.
+The reason is functional coverage. My Jira workflow uses worklogs (list, edit, delete, not just add), ADF-formatted comments (bold, multi-paragraph), user account lookups, issue type metadata for programmatic ticket creation, and Rovo AI search. I evaluated both the official Atlassian CLI (ACLI) and the strong open-source option (ankitpokhrel/jira-cli, ~5K stars). As of April 2026, jira-cli supports `worklog add` but not full CRUD, accepts markdown for comments but does not preserve ADF structure, and has no user search or issue-type field metadata. ACLI is evolving but still falls short for my workflow.
 
 The Atlassian MCP via OAuth covers all of it. One browser auth flow, and the agent gets typed tools across the full API surface.
 

@@ -14,11 +14,11 @@ featured: false
 
 El Model Context Protocol (MCP) es la forma estándar de darle acceso a servicios externos a los asistentes de IA para código. Un MCP de MySQL expone consultas a la base de datos. Un MCP de Playwright expone automatización del navegador. Un MCP de Jira expone operaciones sobre tickets. El agente descubre las herramientas, las llama y trabaja.
 
-El patrón es útil. Algunos MCPs lo hacen bien: el de Atlassian usa OAuth a través de un flujo de navegador sin secretos en config. Otros traen salvaguardas integradas. El MCP de MySQL que yo usaba corre por defecto en modo solo lectura y rechaza DDL. Esa restricción suena bien sobre el papel, pero el patrón de almacenamiento de credenciales que hay por debajo la hace evitable. Si las credenciales viven en un JSON que el agente puede leer directamente, el agente no necesita la función de consulta del MCP para llegar a la base de datos. Puede leer el config, tomar la contraseña y conectarse por su cuenta.
+El patrón es útil. Algunos MCPs lo hacen bien: el de Atlassian usa OAuth a través de un flujo de navegador sin secretos en config. Otros ya vienen con protecciones incorporadas. El MCP de MySQL que yo usaba corre por defecto en modo solo lectura y rechaza DDL. Esa restricción suena bien sobre el papel, pero el patrón de almacenamiento de credenciales que hay por debajo la hace evitable. Si las credenciales viven en un JSON que el agente puede leer directamente, el agente no necesita la función de consulta del MCP para llegar a la base de datos. Puede leer el config, tomar la contraseña y conectarse por su cuenta.
 
 Después de seis meses corriendo ambos en producción, dejé los servidores MCP que usaba para Canvas, MySQL y automatización de navegador. Canvas pasó a canvas-cli. MySQL pasó a un CLI interno en Go que mantengo para el día a día con un cliente (también cubre despliegues, health checks y gestión de servicios). La automatización del navegador pasó a playwright-cli. Dos de esos tres son CLIs que yo mantengo; el tercero es una herramienta existente.
 
-El [post anterior](/blog/ship-fast-and-safe-with-ai-agents) cubrió la capa de enforcement que mantiene el comportamiento del agente seguro dentro del editor. Hooks, linters, escáneres de secretos, listas de permisos, puertas de finalización. Este post cubre la capa más allá: cómo el agente llega a los servicios externos, y por qué los MCPs no siempre son la mejor opción para esa tarea.
+El [post anterior](/blog/ship-fast-and-safe-with-ai-agents) cubrió la capa de enforcement que mantiene el comportamiento del agente seguro dentro del editor. Hooks, linters, escáneres de secretos, listas de permisos, controles de finalización. Este post cubre la capa más allá: cómo el agente llega a los servicios externos, y por qué los MCPs no siempre son la mejor opción para esa tarea.
 
 Una nota de alcance antes de seguir. Este post asume un agente que puede ejecutar comandos de shell, como Claude Code o Cursor en modo agente. Si tu agente no tiene acceso a shell (chatbots web, agentes embebidos en UIs, la mayoría de asistentes SaaS), los MCPs son el camino correcto. Incluso ahí, el patrón de abajo aplica: construye la funcionalidad como CLI primero, y luego envuélvela como MCP cuando necesites la superficie del protocolo. La sección "Un binario, dos interfaces" al final muestra cómo en una librería de Go.
 
@@ -52,23 +52,23 @@ Tenía cinco MCPs de MySQL repartidos en dos proyectos. Cada uno cargaba credenc
 
 ## Lo que un CLI resuelve
 
-Un CLI se para entre el agente y el servicio. El agente corre comandos y lee salida estructurada. Dos cosas cambian de forma estructural respecto al setup con MCP:
+Un CLI se sitúa entre el agente y el servicio. El agente corre comandos y lee salida estructurada. Dos cosas cambian de forma estructural respecto al setup con MCP:
 
 - **La auth se queda fuera del contexto.** Los tokens viven en el keyring del sistema. El agente corre `canvas courses list` y nunca ve un token OAuth. El refresh del token, los retries en 401 y los device flows pasan todos dentro del CLI.
-- **El contexto se mantiene pequeño.** Los servidores MCP registran sus esquemas de herramientas con el agente al inicio de la sesión, antes de que empiece cualquier trabajo. Diez MCPs pueden sumar decenas de miles de tokens de descripciones de herramientas que viven en contexto durante toda la sesión. Un CLI no añade nada hasta que lo llamas; solo la salida de las llamadas reales entra en contexto. Y esa salida es componible: el agente puede pasarla por `jq`, `grep`, `head` o `awk` para descartar campos y recortar tamaño antes de que nada llegue al contexto. Los CLIs modernos están construidos con eso en mente, entregando formatos de salida amigables para LLMs (JSON estable, modos compactos opcionales, flags terses, verbosidad opt-in). Con los precios actuales de API y los recortes de rate limits, esa es la diferencia entre una sesión que te puedes permitir y una que no.
+- **El contexto se mantiene pequeño.** Los servidores MCP registran sus esquemas de herramientas con el agente al inicio de la sesión, antes de que empiece cualquier trabajo. Diez MCPs pueden sumar decenas de miles de tokens de descripciones de herramientas que viven en contexto durante toda la sesión. Un CLI no añade nada hasta que lo llamas; solo la salida de las llamadas reales entra en contexto. Y esa salida se puede encadenar: el agente puede pasarla por `jq`, `grep`, `head` o `awk` para descartar campos y recortar tamaño antes de que nada llegue al contexto. Los CLIs modernos están construidos con eso en mente, entregando formatos de salida amigables para LLMs (JSON estable, modos compactos opcionales, flags concisas, verbosidad opt-in). Con los precios actuales de API y los recortes de rate limits, esa es la diferencia entre una sesión que te puedes permitir y una que no.
 - **La dirección es de una sola vía.** Un CLI se puede envolver como un servidor MCP más tarde (ophis hace esto para CLIs basados en Cobra con una sola llamada a una librería, mostrado más adelante). Ir al revés es más difícil. Los servidores MCP corren dentro del runtime del protocolo. Para convertir uno en un comando de shell usable, reescribes casi todo. Construir primero el CLI mantiene ambas opciones abiertas y permite exponer la superficie MCP solo cuando un cliente realmente la pida.
 
-Un CLI bien construido también puede traer rate limiting, caché, paginación y mensajes de error más limpios. Los MCPs pueden traer las mismas cosas. Las tres ventajas de arriba son las únicas que están horneadas en la forma de cada enfoque.
+Un CLI bien construido también puede traer rate limiting, caché, paginación y mensajes de error más limpios. Los MCPs pueden traer las mismas cosas. Las tres ventajas de arriba son las únicas que son inherentes a cada enfoque.
 
 ## Lo que los LLMs ya conocen
 
-Los CLIs mainstream ya están en los datos de entrenamiento del LLM. `gh`, `gcloud`, `aws`, `kubectl`, `docker`, `git`. Un agente no necesita un esquema, una descripción de herramienta ni un cargador de contexto por sesión para usarlos. Se sabe los flags y las formas de salida por defecto.
+Los CLIs mainstream ya están en los datos de entrenamiento del LLM. `gh`, `gcloud`, `aws`, `kubectl`, `docker`, `git`. Un agente no necesita un esquema, una descripción de herramienta ni un cargador de contexto por sesión para usarlos. Conoce los flags y los formatos de salida por defecto.
 
 Esto desplaza el tradeoff MCP-vs-CLI. Un MCP de GitHub es el default popular para dar acceso a GitHub al agente. El CLI `gh` suele ser la mejor opción: el agente ya lo conoce, `gh pr list --json ...` da salida estructurada limpia, y el token se queda en `~/.config/gh/hosts.yml` donde solo la shell puede llegar.
 
 El movimiento está pasando también a nivel de proveedor. Cloudflare lanzó `cf` en abril de 2026 como technical preview, posicionado explícitamente como el camino para el acceso de agentes de IA a su plataforma. El alcance actual es un subconjunto de sus productos. El objetivo es cobertura completa (miles de operaciones en más de 100 productos). Google Workspace expone `gws` para la misma superficie. Los proveedores están construyendo superficies CLI-first por las razones que este post plantea.
 
-Para los CLIs que un LLM no conoce (herramientas internas, CLIs de nichos específicos), la [capa de contexto del post 1](/blog/context-engineering-across-12-repositories) cubre el hueco. Un archivo de skill que documente qué hace el CLI y cuándo usarlo es suficiente. Las skills son auto-descubribles por el runtime, así que las relevantes se cargan solo cuando la tarea coincide. En mi setup, `canvas-cli` y el CLI interno tienen cada uno un archivo de skill al lado de su código, y el agente los levanta automáticamente cuando surge una tarea de Canvas o de infra.
+Para los CLIs que un LLM no conoce (herramientas internas, CLIs de nichos específicos), la [capa de contexto del post 1](/blog/context-engineering-across-12-repositories) cubre el hueco. Un archivo de skill que documente qué hace el CLI y cuándo usarlo es suficiente. Las skills se descubren automáticamente por el runtime, así que las relevantes se cargan solo cuando la tarea coincide. En mi setup, `canvas-cli` y el CLI interno tienen cada uno un archivo de skill al lado de su código, y el agente los carga automáticamente cuando surge una tarea de Canvas o de infra.
 
 ## Dos CLIs en la práctica
 
@@ -78,9 +78,9 @@ Para los CLIs que un LLM no conoce (herramientas internas, CLIs de nichos espec�
 
 La auth usa OAuth 2.0 con PKCE y guarda los tokens en el keyring del sistema. El soporte multi-instancia me deja cambiar de entorno: `canvas --instance production courses list` versus `canvas --instance sandbox courses list`. Los formatos de salida incluyen JSON, tabla y CSV. El agente típicamente usa `--output json` porque es más fácil de parsear.
 
-Sin configuración específica del protocolo, sin runtime especial. Un único binario estáticamente linkeado en el PATH. Si mañana cambiara de herramienta de IA, el CLI seguiría funcionando sin cambios.
+Sin configuración específica del protocolo, sin runtime especial. Un único binario enlazado estáticamente en el PATH. Si mañana cambiara de herramienta de IA, el CLI seguiría funcionando sin cambios.
 
-### Un CLI interno de cliente con barandas de seguridad
+### Un CLI interno de cliente con mecanismos de seguridad
 
 Para mi día a día con un cliente también mantengo un CLI en Go que maneja despliegues, consultas a base de datos, health checks y gestión de servicios. No es open source porque es específico de ese entorno, pero los patrones de seguridad se generalizan:
 
@@ -111,11 +111,11 @@ Algunos patrones que hacen que un CLI funcione bien para consumo por IA:
 - **Mensajes de error estables.** Frases como "Course not found" y "Authentication expired" son más útiles que códigos de estado HTTP.
 - **Códigos de salida que signifiquen algo.** Éxito es 0. Errores de argumentos son una clase, fallos de auth otra, errores de API upstream otra.
 
-Go es un buen lenguaje para este tipo de CLI: binario único estáticamente linkeado, cross-compilation, arranque rápido, sin dependencias de runtime. Los CLIs que mantengo compilan para macOS (ARM e Intel) y Linux (AMD64) desde un solo código base y se despliegan copiando el binario.
+Go es un buen lenguaje para este tipo de CLI: binario único enlazado estáticamente, cross-compilation, arranque rápido, sin dependencias de runtime. Los CLIs que mantengo compilan para macOS (ARM e Intel) y Linux (AMD64) desde un solo código base y se despliegan copiando el binario.
 
 ## Un binario, dos interfaces
 
-El framing CLI-versus-MCP resulta ser una falsa elección. Puedes entregar un binario que se presente como ambos.
+La dicotomía CLI-versus-MCP resulta ser una falsa elección. Puedes entregar un binario que se presente como ambos.
 
 Una librería de Go llamada [ophis](https://github.com/njayp/ophis) recorre el árbol de comandos de Cobra y convierte cada comando en una herramienta MCP. Integrarla en el Canvas CLI tomó 18 líneas:
 

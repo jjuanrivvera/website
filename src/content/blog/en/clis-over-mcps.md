@@ -18,8 +18,6 @@ The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a 
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. MySQL moved to a separate internal Go CLI I maintain for day-to-day work with a client (it also covers deployments, health checks, and service management). Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
-The same move is happening at major vendors. Cloudflare shipped `cf` in April 2026 as a technical preview, explicitly positioned as the path for AI-agent access to their platform. Current scope is a subset of their products. Full coverage (thousands of operations across 100+ products) is the target. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out below.
-
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why MCPs are not always the best fit for that job.
 
 One scope note before going further. This post assumes an agent that can execute shell commands, like Claude Code or Cursor in agent mode. If your agent has no shell access (web chatbots, embedded UI agents, most SaaS assistants), MCPs are the right path. Even there, the pattern below still applies: build the functionality as a CLI first, then wrap it as an MCP when you need the protocol surface. The "One Binary, Two Interfaces" section at the end shows how in a Go library.
@@ -68,9 +66,13 @@ Mainstream CLIs are already in the LLM's training data. `gh`, `gcloud`, `aws`, `
 
 This shifts the MCP-vs-CLI tradeoff. A GitHub MCP is a popular default for giving agents GitHub access. The `gh` CLI is often the better choice: the agent already knows it, `gh pr list --json ...` gives clean structured output, and the token stays in `~/.config/gh/hosts.yml` where only the shell can reach it.
 
+The move is happening at the vendor level too. Cloudflare shipped `cf` in April 2026 as a technical preview, explicitly positioned as the path for AI-agent access to their platform. Current scope is a subset of their products. Full coverage (thousands of operations across 100+ products) is the target. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out in this post.
+
 For the CLIs an LLM does not know (internal tools, niche industry CLIs), the [context layer from post 1](/blog/context-engineering-across-12-repositories) covers the gap. A skill file that documents what the CLI does and when to use it is enough. Skills are auto-discoverable by the runtime, so the relevant ones load only when the task matches. In my setup, `canvas-cli` and the internal CLI each have a skill file next to their code, and the agent picks them up automatically when a Canvas or infra task comes up.
 
-## canvas-cli as the Open-Source Example
+## Two CLIs in Practice
+
+### canvas-cli (open source)
 
 [canvas-cli](https://github.com/jjuanrivvera/canvas-cli) is a Go CLI I maintain for Canvas LMS. It started as a personal tool and now exposes 280+ commands covering courses, assignments, modules, enrollments, submissions, and more.
 
@@ -78,7 +80,7 @@ Auth uses OAuth 2.0 with PKCE and stores tokens in the system keyring. Multi-ins
 
 No protocol-specific configuration, no special runtime. A single statically linked binary on the PATH. If I switched AI tooling tomorrow, the CLI would work unchanged.
 
-## Internal CLIs With Safety Rails
+### An internal client CLI with safety rails
 
 For my day-to-day work with a client I also maintain a Go CLI that handles deployments, database queries, health checks, and service management. It is not open source because it is specific to that environment, but the safety patterns generalize:
 
@@ -97,15 +99,7 @@ The reason is functional coverage. My Jira workflow uses worklogs (list, edit, d
 
 The Atlassian MCP via OAuth covers all of it. One browser auth flow, and the agent gets typed tools across the full API surface.
 
-The rule I use: if a well-maintained CLI covers 100% of what the agent needs, use the CLI. If the MCP covers operations the CLI cannot, keep the MCP.
-
-## Security: Capability Without Credentials
-
-An MCP server exposes raw access. If the agent can call `mysql_query`, it can run any SQL the database user is authorized for. If the MCP config carries a production password, the agent effectively has production access.
-
-A CLI encapsulates that boundary. The agent gets capability without credentials: it can read courses without touching the OAuth configuration, read rows without running DDL, deploy a service without modifying the pipeline. The boundary between what the agent can do and what still requires a human lives in the command structure itself.
-
-Combined with a permission allowlist from the [enforcement post](/blog/ship-fast-and-safe-with-ai-agents) (`Bash(canvas courses get:*)` allowed, `Bash(canvas admin:*)` not), the boundary becomes two layers. The allowlist controls which commands are reachable. The CLI controls what those commands can actually do.
+The rule I use: when the CLI covers enough of what the agent needs, use it. When the gap is big enough to matter, keep the MCP.
 
 ## Writing a CLI With Agents in Mind
 
@@ -152,6 +146,6 @@ Any other Cobra-based CLI can get the same treatment. If you have a well-structu
 
 ## Where This Leads
 
-The enforcement layer (hooks, linters, tests) keeps AI-written code safe inside the editor. The CLI layer keeps it safe outside the editor, in every service the agent touches.
+Start with the CLI. Let the agent use it natively through shell. Wrap it as an MCP only when a client without shell access asks for the protocol surface. One binary, one security model, nothing duplicated.
 
-The next step, packaging all of this (context files, hooks, skills, agents, CLIs) into a single distributable unit, is the topic of the capstone post in this series.
+The enforcement layer (hooks, linters, tests) keeps AI-written code safe inside the editor. The CLI layer keeps it safe outside the editor, in every service the agent touches. The next step, packaging all of this (context files, hooks, skills, agents, CLIs) into a single distributable unit, is the capstone post of this series.

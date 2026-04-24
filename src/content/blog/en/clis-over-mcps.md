@@ -14,7 +14,7 @@ featured: false
 
 Model Context Protocol (MCP) is the standard way to give AI coding assistants access to external services. A MySQL MCP exposes database queries. A Playwright MCP exposes browser automation. A Jira MCP exposes ticket operations. The agent discovers tools, calls them, and works.
 
-The pattern is useful. It also ships with problems that compound at scale: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
+The pattern is useful, and some MCPs get it right. Atlassian's, for example, uses OAuth through a browser flow and keeps no secrets in config. But at scale, most of the MCPs I ran carried the same set of tradeoffs: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
 
 After six months running both in production, I moved off most of my MCP servers. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
@@ -44,9 +44,9 @@ A typical MySQL MCP configuration:
 }
 ```
 
-The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user. The MCP architecture requires it to be there because the server starts by reading environment variables.
+The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but most community MCPs ship env-var auth because it is the simplest thing for a maintainer to implement.
 
-I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how the protocol works.
+I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
 
 ## What Else Breaks: Operational Behavior
 
@@ -89,7 +89,7 @@ For my day-to-day work with a client I also maintain a Go CLI that handles deplo
 - **Read-only by default.** Database queries get read-only connections unless the command is explicitly a write. Write operations require an explicit `--write` flag.
 - **Query timeouts and result size limits.** An unqualified `SELECT *` on a large table fails early instead of returning a gigabyte to the agent's context.
 
-The agent cannot accidentally run a destructive operation because the CLI rejects it unless the flags say otherwise. Same idea as the permission allowlist from the previous post, at a different layer.
+The agent cannot accidentally run a destructive operation because the CLI rejects it unless the flags say otherwise. This pairs directly with the permission allowlist from the [enforcement post](/blog/ship-fast-and-safe-with-ai-agents). The allowlist can match a specific command pattern: `Bash(mycli db query --read-only:*)` allowed, any `--write` variant denied. The command structure exposes the destructive intent, so the allowlist can gate it. An MCP tool call hides that intent behind a generic `mysql_query`, so the allowlist can only allow or deny the whole tool, not the specific operation inside it.
 
 ## When the MCP Wins
 

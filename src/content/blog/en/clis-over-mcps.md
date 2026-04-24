@@ -18,7 +18,7 @@ The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a 
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
-The same pattern is showing up at company scale. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. The CLI approach is being adopted by vendors for the reasons laid out below.
+The same move is happening at major vendors. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out below.
 
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why the standard MCP pattern has the wrong security model for that job.
 

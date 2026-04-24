@@ -97,7 +97,7 @@ The reason is functional coverage. My Jira workflow uses worklogs (list, edit, d
 
 The Atlassian MCP via OAuth covers all of it. One browser auth flow, and the agent gets typed tools across the full API surface.
 
-The rule I use: if a well-maintained CLI covers 100% of what the agent needs, use the CLI. If the MCP covers operations the CLI cannot, keep the MCP. The layer closest to the service should own the service's concerns.
+The rule I use: if a well-maintained CLI covers 100% of what the agent needs, use the CLI. If the MCP covers operations the CLI cannot, keep the MCP.
 
 ## Security: Capability Without Credentials
 

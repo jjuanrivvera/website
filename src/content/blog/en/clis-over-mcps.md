@@ -14,7 +14,7 @@ featured: false
 
 Model Context Protocol (MCP) is the standard way to give AI coding assistants access to external services. A MySQL MCP exposes database queries. A Playwright MCP exposes browser automation. A Jira MCP exposes ticket operations. The agent discovers tools, calls them, and works.
 
-The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a browser flow with no secrets in config. Others ship with built-in safeguards. The MySQL MCP I was running defaults to read-only queries and denies DDL. That restriction sounds good on paper, but the credential storage pattern underneath makes it bypassable. If credentials live in a JSON config the agent can read directly, the agent does not need the MCP's query function to reach the database at all. It can read the config, grab the password, and connect on its own. The other tradeoffs compound from there: no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
+The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a browser flow with no secrets in config. Others ship with built-in safeguards. The MySQL MCP I was running defaults to read-only queries and denies DDL. That restriction sounds good on paper, but the credential storage pattern underneath makes it bypassable. If credentials live in a JSON config the agent can read directly, the agent does not need the MCP's query function to reach the database at all. It can read the config, grab the password, and connect on its own.
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
@@ -48,29 +48,14 @@ The database password lives in a JSON file. If the file sits in the project root
 
 I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
 
-## What Else Breaks: Operational Behavior
-
-Credentials are the headline problem. Operationally, MCPs expose raw API calls, which means the AI has to handle concerns that should live closer to the service:
-
-- **No rate limiting.** A thousand `mysql_query` calls in one session hit the database a thousand times. There is no throttle.
-- **No caching.** Data that does not change mid-session is fetched repeatedly.
-- **Raw pagination.** The agent has to remember `?page=2&per_page=100` or stop reading at the first page.
-- **Raw errors.** The response is whatever the API returned, including HTTP status codes the agent then has to interpret.
-
-Each one is a small inefficiency. Across hundreds of calls a day, they add up.
-
 ## What a CLI Fixes
 
-A CLI sits between the agent and the service. Auth, rate limiting, caching, pagination, and error translation all live in the CLI. The agent runs commands and reads structured output.
+A CLI sits between the agent and the service. The agent runs commands and reads structured output. Two things change structurally from the MCP setup:
 
 - **Auth stays out of context.** Tokens live in the system keyring. The agent runs `canvas courses list` and never sees an OAuth token. Token refresh, 401 retries, device flows all happen inside the CLI.
 - **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. Ten MCPs can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. And that output is composable: the agent can pipe it through `jq`, `grep`, `head`, or `awk` to drop fields and trim size before anything reaches context. Modern CLIs are built with this in mind, shipping LLM-friendly output formats (stable JSON, optional compact modes, terse flags, opt-in verbosity). With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
-- **Rate limiting is built in.** Adaptive throttling based on the API's quota headers.
-- **Caching is automatic.** Data that does not change within a session (course metadata, user profiles) comes from a local cache after the first fetch.
-- **Pagination disappears.** `canvas assignments list --course 12345` returns all assignments. The agent does not know `per_page` exists.
-- **Errors are useful.** "Course 12345 not found" or "Authentication expired, run `canvas auth login`" instead of a 404 JSON blob.
 
-The agent works against a clean surface. The CLI carries the mess.
+A CLI can also ship rate limiting, caching, pagination, and cleaner error messages. Those are implementation choices, not structural advantages. MCPs can add them too. The auth and context wins above are the ones baked into the shape of each approach.
 
 ## canvas-cli as the Open Source Example
 

@@ -14,7 +14,7 @@ featured: false
 
 Model Context Protocol (MCP) is the standard way to give AI coding assistants access to external services. A MySQL MCP exposes database queries. A Playwright MCP exposes browser automation. A Jira MCP exposes ticket operations. The agent discovers tools, calls them, and works.
 
-The pattern is useful, and some MCPs get it right. Atlassian's, for example, uses OAuth through a browser flow and keeps no secrets in config. But the MCPs I was running carried a common set of tradeoffs: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
+The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a browser flow with no secrets in config. Others ship with built-in safeguards. The MySQL MCP I was running defaults to read-only queries and denies DDL. That restriction sounds good on paper, but the credential storage pattern underneath makes it bypassable. If credentials live in a JSON config the agent can read directly, the agent does not need the MCP's query function to reach the database at all. It can read the config, grab the password, and connect on its own. The other tradeoffs compound from there: no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
@@ -44,7 +44,7 @@ A typical MySQL MCP configuration:
 }
 ```
 
-The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but the ones I was running shipped env-var auth because it is the simplest thing for a maintainer to implement.
+The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user, including the agent. Whatever safety the MCP layer adds on top (read-only mode, allowlisted tables, query-length limits) stops being a gate once the agent can open the config and use the credential directly. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but the MCPs I was using shipped env-var auth because it is the simplest thing for a maintainer to implement.
 
 I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
 

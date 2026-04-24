@@ -18,7 +18,7 @@ The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a 
 
 After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
-The shift is not just mine. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. The CLI approach is being adopted at company scale for the reasons laid out below.
+The same pattern is showing up at company scale. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. The CLI approach is being adopted by vendors for the reasons laid out below.
 
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why the standard MCP pattern has the wrong security model for that job.
 
@@ -54,9 +54,9 @@ A CLI sits between the agent and the service. The agent runs commands and reads 
 
 - **Auth stays out of context.** Tokens live in the system keyring. The agent runs `canvas courses list` and never sees an OAuth token. Token refresh, 401 retries, device flows all happen inside the CLI.
 - **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. Ten MCPs can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. And that output is composable: the agent can pipe it through `jq`, `grep`, `head`, or `awk` to drop fields and trim size before anything reaches context. Modern CLIs are built with this in mind, shipping LLM-friendly output formats (stable JSON, optional compact modes, terse flags, opt-in verbosity). With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
-- **The direction is one-way.** A CLI can be wrapped as an MCP server later (ophis does this for Cobra-based CLIs in a single library call, shown further down in this post). Going the other direction is harder. MCP servers expect the protocol runtime, not a terminal, so turning one into a usable shell command means rewriting most of it. Building the CLI first keeps both options open and lets you expose the MCP surface when a client actually asks for it, not before.
+- **The direction is one-way.** A CLI can be wrapped as an MCP server later (ophis does this for Cobra-based CLIs in a single library call, shown further down). Going the other way is harder. MCP servers run inside the protocol runtime. To turn one into a usable shell command, you rewrite most of it. Building the CLI first keeps both options open and lets you expose the MCP surface only when a client actually asks for it.
 
-A CLI can also ship rate limiting, caching, pagination, and cleaner error messages. Those are implementation choices, not structural advantages. MCPs can add them too. The three wins above are the ones baked into the shape of each approach.
+A well-built CLI can also ship rate limiting, caching, pagination, and cleaner error messages. MCPs can ship the same things. The three wins above are the only ones baked into the shape of each approach.
 
 ## canvas-cli as the Open Source Example
 
@@ -75,7 +75,7 @@ For my day-to-day work with a client I also maintain a Go CLI that handles deplo
 - **Read-only by default.** Database queries get read-only connections unless the command is explicitly a write. Write operations require an explicit `--write` flag.
 - **Query timeouts and result size limits.** An unqualified `SELECT *` on a large table fails early instead of returning a gigabyte to the agent's context.
 
-The agent cannot accidentally run a destructive operation because the CLI rejects it unless the flags say otherwise. This pairs directly with the permission allowlist from the [enforcement post](/blog/ship-fast-and-safe-with-ai-agents). The allowlist can match a specific command pattern: `Bash(mycli db query --read-only:*)` allowed, any `--write` variant denied. The command structure exposes the destructive intent, so the allowlist can gate it. An MCP tool call hides that intent behind a generic `mysql_query`, so the allowlist can only allow or deny the whole tool, not the specific operation inside it.
+The agent cannot accidentally run a destructive operation because the CLI rejects it unless the flags say otherwise. This pairs directly with the permission allowlist from the [enforcement post](/blog/ship-fast-and-safe-with-ai-agents). The allowlist can match a specific command pattern: `Bash(mycli db query --read-only:*)` allowed, any `--write` variant denied. The command structure exposes the destructive intent, so the allowlist can gate it. An MCP tool call hides that intent behind a generic `mysql_query`, so the allowlist has to allow or deny the whole tool. The specific operation inside is invisible to it.
 
 ## When the MCP Wins
 

@@ -20,7 +20,7 @@ After six months running both in production, I moved off the MCP servers I was u
 
 The same move is happening at major vendors. Cloudflare shipped `cf` in April 2026 as a technical preview, explicitly positioned as the path for AI-agent access to their platform. Current scope is a subset of their products. Full coverage (thousands of operations across 100+ products) is the target. Google Workspace exposes `gws` for the same surface. Vendors are building CLI-first surfaces for the reasons laid out below.
 
-The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why the standard MCP pattern has the wrong security model for that job.
+The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why MCPs are not always the best fit for that job.
 
 ## What Breaks First: Credentials
 

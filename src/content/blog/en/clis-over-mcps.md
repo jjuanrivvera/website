@@ -1,6 +1,6 @@
 ---
 title: 'CLIs Over MCPs for AI Tool Integration'
-description: 'MCP servers put credentials in JSON configs. CLIs keep them in a keyring. After six months using both, I moved most of my integrations off MCP. Here is why.'
+description: 'MCP servers put credentials in JSON configs. CLIs keep them in a keyring. After six months using both, I moved my main integrations off MCP. Here is why.'
 pubDate: 2026-05-04
 author: 'Juan Felipe Rivera González'
 tags: ['claude-code', 'mcp', 'cli', 'go', 'security']
@@ -14,9 +14,9 @@ featured: false
 
 Model Context Protocol (MCP) is the standard way to give AI coding assistants access to external services. A MySQL MCP exposes database queries. A Playwright MCP exposes browser automation. A Jira MCP exposes ticket operations. The agent discovers tools, calls them, and works.
 
-The pattern is useful, and some MCPs get it right. Atlassian's, for example, uses OAuth through a browser flow and keeps no secrets in config. But at scale, most of the MCPs I ran carried the same set of tradeoffs: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
+The pattern is useful, and some MCPs get it right. Atlassian's, for example, uses OAuth through a browser flow and keeps no secrets in config. But the MCPs I was running carried a common set of tradeoffs: credentials in config files, no rate limiting, no caching, raw error messages, and auth that becomes the integration's problem rather than the service's.
 
-After six months running both in production, I moved off most of my MCP servers. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
+After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. A Go CLI I maintain for day-to-day work with a client (deployments, database queries, health checks, service management) replaced the MySQL MCPs. Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
 
 The shift is not just mine. Cloudflare shipped `cf` in April 2026 (3,000+ operations across 100+ products), explicitly positioned as the path for AI-agent access to their platform. Google Workspace exposes `gws` for the same surface. The CLI approach is being adopted at company scale for the reasons laid out below.
 
@@ -44,7 +44,7 @@ A typical MySQL MCP configuration:
 }
 ```
 
-The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but most community MCPs ship env-var auth because it is the simplest thing for a maintainer to implement.
+The database password lives in a JSON file. If the file sits in the project root, one misconfigured `.gitignore` away from being committed. Even if the `.gitignore` is correct, the credential exists as plaintext on disk, readable by any process under the user. The MCP architecture does not force this shape (Atlassian's MCP shows it is solvable with OAuth and no secrets in config), but the ones I was running shipped env-var auth because it is the simplest thing for a maintainer to implement.
 
 I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
 

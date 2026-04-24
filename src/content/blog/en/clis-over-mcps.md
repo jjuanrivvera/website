@@ -60,6 +60,14 @@ A CLI sits between the agent and the service. The agent runs commands and reads 
 
 A well-built CLI can also ship rate limiting, caching, pagination, and cleaner error messages. MCPs can ship the same things. The three wins above are the only ones baked into the shape of each approach.
 
+## What LLMs Already Know
+
+Mainstream CLIs are already in the LLM's training data. `gh`, `gcloud`, `aws`, `kubectl`, `docker`, `git`. An agent does not need a schema, a tool description, or a per-session context loader to use them. It knows the flags and the output shapes by default.
+
+This shifts the MCP-vs-CLI tradeoff. A GitHub MCP is a popular default for giving agents GitHub access. The `gh` CLI is often the better choice: the agent already knows it, `gh pr list --json ...` gives clean structured output, and the token stays in `~/.config/gh/hosts.yml` where only the shell can reach it.
+
+For the CLIs an LLM does not know (internal tools, niche industry CLIs), the [context layer from post 1](/blog/context-engineering-across-12-repositories) covers the gap. A skill file that documents what the CLI does and when to use it is enough. Skills are auto-discoverable by the runtime, so the relevant ones load only when the task matches. In my setup, `canvas-cli` and the internal CLI each have a skill file next to their code, and the agent picks them up automatically when a Canvas or infra task comes up.
+
 ## canvas-cli as the Open-Source Example
 
 [canvas-cli](https://github.com/jjuanrivvera/canvas-cli) is a Go CLI I maintain for Canvas LMS. It started as a personal tool and now exposes 280+ commands covering courses, assignments, modules, enrollments, submissions, and more.

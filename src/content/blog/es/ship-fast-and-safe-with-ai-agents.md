@@ -1,7 +1,7 @@
 ---
 title: 'Rápido y Seguro con Agentes de IA: La Capa de Enforcement'
 description: 'Los agentes de IA mienten sobre los tests y pueden filtrar secretos. El enforcement en hooks y commits mantiene calidad, velocidad y seguridad juntas.'
-pubDate: 2026-04-27
+pubDate: 2026-04-22
 author: 'Juan Felipe Rivera González'
 tags: ['claude-code', 'agentes-de-ia', 'git-hooks', 'seguridad', 'calidad']
 cover: '@assets/blog/covers/enforcement-layer-cover.jpg'

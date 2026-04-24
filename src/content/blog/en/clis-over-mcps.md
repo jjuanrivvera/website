@@ -22,6 +22,8 @@ The same move is happening at major vendors. Cloudflare shipped `cf` in April 20
 
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why MCPs are not always the best fit for that job.
 
+One scope note before going further. This post assumes an agent that can execute shell commands, like Claude Code or Cursor in agent mode. If your agent has no shell access (web chatbots, embedded UI agents, most SaaS assistants), MCPs are the right path. Even there, the pattern below still applies: build the functionality as a CLI first, then wrap it as an MCP when you need the protocol surface. The "One Binary, Two Interfaces" section at the end shows how in a Go library.
+
 ## What Breaks First: Credentials
 
 A typical MySQL MCP configuration:

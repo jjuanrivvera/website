@@ -28,6 +28,10 @@ const listUuids = {
 
 const listUuid = listUuids[lang];
 const listmonkUrl = 'https://newsletter.jjuanrivvera.com/subscription/form';
+const altchaChallengeUrl =
+  'https://newsletter.jjuanrivvera.com/api/public/captcha/altcha';
+const altchaScriptUrl =
+  'https://newsletter.jjuanrivvera.com/public/static/altcha.umd.js';
 ---
 
 <aside class="subscribe-form" aria-labelledby="subscribe-heading">
@@ -64,10 +68,18 @@ const listmonkUrl = 'https://newsletter.jjuanrivvera.com/subscription/form';
         </button>
       </div>
 
+      <altcha-widget
+        challengeurl={altchaChallengeUrl}
+        class="subscribe-form__altcha"
+        hidefooter
+        hidelogo></altcha-widget>
+
       <p class="subscribe-form__hint">{t('newsletter.hint')}</p>
     </form>
   </div>
 </aside>
+
+<script is:inline src={altchaScriptUrl} type="module" async></script>
 
 <style>
   .subscribe-form {
@@ -169,6 +181,15 @@ const listmonkUrl = 'https://newsletter.jjuanrivvera.com/subscription/form';
     margin: 0;
     font-size: 0.85rem;
     color: rgb(100, 116, 139);
+  }
+
+  .subscribe-form__altcha {
+    --altcha-border-color: rgba(99, 102, 241, 0.3);
+    --altcha-color-base: rgba(15, 23, 42, 0.6);
+    --altcha-color-text: rgb(226, 232, 240);
+    --altcha-color-border-focus: rgb(99, 102, 241);
+    margin: 4px auto 0;
+    max-width: 100%;
   }
 
   @media (max-width: 540px) {

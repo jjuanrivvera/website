@@ -1,7 +1,7 @@
 ---
 title: 'Canvas CLI: La Guía Completa para Automatización de LMS'
 description: 'Domina la automatización de Canvas LMS con Canvas CLI. Aprende instalación, OAuth, operaciones por lotes y flujos de trabajo avanzados.'
-pubDate: 2025-01-20
+pubDate: 2026-01-20
 author: 'Juan Felipe Rivera González'
 tags: ['go', 'canvas-lms', 'cli', 'automation', 'ai-agents']
 cover: '@assets/blog/covers/canvas-cli-guide-cover.jpg'

@@ -409,7 +409,7 @@ export const ui = {
     '404.cta': 'Ir al Inicio',
 
     // Newsletter
-    'newsletter.heading': 'Recibí los nuevos posts en tu bandeja',
+    'newsletter.heading': 'Recibe los nuevos posts en tu bandeja',
     'newsletter.intro':
       'Notas prácticas sobre desarrollo asistido por IA, herramientas y los sistemas detrás. Un email cuando sale un post nuevo, sin spam.',
     'newsletter.emailLabel': 'Correo electrónico',

@@ -4,14 +4,19 @@
 
 ## Architecture (deployed)
 
-```
+```text
 Astro site (Netlify)
-  └── <SubscribeForm lang> [PHASE 3 — pending]
-        └── POST /api/subscribe (Astro server endpoint)
-              └── HTTPS + Basic Auth → Listmonk API on Pi
+  └── <SubscribeForm lang>
+        ├── altcha-widget fetches challenge cross-origin from Listmonk (CORS allowed)
+        └── HTML form POST cross-origin → newsletter.jjuanrivvera.com/subscription/form
+              └── Listmonk on Pi (Docker, behind home tunnel)
                     └── SMTP via Resend (smtp.resend.com:465 SSL)
                           └── Resend → Amazon SES → recipient inbox
 ```
+
+No first-party Astro server endpoint. Listmonk's hosted form handler accepts
+the cross-origin POST directly; browsers don't require CORS for plain HTML
+form submits.
 
 ## Phase 1 — DNS + Resend (DONE)
 
@@ -73,22 +78,19 @@ Resend domain `jjuanrivvera.com` verified. Send-only API key stored.
 - Cadence: per-post (one email per new blog post)
 - Welcome email: generic
 - Listmonk on: Pi (not VPS)
-- Turnstile on subscribe form: yes from day 1
+- Captcha on subscribe form: **Altcha** (built-in Listmonk; chosen over Turnstile because Listmonk doesn't natively support Turnstile and Altcha needs no third-party signup or server-side validation)
 
-## Phase 3 — Astro integration (PENDING)
+## Phase 3 — Astro integration (DONE)
 
-Tasks:
+Shipped:
 
-1. Build `<SubscribeForm lang={lang} />` Vue/Astro component
-2. Place in blog post layouts (bottom of post) and site footer
-3. Server endpoint at `/api/subscribe` — POST receives `{email, lang}`, calls Listmonk API
-4. Listmonk API token held in Netlify env var (never exposed to browser)
-5. Cloudflare Turnstile token verified server-side
-6. Language → list ID mapping:
-   - `en` → list id 3
-   - `es` → list id 4
-   - `pt` → list id 5
-7. Success page with double-opt-in instructions
+1. `<SubscribeForm lang={lang} />` reusable Astro component (`src/components/blog/SubscribeForm.astro`)
+2. Placed in blog post layouts after `<AuthorBio>`
+3. **HTML form POST cross-origin** to `https://newsletter.jjuanrivvera.com/subscription/form` — no server endpoint, no Listmonk API token in browser
+4. Per-language hidden input `l` carries the matching list UUID
+5. Altcha widget fetches challenge from `/api/public/captcha/altcha` (CORS: `https://jjuanrivvera.com`, `https://www.jjuanrivvera.com`)
+6. Listmonk validates the altcha solution server-side and sends the double-opt-in email
+7. Response renders on Listmonk's hosted page in a new tab (`target="_blank"`) so the reader keeps their place in the post
 
 ## Phase 4 — Content workflow (PENDING)
 

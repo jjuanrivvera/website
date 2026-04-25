@@ -3,11 +3,18 @@
  * SubscribeForm Component
  *
  * Newsletter subscription form with per-language Listmonk list routing.
- * Submits cross-origin to https://newsletter.jjuanrivvera.com/subscription/form
- * (HTML form POST allowed by browsers across origins without CORS).
  *
- * Listmonk handles the response page (success / already subscribed / error).
- * Double opt-in: subscribers receive a confirmation email before being added.
+ * Default flow (JS available): the form is intercepted, the altcha solution
+ * is read from the embedded widget, and a JSON POST goes to Listmonk's
+ * public subscription API. Success / error feedback renders inline; the
+ * reader stays on the post.
+ *
+ * Fallback (no JS): the form is a real <form action> that submits cross-
+ * origin to Listmonk's hosted /subscription/form. Listmonk renders the
+ * response on its own page in a new tab.
+ *
+ * Double opt-in: confirmation email goes out via Resend before any
+ * subscription is finalized.
  */
 
 import { useTranslations } from '@i18n/utils';
@@ -27,11 +34,11 @@ const listUuids = {
 } as const;
 
 const listUuid = listUuids[lang];
-const listmonkUrl = 'https://newsletter.jjuanrivvera.com/subscription/form';
-const altchaChallengeUrl =
-  'https://newsletter.jjuanrivvera.com/api/public/captcha/altcha';
-const altchaScriptUrl =
-  'https://newsletter.jjuanrivvera.com/public/static/altcha.umd.js';
+const listmonkOrigin = 'https://newsletter.jjuanrivvera.com';
+const listmonkUrl = `${listmonkOrigin}/subscription/form`;
+const altchaChallengeUrl = `${listmonkOrigin}/api/public/captcha/altcha`;
+const altchaScriptUrl = `${listmonkOrigin}/public/static/altcha.umd.js`;
+const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
 ---
 
 <aside class="subscribe-form" aria-labelledby="subscribe-heading">
@@ -46,6 +53,11 @@ const altchaScriptUrl =
       action={listmonkUrl}
       class="subscribe-form__form"
       target="_blank"
+      data-list-uuid={listUuid}
+      data-api-url={subscribeApiUrl}
+      data-success-msg={t('newsletter.success')}
+      data-error-msg={t('newsletter.error')}
+      data-already-msg={t('newsletter.alreadyMsg')}
     >
       <input type="hidden" name="l" value={listUuid} />
       <input type="hidden" name="nonce" value="" />
@@ -74,12 +86,94 @@ const altchaScriptUrl =
         hidefooter
         hidelogo></altcha-widget>
 
+      <p
+        class="subscribe-form__feedback"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
+      </p>
+
       <p class="subscribe-form__hint">{t('newsletter.hint')}</p>
     </form>
   </div>
 </aside>
 
 <script is:inline src={altchaScriptUrl} type="module" async></script>
+
+<script>
+  // Progressive enhancement: intercept submit, post via fetch to keep the
+  // reader on the page. If anything fails or JS is disabled, the form's
+  // native action takes over (cross-origin POST to Listmonk hosted form).
+  document
+    .querySelectorAll<HTMLFormElement>('.subscribe-form__form')
+    .forEach((form) => {
+      const apiUrl = form.dataset.apiUrl;
+      const listUuid = form.dataset.listUuid;
+      const successMsg = form.dataset.successMsg ?? 'Subscribed.';
+      const errorMsg = form.dataset.errorMsg ?? 'Something went wrong.';
+      const alreadyMsg = form.dataset.alreadyMsg ?? 'Already subscribed.';
+      const feedback = form.querySelector<HTMLParagraphElement>(
+        '.subscribe-form__feedback'
+      );
+      const button = form.querySelector<HTMLButtonElement>(
+        '.subscribe-form__button'
+      );
+      const emailInput = form.querySelector<HTMLInputElement>(
+        'input[name="email"]'
+      );
+      if (!apiUrl || !listUuid || !feedback || !button || !emailInput) return;
+
+      function showFeedback(text: string, ok: boolean) {
+        feedback!.textContent = text;
+        feedback!.hidden = false;
+        feedback!.classList.toggle('subscribe-form__feedback--ok', ok);
+        feedback!.classList.toggle('subscribe-form__feedback--err', !ok);
+      }
+
+      form.addEventListener('submit', async (event) => {
+        const altchaInput = form.querySelector<HTMLInputElement>(
+          'input[name="altcha"]'
+        );
+        const altcha = altchaInput?.value;
+        if (!altcha) {
+          // Altcha widget hasn't finished or failed to load — let the
+          // native form submit (cross-origin to Listmonk's hosted form).
+          return;
+        }
+
+        event.preventDefault();
+        button.disabled = true;
+        feedback.hidden = true;
+
+        try {
+          const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: emailInput.value,
+              list_uuids: [listUuid],
+              altcha,
+            }),
+          });
+          const data = (await res.json()) as {
+            data?: { has_optin?: boolean };
+            message?: string;
+          };
+          if (res.ok && data.data) {
+            showFeedback(data.data.has_optin ? successMsg : alreadyMsg, true);
+            form.reset();
+          } else {
+            showFeedback(data.message ?? errorMsg, false);
+          }
+        } catch {
+          showFeedback(errorMsg, false);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
+</script>
 
 <style>
   .subscribe-form {
@@ -190,6 +284,31 @@ const altchaScriptUrl =
     --altcha-color-border-focus: rgb(99, 102, 241);
     margin: 4px auto 0;
     max-width: 100%;
+  }
+
+  .subscribe-form__feedback {
+    margin: 4px 0 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .subscribe-form__feedback--ok {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    color: rgb(134, 239, 172);
+  }
+
+  .subscribe-form__feedback--err {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: rgb(252, 165, 165);
+  }
+
+  .subscribe-form__button[disabled] {
+    opacity: 0.7;
+    cursor: progress;
   }
 
   @media (max-width: 540px) {

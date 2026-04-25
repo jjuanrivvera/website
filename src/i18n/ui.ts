@@ -216,6 +216,10 @@ export const ui = {
     'newsletter.submit': 'Subscribe',
     'newsletter.hint':
       "You'll get a confirmation email to verify the address. Unsubscribe any time.",
+    'newsletter.success':
+      'Almost there. Check your inbox for the confirmation email.',
+    'newsletter.alreadyMsg': "You're already on the list.",
+    'newsletter.error': "Couldn't subscribe. Try again in a moment.",
   },
 
   es: {
@@ -417,6 +421,10 @@ export const ui = {
     'newsletter.submit': 'Suscribirme',
     'newsletter.hint':
       'Recibirás un email para confirmar la dirección. Te puedes desuscribir cuando quieras.',
+    'newsletter.success':
+      'Casi listo. Revisa tu inbox para el email de confirmación.',
+    'newsletter.alreadyMsg': 'Ya estás en la lista.',
+    'newsletter.error': 'No se pudo suscribir. Probá de nuevo en un momento.',
   },
   pt: {
     // Meta
@@ -615,6 +623,10 @@ export const ui = {
     'newsletter.submit': 'Inscrever-se',
     'newsletter.hint':
       'Você vai receber um email para confirmar o endereço. Pode cancelar a inscrição quando quiser.',
+    'newsletter.success':
+      'Quase lá. Verifique seu inbox para o email de confirmação.',
+    'newsletter.alreadyMsg': 'Você já está na lista.',
+    'newsletter.error': 'Não foi possível se inscrever. Tente em instantes.',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 

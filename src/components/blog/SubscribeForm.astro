@@ -54,6 +54,7 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
       class="subscribe-form__form"
       target="_blank"
       data-list-uuid={listUuid}
+      data-list-lang={lang}
       data-api-url={subscribeApiUrl}
       data-success-msg={t('newsletter.success')}
       data-error-msg={t('newsletter.error')}
@@ -107,11 +108,24 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
   // Progressive enhancement: intercept submit, post via fetch to keep the
   // reader on the page. If anything fails or JS is disabled, the form's
   // native action takes over (cross-origin POST to Listmonk hosted form).
+  type GtagFn = (...args: unknown[]) => void;
+  const gtag: GtagFn | undefined = (window as unknown as { gtag?: GtagFn })
+    .gtag;
+
+  function track(event: string, params: Record<string, unknown>) {
+    try {
+      gtag?.('event', event, params);
+    } catch {
+      // analytics is optional; never block the form on a tracking error
+    }
+  }
+
   document
     .querySelectorAll<HTMLFormElement>('.subscribe-form__form')
     .forEach((form) => {
       const apiUrl = form.dataset.apiUrl;
       const listUuid = form.dataset.listUuid;
+      const listLang = form.dataset.listLang ?? 'unknown';
       const successMsg = form.dataset.successMsg ?? 'Subscribed.';
       const errorMsg = form.dataset.errorMsg ?? 'Something went wrong.';
       const alreadyMsg = form.dataset.alreadyMsg ?? 'Already subscribed.';
@@ -167,10 +181,20 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
         button.disabled = true;
         feedback.hidden = true;
 
+        track('newsletter_submit', {
+          list_lang: listLang,
+          list_uuid: listUuid,
+        });
+
         const altcha = await waitForAltcha(5000);
         if (!altcha) {
           showFeedback(errorMsg, false);
           button.disabled = false;
+          track('newsletter_error', {
+            list_lang: listLang,
+            list_uuid: listUuid,
+            reason: 'altcha_timeout',
+          });
           return;
         }
 
@@ -189,13 +213,30 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
             message?: string;
           };
           if (res.ok && data.data) {
-            showFeedback(data.data.has_optin ? successMsg : alreadyMsg, true);
+            const hasOptin = data.data.has_optin;
+            showFeedback(hasOptin ? successMsg : alreadyMsg, true);
             form.reset();
+            track(hasOptin ? 'newsletter_subscribe' : 'newsletter_already', {
+              list_lang: listLang,
+              list_uuid: listUuid,
+            });
           } else {
             showFeedback(data.message ?? errorMsg, false);
+            track('newsletter_error', {
+              list_lang: listLang,
+              list_uuid: listUuid,
+              reason: 'api_error',
+              status: res.status,
+            });
           }
-        } catch {
+        } catch (e) {
           showFeedback(errorMsg, false);
+          track('newsletter_error', {
+            list_lang: listLang,
+            list_uuid: listUuid,
+            reason: 'fetch_failed',
+            error: (e as Error)?.message,
+          });
         } finally {
           button.disabled = false;
         }

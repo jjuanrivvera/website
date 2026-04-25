@@ -17,6 +17,7 @@ import TableOfContents from '@components/blog/TableOfContents.astro';
 import RelatedPosts from '@components/blog/RelatedPosts.astro';
 import AuthorBio from '@components/blog/AuthorBio.astro';
 import SocialShare from '@components/blog/SocialShare.astro';
+import SubscribeForm from '@components/blog/SubscribeForm.astro';
 import ReadingProgress from '@components/blog/ReadingProgress.astro';
 import { getReadingTime } from '@utils/readingTime';
 import { extractToc } from '@utils/toc';
@@ -261,6 +262,8 @@ const blogPostingSchema = generateBlogPostingSchema({
             />
 
             <AuthorBio name={data.author} lang={data.lang} />
+
+            <SubscribeForm lang={data.lang} />
           </div>
         </div>
 

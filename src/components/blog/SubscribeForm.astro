@@ -1,0 +1,187 @@
+---
+/**
+ * SubscribeForm Component
+ *
+ * Newsletter subscription form with per-language Listmonk list routing.
+ * Submits cross-origin to https://newsletter.jjuanrivvera.com/subscription/form
+ * (HTML form POST allowed by browsers across origins without CORS).
+ *
+ * Listmonk handles the response page (success / already subscribed / error).
+ * Double opt-in: subscribers receive a confirmation email before being added.
+ */
+
+import { useTranslations } from '@i18n/utils';
+
+interface Props {
+  lang?: 'en' | 'es' | 'pt';
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang);
+
+// Listmonk list UUIDs per language
+const listUuids = {
+  en: '1fd370d2-9c78-4e9d-98a2-9313fd5a0061',
+  es: '99da3660-a828-409c-8ad4-a5631ab09cb6',
+  pt: '97112328-d358-4ecf-bb43-33a63731a11b',
+} as const;
+
+const listUuid = listUuids[lang];
+const listmonkUrl = 'https://newsletter.jjuanrivvera.com/subscription/form';
+---
+
+<aside class="subscribe-form" aria-labelledby="subscribe-heading">
+  <div class="subscribe-form__inner">
+    <h3 id="subscribe-heading" class="subscribe-form__heading">
+      {t('newsletter.heading')}
+    </h3>
+    <p class="subscribe-form__intro">{t('newsletter.intro')}</p>
+
+    <form
+      method="POST"
+      action={listmonkUrl}
+      class="subscribe-form__form"
+      target="_blank"
+    >
+      <input type="hidden" name="l" value={listUuid} />
+      <input type="hidden" name="nonce" value="" />
+
+      <div class="subscribe-form__row">
+        <label for="newsletter-email" class="subscribe-form__label sr-only">
+          {t('newsletter.emailLabel')}
+        </label>
+        <input
+          id="newsletter-email"
+          type="email"
+          name="email"
+          required
+          placeholder={t('newsletter.emailPlaceholder')}
+          autocomplete="email"
+          class="subscribe-form__input"
+        />
+        <button type="submit" class="subscribe-form__button">
+          {t('newsletter.submit')}
+        </button>
+      </div>
+
+      <p class="subscribe-form__hint">{t('newsletter.hint')}</p>
+    </form>
+  </div>
+</aside>
+
+<style>
+  .subscribe-form {
+    margin-top: 48px;
+    padding: 28px;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+  }
+
+  .subscribe-form__inner {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .subscribe-form__heading {
+    margin: 0 0 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgb(226, 232, 240);
+  }
+
+  .subscribe-form__intro {
+    margin: 0 0 20px;
+    color: rgb(148, 163, 184);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .subscribe-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .subscribe-form__row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .subscribe-form__label.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .subscribe-form__input {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 1rem;
+    color: rgb(226, 232, 240);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .subscribe-form__input:focus {
+    outline: none;
+    border-color: rgb(99, 102, 241);
+  }
+
+  .subscribe-form__input::placeholder {
+    color: rgb(100, 116, 139);
+  }
+
+  .subscribe-form__button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: rgb(99, 102, 241);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      transform 0.1s ease;
+    white-space: nowrap;
+  }
+
+  .subscribe-form__button:hover {
+    background: rgb(79, 82, 220);
+  }
+
+  .subscribe-form__button:active {
+    transform: scale(0.98);
+  }
+
+  .subscribe-form__hint {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgb(100, 116, 139);
+  }
+
+  @media (max-width: 540px) {
+    .subscribe-form {
+      padding: 20px;
+    }
+
+    .subscribe-form__row {
+      flex-direction: column;
+    }
+
+    .subscribe-form__button {
+      width: 100%;
+    }
+  }
+</style>

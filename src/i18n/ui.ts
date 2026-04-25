@@ -206,6 +206,16 @@ export const ui = {
     '404.description':
       "The page you're looking for doesn't exist or has been moved.",
     '404.cta': 'Go Home',
+
+    // Newsletter
+    'newsletter.heading': 'Get new posts in your inbox',
+    'newsletter.intro':
+      'Practical notes on AI-assisted development, tooling, and the systems behind them. One email when a new post drops, no spam.',
+    'newsletter.emailLabel': 'Email address',
+    'newsletter.emailPlaceholder': 'you@email.com',
+    'newsletter.submit': 'Subscribe',
+    'newsletter.hint':
+      "You'll get a confirmation email to verify the address. Unsubscribe any time.",
   },
 
   es: {
@@ -397,6 +407,16 @@ export const ui = {
     '404.title': 'Página No Encontrada',
     '404.description': 'La página que buscas no existe o ha sido movida.',
     '404.cta': 'Ir al Inicio',
+
+    // Newsletter
+    'newsletter.heading': 'Recibí los nuevos posts en tu bandeja',
+    'newsletter.intro':
+      'Notas prácticas sobre desarrollo asistido por IA, herramientas y los sistemas detrás. Un email cuando sale un post nuevo, sin spam.',
+    'newsletter.emailLabel': 'Correo electrónico',
+    'newsletter.emailPlaceholder': 'tu@email.com',
+    'newsletter.submit': 'Suscribirme',
+    'newsletter.hint':
+      'Recibirás un email para confirmar la dirección. Te puedes desuscribir cuando quieras.',
   },
   pt: {
     // Meta
@@ -585,6 +605,16 @@ export const ui = {
     '404.title': 'Página Não Encontrada',
     '404.description': 'A página que você procura não existe ou foi movida.',
     '404.cta': 'Voltar ao Início',
+
+    // Newsletter
+    'newsletter.heading': 'Receba os novos posts no seu inbox',
+    'newsletter.intro':
+      'Notas práticas sobre desenvolvimento assistido por IA, ferramentas e os sistemas por trás. Um email quando sai um post novo, sem spam.',
+    'newsletter.emailLabel': 'E-mail',
+    'newsletter.emailPlaceholder': 'voce@email.com',
+    'newsletter.submit': 'Inscrever-se',
+    'newsletter.hint':
+      'Você vai receber um email para confirmar o endereço. Pode cancelar a inscrição quando quiser.',
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 

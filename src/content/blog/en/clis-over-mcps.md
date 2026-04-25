@@ -48,14 +48,14 @@ The database password lives in a JSON file. If the file sits in the project root
 
 Not every service has an OAuth flow available. MySQL, Redis, raw cloud storage buckets, and legacy APIs require an API key or username/password to authenticate. When the service needs a shared secret, that secret has to sit somewhere the client can read. In the MCPs I was using, that somewhere was the agent's config file. Services that do support OAuth (Atlassian's MCP, for example) sidestep this entirely, but for the rest, the credential lives with the integration and therefore within reach of the agent.
 
-I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP had the same pattern. Canvas LMS was a different shape of the same problem — the agent had a personal access token in `.env` and was building HTTP requests by hand against the Canvas API, which exposes the token to every shell invocation that reads the file.
+I had five MySQL MCPs across two projects. Each one carried plaintext credentials. Canvas LMS was a different shape of the same problem — the agent had a personal access token in `.env` and was building HTTP requests by hand against the Canvas API, which exposes the token to every shell invocation that reads the file.
 
 ## What a CLI Fixes
 
 A CLI sits between the agent and the service. The agent runs commands and reads structured output. Two things change structurally from the MCP setup:
 
 - **Auth stays out of context.** Tokens live in the system keyring. The agent runs `canvas courses list` and never sees an OAuth token. Token refresh, 401 retries, device flows all happen inside the CLI.
-- **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. Ten MCPs can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. And that output is composable: the agent can pipe it through `jq`, `grep`, `head`, or `awk` to drop fields and trim size before anything reaches context. Modern CLIs are built with this in mind, shipping LLM-friendly output formats (stable JSON, optional compact modes, terse flags, opt-in verbosity). With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
+- **Context stays small.** MCP servers register their tool schemas with the agent at session start, before any work begins. The Playwright MCP was the clearest case in my setup: a long list of browser-automation tools and verbose schemas pre-loaded into context every session, most of them irrelevant to whatever the task actually needed. The same shape on simple tasks burned more tokens than the work itself; on complex tasks it crowded out the room the agent needed for the actual problem. Ten MCPs of that shape can add tens of thousands of tokens of tool descriptions that live in context for the whole session. A CLI adds nothing until you call it; only the output of actual calls enters context. And that output is composable: the agent can pipe it through `jq`, `grep`, `head`, or `awk` to drop fields and trim size before anything reaches context. Modern CLIs are built with this in mind, shipping LLM-friendly output formats (stable JSON, optional compact modes, terse flags, opt-in verbosity). With current API prices and rate-limit cuts, that is the difference between a session you can afford and one you cannot.
 - **The direction is one-way.** A CLI can be wrapped as an MCP server later (ophis does this for Cobra-based CLIs in a single library call, shown further down). Going the other way is harder. MCP servers run inside the protocol runtime. To turn one into a usable shell command, you rewrite most of it. Building the CLI first keeps both options open and lets you expose the MCP surface only when a client actually asks for it.
 
 A well-built CLI can also ship rate limiting, caching, pagination, and cleaner error messages. MCPs can ship the same things. The three wins above are the only ones baked into the shape of each approach.
@@ -93,13 +93,11 @@ The agent cannot accidentally run a destructive operation because the CLI reject
 
 ## When the MCP Wins
 
-I did not replace everything. Three MCPs stayed.
+I did not replace everything. Two MCPs stayed.
 
 **Jira (Atlassian official MCP).** Functional coverage decides this one. My Jira workflow uses worklogs (list, edit, delete, not just add), ADF-formatted comments (bold, multi-paragraph), user account lookups, issue type metadata for programmatic ticket creation, and Rovo AI search. I evaluated both the official Atlassian CLI (ACLI) and the strong open-source option (ankitpokhrel/jira-cli, ~5K stars). As of April 2026, jira-cli supports `worklog add` but not full CRUD, accepts markdown for comments but does not preserve ADF structure, and has no user search or issue-type field metadata. ACLI is evolving but still falls short. The Atlassian MCP via OAuth covers all of it — one browser auth flow, typed tools across the full API surface.
 
 **Context7.** Live, up-to-date documentation lookup for libraries. The MCP indexes thousands of docs sites and exposes a search tool the agent can hit when it needs current API references. The CLI equivalent would be a docs scraper I'd have to maintain; the MCP is the right shape because the value is in the index, not in the protocol.
-
-**Sequential thinking.** Forces the model to externalize a chain of reasoning steps before acting. Useful early in 2025; less so now that recent Claude and GPT-5 models have native think modes that produce comparable structured reasoning without the extra MCP roundtrip. I keep it on for tasks where I want to see the steps in the trace, not because I need it.
 
 The rule I use: when the CLI covers enough of what the agent needs, use it. When the gap is big enough to matter, keep the MCP. And when the MCP exposes something the model can't get any other way (live external indexes, vendor-specific full APIs), the protocol pays for itself.
 

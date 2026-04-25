@@ -16,7 +16,7 @@ O Model Context Protocol (MCP) é a forma padrão de dar acesso a serviços exte
 
 O padrão é útil. Alguns MCPs acertam: o da Atlassian usa OAuth através de um fluxo de navegador sem segredos no config. Outros trazem salvaguardas embutidas. O MCP de MySQL que eu usava roda por padrão em modo somente leitura e rejeita DDL. Essa restrição soa bem no papel, mas o padrão de armazenamento de credenciais por baixo a torna contornável. Se as credenciais vivem em um JSON que o agente pode ler diretamente, o agente não precisa da função de consulta do MCP para alcançar o banco. Pode ler o config, pegar a senha e se conectar por conta própria.
 
-Depois de seis meses rodando ambos em produção, deixei os servidores MCP que usava para Canvas, MySQL e automação de navegador. Canvas passou para canvas-cli. MySQL passou para um CLI interno em Go que mantenho para o dia a dia com um cliente (também cobre deploys, health checks e gerenciamento de serviços). A automação do navegador passou para playwright-cli. Dois desses três são CLIs que eu mantenho; o terceiro é uma ferramenta existente.
+Depois de seis meses rodando ambos em produção, movi meu trabalho de MySQL e automação de navegador de servidores MCP para CLIs. MySQL passou para um CLI interno em Go que mantenho para o dia a dia com um cliente (também cobre deploys, health checks e gerenciamento de serviços). A automação do navegador passou para playwright-cli. Canvas LMS, onde o agente vinha batendo na API com `curl` cru, passou para canvas-cli — mesmo argumento de segurança: a auth fica no keyring, não no contexto do agente.
 
 O [post anterior](/blog/ship-fast-and-safe-with-ai-agents) cobriu a camada de enforcement que mantém o comportamento do agente seguro dentro do editor. Hooks, linters, scanners de segredos, allowlists de permissões, portões de conclusão. Este post cobre a camada além disso: como o agente alcança serviços externos, e por que MCPs nem sempre são a melhor opção para esse trabalho.
 
@@ -48,7 +48,7 @@ A senha do banco vive em um arquivo JSON. Se o arquivo está na raiz do projeto,
 
 Nem todo serviço tem um fluxo OAuth disponível. MySQL, Redis, buckets de armazenamento em nuvem e APIs legadas exigem uma API key ou usuário/senha para autenticar. Quando o serviço precisa de um segredo compartilhado, esse segredo tem que estar em algum lugar que o cliente possa ler. Nos MCPs que eu usava, esse lugar era o arquivo de config do agente. Os serviços que suportam OAuth (o MCP da Atlassian, por exemplo) contornam isso por completo, mas para o resto a credencial vive com a integração e portanto ao alcance do agente.
 
-Eu tinha cinco MCPs de MySQL espalhados em dois projetos. Cada um carregava credenciais em texto plano. O MCP de Playwright e a avaliação do Canvas LMS tinham o mesmo padrão: credenciais no config, porque era assim que esses MCPs eram construídos.
+Eu tinha cinco MCPs de MySQL espalhados em dois projetos. Cada um carregava credenciais em texto plano. O MCP de Playwright tinha o mesmo padrão. Canvas LMS era uma variante do mesmo problema: o agente tinha um personal access token em `.env` e montava as requisições HTTP na mão contra a API do Canvas, o que expõe o token a qualquer shell que leia o arquivo.
 
 ## O que um CLI resolve
 
@@ -93,13 +93,15 @@ O agente não consegue rodar acidentalmente uma operação destrutiva porque o C
 
 ## Quando o MCP ganha
 
-Eu não substituí tudo. Jira ficou como MCP.
+Eu não substituí tudo. Três MCPs ficaram.
 
-A razão é cobertura funcional. Meu fluxo de Jira usa worklogs (list, edit, delete, não só add), comentários em formato ADF (bold, multi-parágrafo), busca de contas de usuário, metadata de tipos de issue para criação programática de tickets e busca com Rovo AI. Avaliei tanto o CLI oficial da Atlassian (ACLI) quanto a opção open source mais forte (ankitpokhrel/jira-cli, ~5K estrelas). Em abril de 2026, jira-cli suporta `worklog add` mas não CRUD completo, aceita markdown para comentários mas não preserva a estrutura ADF, e não tem busca de usuários nem metadata de campos por tipo de issue. ACLI está evoluindo mas ainda fica curto para meu fluxo.
+**Jira (MCP oficial da Atlassian).** Cobertura funcional decide esse. Meu fluxo de Jira usa worklogs (list, edit, delete, não só add), comentários em formato ADF (bold, multi-parágrafo), busca de contas de usuário, metadata de tipos de issue para criação programática de tickets e busca com Rovo AI. Avaliei tanto o CLI oficial da Atlassian (ACLI) quanto a opção open source mais forte (ankitpokhrel/jira-cli, ~5K estrelas). Em abril de 2026, jira-cli suporta `worklog add` mas não CRUD completo, aceita markdown mas não preserva a estrutura ADF, e não tem busca de usuários nem metadata de campos por tipo de issue. ACLI está evoluindo mas ainda fica curto. O MCP da Atlassian via OAuth cobre tudo — um único fluxo de auth no navegador, ferramentas tipadas sobre toda a superfície da API.
 
-O MCP da Atlassian via OAuth cobre tudo isso. Um único fluxo de auth no navegador, e o agente ganha ferramentas tipadas sobre toda a superfície da API.
+**Context7.** Lookup de documentação viva e atualizada para bibliotecas. O MCP indexa milhares de sites de docs e expõe uma tool de busca que o agente chama quando precisa de references atuais. O equivalente CLI seria um scraper que eu teria que manter; o MCP é a forma certa aqui porque o valor está no índice, não no protocolo.
 
-A regra que uso: quando o CLI cobre o suficiente do que o agente precisa, use. Quando a lacuna é grande o bastante para importar, mantenha o MCP.
+**Sequential thinking.** Força o modelo a externalizar uma cadeia de passos de raciocínio antes de agir. Útil no início de 2025; menos agora que Claude recente e GPT-5 trazem think modes nativos que produzem raciocínio estruturado equivalente sem o roundtrip extra do MCP. Mantenho ativo em tarefas onde quero ver os passos no trace, não porque preciso.
+
+A regra que uso: quando o CLI cobre o suficiente do que o agente precisa, use. Quando a lacuna é grande o bastante para importar, mantenha o MCP. E quando o MCP expõe algo que o modelo não consegue obter de outra forma (índices externos vivos, APIs completas vendor-specific), o protocolo se paga.
 
 ## Escrevendo um CLI pensando em agentes
 

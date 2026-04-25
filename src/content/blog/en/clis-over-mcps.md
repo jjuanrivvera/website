@@ -16,7 +16,7 @@ Model Context Protocol (MCP) is the standard way to give AI coding assistants ac
 
 The pattern is useful. Some MCPs get it right: Atlassian's uses OAuth through a browser flow with no secrets in config. Others ship with built-in safeguards. The MySQL MCP I was running defaults to read-only queries and denies DDL. That restriction sounds good on paper, but the credential storage pattern underneath makes it bypassable. If credentials live in a JSON config the agent can read directly, the agent does not need the MCP's query function to reach the database at all. It can read the config, grab the password, and connect on its own.
 
-After six months running both in production, I moved off the MCP servers I was using for Canvas, MySQL, and browser automation. Canvas moved to canvas-cli. MySQL moved to a separate internal Go CLI I maintain for day-to-day work with a client (it also covers deployments, health checks, and service management). Browser automation moved to playwright-cli. Two of those three are CLIs I maintain; the third is an existing tool.
+After six months running both in production, I moved my MySQL and browser-automation work off MCP servers and onto CLIs. MySQL moved to a separate internal Go CLI I maintain for day-to-day work with a client (it also covers deployments, health checks, and service management). Browser automation moved to playwright-cli. Canvas LMS work, where the agent had previously been driving the API with raw `curl` calls, moved to canvas-cli — same security argument: auth lives in the keyring, not in the agent's context.
 
 The [previous post](/blog/ship-fast-and-safe-with-ai-agents) covered the enforcement layer that keeps agent behavior safe inside the editor. Hooks, linters, secret scanners, permission allowlists, completion gates. This post covers the layer beyond that: how the agent reaches external services, and why MCPs are not always the best fit for that job.
 
@@ -48,7 +48,7 @@ The database password lives in a JSON file. If the file sits in the project root
 
 Not every service has an OAuth flow available. MySQL, Redis, raw cloud storage buckets, and legacy APIs require an API key or username/password to authenticate. When the service needs a shared secret, that secret has to sit somewhere the client can read. In the MCPs I was using, that somewhere was the agent's config file. Services that do support OAuth (Atlassian's MCP, for example) sidestep this entirely, but for the rest, the credential lives with the integration and therefore within reach of the agent.
 
-I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP and the Canvas LMS evaluation had the same pattern: credentials in config, because that is how those MCPs were built.
+I had five MySQL MCPs across two projects. Each one carried plaintext credentials. The Playwright MCP had the same pattern. Canvas LMS was a different shape of the same problem — the agent had a personal access token in `.env` and was building HTTP requests by hand against the Canvas API, which exposes the token to every shell invocation that reads the file.
 
 ## What a CLI Fixes
 
@@ -93,13 +93,15 @@ The agent cannot accidentally run a destructive operation because the CLI reject
 
 ## When the MCP Wins
 
-I did not replace everything. Jira stayed as an MCP.
+I did not replace everything. Three MCPs stayed.
 
-The reason is functional coverage. My Jira workflow uses worklogs (list, edit, delete, not just add), ADF-formatted comments (bold, multi-paragraph), user account lookups, issue type metadata for programmatic ticket creation, and Rovo AI search. I evaluated both the official Atlassian CLI (ACLI) and the strong open-source option (ankitpokhrel/jira-cli, ~5K stars). As of April 2026, jira-cli supports `worklog add` but not full CRUD, accepts markdown for comments but does not preserve ADF structure, and has no user search or issue-type field metadata. ACLI is evolving but still falls short for my workflow.
+**Jira (Atlassian official MCP).** Functional coverage decides this one. My Jira workflow uses worklogs (list, edit, delete, not just add), ADF-formatted comments (bold, multi-paragraph), user account lookups, issue type metadata for programmatic ticket creation, and Rovo AI search. I evaluated both the official Atlassian CLI (ACLI) and the strong open-source option (ankitpokhrel/jira-cli, ~5K stars). As of April 2026, jira-cli supports `worklog add` but not full CRUD, accepts markdown for comments but does not preserve ADF structure, and has no user search or issue-type field metadata. ACLI is evolving but still falls short. The Atlassian MCP via OAuth covers all of it — one browser auth flow, typed tools across the full API surface.
 
-The Atlassian MCP via OAuth covers all of it. One browser auth flow, and the agent gets typed tools across the full API surface.
+**Context7.** Live, up-to-date documentation lookup for libraries. The MCP indexes thousands of docs sites and exposes a search tool the agent can hit when it needs current API references. The CLI equivalent would be a docs scraper I'd have to maintain; the MCP is the right shape because the value is in the index, not in the protocol.
 
-The rule I use: when the CLI covers enough of what the agent needs, use it. When the gap is big enough to matter, keep the MCP.
+**Sequential thinking.** Forces the model to externalize a chain of reasoning steps before acting. Useful early in 2025; less so now that recent Claude and GPT-5 models have native think modes that produce comparable structured reasoning without the extra MCP roundtrip. I keep it on for tasks where I want to see the steps in the trace, not because I need it.
+
+The rule I use: when the CLI covers enough of what the agent needs, use it. When the gap is big enough to matter, keep the MCP. And when the MCP exposes something the model can't get any other way (live external indexes, vendor-specific full APIs), the protocol pays for itself.
 
 ## Writing a CLI With Agents in Mind
 

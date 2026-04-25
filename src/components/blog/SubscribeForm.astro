@@ -83,6 +83,8 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
       <altcha-widget
         challengeurl={altchaChallengeUrl}
         class="subscribe-form__altcha"
+        auto="onload"
+        floating="false"
         hidefooter
         hidelogo></altcha-widget>
 
@@ -131,20 +133,46 @@ const subscribeApiUrl = `${listmonkOrigin}/api/public/subscription`;
         feedback!.classList.toggle('subscribe-form__feedback--err', !ok);
       }
 
-      form.addEventListener('submit', async (event) => {
-        const altchaInput = form.querySelector<HTMLInputElement>(
+      function getAltchaValue(): string | null {
+        const input = form.querySelector<HTMLInputElement>(
           'input[name="altcha"]'
         );
-        const altcha = altchaInput?.value;
-        if (!altcha) {
-          // Altcha widget hasn't finished or failed to load — let the
-          // native form submit (cross-origin to Listmonk's hosted form).
-          return;
-        }
+        const v = input?.value;
+        return v && v.length > 0 ? v : null;
+      }
 
+      function waitForAltcha(timeoutMs: number): Promise<string | null> {
+        const existing = getAltchaValue();
+        if (existing) return Promise.resolve(existing);
+        return new Promise((resolve) => {
+          const widget = form.querySelector('altcha-widget');
+          let done = false;
+          const finish = (val: string | null) => {
+            if (done) return;
+            done = true;
+            widget?.removeEventListener('verified', onVerified);
+            resolve(val);
+          };
+          const onVerified = () => finish(getAltchaValue());
+          widget?.addEventListener('verified', onVerified);
+          setTimeout(() => finish(getAltchaValue()), timeoutMs);
+        });
+      }
+
+      form.addEventListener('submit', async (event) => {
+        // Always handle via fetch so the reader stays on the post; the
+        // cross-origin form action remains as a hard fallback if JS is
+        // blocked entirely.
         event.preventDefault();
         button.disabled = true;
         feedback.hidden = true;
+
+        const altcha = await waitForAltcha(5000);
+        if (!altcha) {
+          showFeedback(errorMsg, false);
+          button.disabled = false;
+          return;
+        }
 
         try {
           const res = await fetch(apiUrl, {

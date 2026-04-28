@@ -16,7 +16,7 @@ El Model Context Protocol (MCP) es la forma estándar de darle acceso a servicio
 
 El patrón es útil. Algunos MCPs lo hacen bien: el de Atlassian usa OAuth a través de un flujo de navegador sin secretos en config. Otros ya vienen con protecciones incorporadas. El MCP de MySQL que yo usaba corre por defecto en modo solo lectura y rechaza DDL. Esa restricción suena bien sobre el papel, pero el patrón de almacenamiento de credenciales que hay por debajo la hace evitable. Si las credenciales viven en un JSON que el agente puede leer directamente, el agente no necesita la función de consulta del MCP para llegar a la base de datos. Puede leer el config, tomar la contraseña y conectarse por su cuenta.
 
-Después de seis meses corriendo ambos en producción, moví mi trabajo de MySQL y automatización de navegador de servidores MCP a CLIs. MySQL pasó a un CLI interno en Go que mantengo para el día a día con un cliente (también cubre despliegues, health checks y gestión de servicios). La automatización del navegador pasó a playwright-cli. Canvas LMS, donde el agente venía golpeando la API con `curl` crudo, pasó a canvas-cli — mismo argumento de seguridad: la auth vive en el keyring, no en el contexto del agente.
+Después de seis meses corriendo ambos en producción, moví mi trabajo de MySQL y automatización de navegador de servidores MCP a CLIs. MySQL pasó a un CLI interno en Go que mantengo para el día a día con un cliente (también cubre despliegues, health checks y gestión de servicios). La automatización del navegador pasó a playwright-cli. Canvas LMS, donde el agente venía golpeando la API con `curl` crudo, pasó a canvas-cli por la misma razón: la auth vive en el keyring, no en el contexto del agente.
 
 El [post anterior](/blog/ship-fast-and-safe-with-ai-agents) cubrió la capa de enforcement que mantiene el comportamiento del agente seguro dentro del editor. Hooks, linters, escáneres de secretos, listas de permisos, controles de finalización. Este post cubre la capa más allá: cómo el agente llega a los servicios externos, y por qué los MCPs no siempre son la mejor opción para esa tarea.
 
@@ -78,7 +78,7 @@ Para los CLIs que un LLM no conoce (herramientas internas, CLIs de nichos espec�
 
 La auth usa OAuth 2.0 con PKCE y guarda los tokens en el keyring del sistema. El soporte multi-instancia me deja cambiar de entorno: `canvas --instance production courses list` versus `canvas --instance sandbox courses list`. Los formatos de salida incluyen JSON, tabla y CSV. El agente típicamente usa `--output json` porque es más fácil de parsear.
 
-Sin configuración específica del protocolo, sin runtime especial. Un único binario enlazado estáticamente en el PATH. Si mañana cambiara de herramienta de IA, el CLI seguiría funcionando sin cambios.
+Un único binario enlazado estáticamente en el PATH. Si mañana cambiara de herramienta de IA, el CLI seguiría funcionando sin cambios.
 
 ### Un CLI interno de cliente con mecanismos de seguridad
 
@@ -95,7 +95,7 @@ El agente no puede correr accidentalmente una operación destructiva porque el C
 
 No reemplacé todo. Dos MCPs se quedaron.
 
-**Jira (MCP oficial de Atlassian).** Cobertura funcional decide este. Mi flujo de Jira usa worklogs (list, edit, delete, no solo add), comentarios en formato ADF (bold, multi-párrafo), búsqueda de cuentas de usuario, metadata de tipos de issue para creación programática de tickets y búsqueda con Rovo AI. Evalué tanto el CLI oficial de Atlassian (ACLI) como la opción open source más fuerte (ankitpokhrel/jira-cli, ~5K estrellas). A abril de 2026, jira-cli soporta `worklog add` pero no CRUD completo, acepta markdown pero no preserva la estructura ADF, y no tiene búsqueda de usuarios ni metadata de campos por tipo de issue. ACLI está evolucionando pero todavía se queda corto. El MCP de Atlassian vía OAuth cubre todo eso — un único flujo de auth en navegador, herramientas tipadas sobre toda la superficie de la API.
+**Jira (MCP oficial de Atlassian).** Cobertura funcional decide este. Mi flujo de Jira usa worklogs (list, edit, delete, no solo add), comentarios en formato ADF (bold, multi-párrafo), búsqueda de cuentas de usuario, metadata de tipos de issue para creación programática de tickets y búsqueda con Rovo AI. Evalué tanto el CLI oficial de Atlassian (ACLI) como la opción open source más fuerte (ankitpokhrel/jira-cli, ~5K estrellas). A abril de 2026, jira-cli soporta `worklog add` pero no CRUD completo, acepta markdown pero no preserva la estructura ADF, y no tiene búsqueda de usuarios ni metadata de campos por tipo de issue. ACLI está evolucionando pero todavía se queda corto. El MCP de Atlassian vía OAuth cubre todo eso: un único flujo de auth en navegador, herramientas tipadas sobre toda la superficie de la API.
 
 **Context7.** Lookup de documentación viva y al día para librerías. El MCP indexa miles de sites de docs y expone una tool de búsqueda que el agente puede llamar cuando necesita references actualizadas. El equivalente CLI sería un scraper que tendría que mantener; el MCP es la forma correcta acá porque el valor está en el índice, no en el protocolo.
 

@@ -41,6 +41,15 @@ const LIST_UUIDS = {
   pt: '97112328-d358-4ecf-bb43-33a63731a11b',
 };
 
+// Listmonk's POST /api/campaigns expects integer list IDs in `lists`,
+// not UUIDs. Numeric IDs are stable per Listmonk install (assigned at
+// list creation time). Keep both maps in sync if a list is recreated.
+const LIST_IDS = {
+  en: 3,
+  es: 4,
+  pt: 5,
+};
+
 const PATH_LABEL = {
   en: 'blog',
   es: 'es/blog',
@@ -335,7 +344,7 @@ async function createAndSendCampaign({ lang, slug, frontmatter }) {
   const created = await listmonk('POST', '/api/campaigns', {
     name,
     subject,
-    lists: [listUuid],
+    lists: [LIST_IDS[lang]],
     type: 'regular',
     content_type: 'html',
     body: html,

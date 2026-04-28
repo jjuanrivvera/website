@@ -18,8 +18,6 @@
 //
 // Optional env:
 //   GITHUB_EVENT_PATH   Push event payload (provided automatically in CI)
-//   TELEGRAM_BOT_TOKEN  If set, posts a status message to Juan after each send
-//   TELEGRAM_CHAT_ID    Default Juan's chat (1478765505)
 //   DRY_RUN=1           Skip actual API calls; just log what would happen
 //   FORCE_POSTS=...     Comma-separated `lang/slug` overrides (e.g. for testing
 //                       without a push event). Bypasses git change detection.
@@ -358,26 +356,6 @@ async function createAndSendCampaign({ lang, slug, frontmatter }) {
   return { skipped: false, campaignId, name, listUuid, url };
 }
 
-async function notifyTelegram(text) {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID || '1478765505';
-  if (!token) return;
-  try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        disable_web_page_preview: true,
-      }),
-    });
-  } catch (err) {
-    // Don't block the run if Telegram is flaky.
-    console.warn('Telegram notify failed:', err.message);
-  }
-}
-
 async function main() {
   if (!DRY_RUN) {
     for (const k of REQUIRED_ENV) {
@@ -422,31 +400,27 @@ async function main() {
     }
   }
 
-  // Summarize on Telegram. Only ping when we actually did something — no
-  // notification for "nothing changed" runs.
+  // Summarize to stdout so the GitHub Actions log captures what happened.
+  // No external notifications — Juan is one of the subscribers, so the
+  // proof that the pipeline works is a real email landing in his inbox.
   const sent = results.filter((r) => !r.skipped && !r.error && !r.dryRun);
   const skipped = results.filter((r) => r.skipped);
   const errors = results.filter((r) => r.error);
-  if (sent.length || errors.length) {
-    const lines = [];
-    if (sent.length) {
-      lines.push('📬 Newsletter dispatched');
-      for (const r of sent) {
-        lines.push(
-          `  · ${r.lang}/${r.slug} → list ${r.listUuid.slice(0, 8)}… (campaign ${r.campaignId})`
-        );
-      }
+  if (sent.length) {
+    info('Newsletter dispatched:');
+    for (const r of sent) {
+      info(
+        `  · ${r.lang}/${r.slug} → list ${r.listUuid.slice(0, 8)}… (campaign ${r.campaignId})`
+      );
     }
-    if (skipped.length) {
-      lines.push('Skipped (already-sent or no-list):');
-      for (const r of skipped)
-        lines.push(`  · ${r.lang}/${r.slug} — ${r.reason}`);
-    }
-    if (errors.length) {
-      lines.push('⚠️ Errors:');
-      for (const r of errors) lines.push(`  · ${r.lang}/${r.slug}: ${r.error}`);
-    }
-    await notifyTelegram(lines.join('\n'));
+  }
+  if (skipped.length) {
+    info('Skipped (already-sent or no-list):');
+    for (const r of skipped) info(`  · ${r.lang}/${r.slug} — ${r.reason}`);
+  }
+  if (errors.length) {
+    info('Errors:');
+    for (const r of errors) info(`  · ${r.lang}/${r.slug}: ${r.error}`);
   }
 
   if (errors.length > 0) process.exit(1);
@@ -454,7 +428,5 @@ async function main() {
 
 main().catch((err) => {
   console.error('Fatal:', err);
-  notifyTelegram(`⚠️ Newsletter pipeline crashed: ${err.message}`).finally(() =>
-    process.exit(1)
-  );
+  process.exit(1);
 });

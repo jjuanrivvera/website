@@ -13,8 +13,6 @@
 #   LISTMONK_TOKEN   token for that API user
 #
 # Optional:
-#   TELEGRAM_BOT_TOKEN   if set, the workflow posts a Telegram summary
-#                        after each run
 #   NEWSLETTER_FROM_EMAIL  defaults to "Juan Rivera <hello@jjuanrivvera.com>"
 #
 # Re-running the script is safe — it overwrites existing values.
@@ -84,8 +82,6 @@ prompt LISTMONK_URL "Listmonk URL" "https://newsletter.jjuanrivvera.com"
 prompt LISTMONK_USER "Listmonk API user (kind=API)" ""
 prompt_secret LISTMONK_TOKEN "Listmonk API token"
 prompt NEWSLETTER_FROM_EMAIL "Newsletter from email" "Juan Rivera <hello@jjuanrivvera.com>"
-prompt_secret TELEGRAM_BOT_TOKEN "Telegram bot token (optional)" yes
-prompt TELEGRAM_CHAT_ID "Telegram chat id" "1478765505"
 
 set_secret() {
   local key="$1"
@@ -104,8 +100,6 @@ set_secret LISTMONK_URL "$LISTMONK_URL"
 set_secret LISTMONK_USER "$LISTMONK_USER"
 set_secret LISTMONK_TOKEN "$LISTMONK_TOKEN"
 set_secret NEWSLETTER_FROM_EMAIL "$NEWSLETTER_FROM_EMAIL"
-set_secret TELEGRAM_BOT_TOKEN "${TELEGRAM_BOT_TOKEN:-}"
-set_secret TELEGRAM_CHAT_ID "$TELEGRAM_CHAT_ID"
 
 echo
 echo "Done. The 'Publish newsletter' workflow will use these on the next push to main."

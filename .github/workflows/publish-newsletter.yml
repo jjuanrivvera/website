@@ -12,8 +12,7 @@ name: Publish newsletter
 #   LISTMONK_TOKEN  token for that API user
 #
 # Optional secrets:
-#   TELEGRAM_BOT_TOKEN  if set, posts a status summary after each run
-#   TELEGRAM_CHAT_ID    overrides the default chat (Juan's id)
+#   NEWSLETTER_FROM_EMAIL  overrides the default From address
 
 on:
   push:
@@ -61,8 +60,6 @@ jobs:
           LISTMONK_URL: ${{ secrets.LISTMONK_URL }}
           LISTMONK_USER: ${{ secrets.LISTMONK_USER }}
           LISTMONK_TOKEN: ${{ secrets.LISTMONK_TOKEN }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
           FORCE_POSTS: ${{ github.event.inputs.force_posts }}
           DRY_RUN: ${{ github.event.inputs.dry_run }}

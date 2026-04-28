@@ -338,7 +338,7 @@ async function createAndSendCampaign({ lang, slug, frontmatter }) {
     body: html,
     from_email:
       process.env.NEWSLETTER_FROM_EMAIL ||
-      'Juan Rivera <hello@jjuanrivvera.com>',
+      'Juan Rivera <newsletter@jjuanrivvera.com>',
     messenger: 'email',
     tags: ['auto-publish', `lang-${lang}`],
   });

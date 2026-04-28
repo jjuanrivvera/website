@@ -1,7 +1,7 @@
 ---
 title: 'CLIs Over MCPs for AI Tool Integration'
 description: 'MCP servers put credentials in JSON configs. CLIs keep them in a keyring. After six months using both, I moved my main integrations off MCP. Here is why.'
-pubDate: 2026-05-04
+pubDate: 2026-04-28
 author: 'Juan Felipe Rivera González'
 tags: ['claude-code', 'mcp', 'cli', 'go', 'security']
 cover: '@assets/blog/covers/clis-over-mcps-cover.jpg'

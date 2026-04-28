@@ -1,7 +1,7 @@
 ---
 title: 'CLIs en lugar de MCPs para integrar herramientas de IA'
 description: 'Los MCP guardan credenciales en JSON. Los CLI las dejan en el keyring. Después de seis meses con ambos, moví mis integraciones fuera de MCP.'
-pubDate: 2026-05-04
+pubDate: 2026-04-28
 author: 'Juan Felipe Rivera González'
 tags: ['claude-code', 'mcp', 'cli', 'go', 'security']
 cover: '@assets/blog/covers/clis-over-mcps-cover.jpg'

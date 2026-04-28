@@ -264,6 +264,11 @@ async function listmonk(method, route, body) {
     headers: {
       'Content-Type': 'application/json',
       Authorization: listmonkAuthHeader(),
+      // Bypass token for the Cloudflare "Not in colombia" WAF rule. The
+      // value is a legacy IP kept by the rule for back-compat; it is not
+      // a secret. Without this header, GitHub-hosted runners (US IPs)
+      // get a CF challenge page instead of the Listmonk JSON response.
+      'x-vps': '5.183.9.242',
     },
     body: body ? JSON.stringify(body) : undefined,
   });

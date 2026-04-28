@@ -54,7 +54,7 @@ echo
 set_secret() {
   local key="$1"
   local val="$2"
-  printf '%s' "$val" | gh secret set "$key" --repo "$REPO" --body -
+  printf '%s' "$val" | gh secret set "$key" --repo "$REPO"
   echo "  ✓ $key"
 }
 

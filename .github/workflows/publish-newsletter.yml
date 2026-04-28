@@ -1,0 +1,66 @@
+name: Publish newsletter
+
+# Fires when a new blog post lands on main. The script in
+# scripts/publish-to-newsletter.mjs reads the push event, finds added or
+# modified .md files under src/content/blog/<lang>/, and creates a Listmonk
+# campaign per published post that immediately sends to the matching
+# language list. Idempotent — reruns or force-pushes don't double-send.
+#
+# Required repo secrets (set with scripts/setup-newsletter-secrets.sh):
+#   LISTMONK_URL    base URL of the Listmonk instance
+#   LISTMONK_USER   API user (admin → Users → create API user)
+#   LISTMONK_TOKEN  token for that API user
+#
+# Optional secrets:
+#   NEWSLETTER_FROM_EMAIL  overrides the default From address
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/content/blog/**/*.md'
+  # Manual trigger for re-runs and ad-hoc dispatches. `force_posts` accepts
+  # comma-separated `lang/slug` entries (e.g. "en/clis-over-mcps,es/clis-over-mcps")
+  # to bypass git change detection — useful when re-publishing or when the
+  # change-detection diff misses a file.
+  workflow_dispatch:
+    inputs:
+      force_posts:
+        description: 'Comma-separated lang/slug entries (optional)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Skip API calls (1 = dry run)'
+        required: false
+        default: '0'
+
+# Single run at a time. If two pushes land in quick succession we serialize
+# them rather than running concurrent jobs that race on Listmonk dedup.
+concurrency:
+  group: publish-newsletter
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need the previous commit so the script's git-diff fallback works
+          # if the push event payload is empty (rare but possible on rebases).
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run newsletter dispatcher
+        env:
+          LISTMONK_URL: ${{ secrets.LISTMONK_URL }}
+          LISTMONK_USER: ${{ secrets.LISTMONK_USER }}
+          LISTMONK_TOKEN: ${{ secrets.LISTMONK_TOKEN }}
+          NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
+          FORCE_POSTS: ${{ github.event.inputs.force_posts }}
+          DRY_RUN: ${{ github.event.inputs.dry_run }}
+        run: node scripts/publish-to-newsletter.mjs

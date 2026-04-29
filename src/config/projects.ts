@@ -174,6 +174,33 @@ export const projects: Project[] = [
     techTags: ['Astro', 'Tailwind CSS', 'Alpine.js', 'TypeScript'],
     demoUrl: 'https://roperodesuenos.com',
   },
+  {
+    // Self-serve invitation SaaS for the LATAM market. Built solo
+    // through the AI dev workflow Juan documents in his blog series
+    // — every PR shipped via Claude Code with full test coverage,
+    // CodeRabbit review, and a rolling decisions log. Featured on
+    // the portfolio because it's the highest-leverage demo of the
+    // documented approach: a real product with paying users (post-
+    // launch) built end-to-end in this style.
+    key: 'invitas',
+    title: 'invitas.co — Digital Invitations for LATAM',
+    featured: true,
+    techTags: [
+      'Astro 5',
+      'React 18',
+      'TypeScript',
+      'PostgreSQL',
+      'Drizzle ORM',
+      'Tailwind CSS 4',
+      'Better-Auth',
+      'Cloudflare R2',
+      'Vitest',
+      'Playwright',
+      'Coolify',
+      'Traefik',
+    ],
+    demoUrl: 'https://invitas.co',
+  },
 ];
 
 /**

@@ -142,6 +142,8 @@ export const ui = {
       'Professional website for Rivera Refrigeración, a family-owned appliance repair business in Cali, Colombia with over 30 years of experience. Built with Astro and Tailwind CSS, featuring a blog system, SEO optimization, and WhatsApp integration. Deployed on Netlify.',
     'projects.roperoDeSuenos.description':
       'E-commerce website for Ropero de Sueños, showcasing handcrafted MDF closets for fashion dolls. Features product gallery, testimonials, FAQ section, blog system, and WhatsApp integration for orders. Built with Astro, Tailwind CSS, and Alpine.js.',
+    'projects.invitas.description':
+      'Self-serve digital invitation SaaS targeting the Spanish-speaking LATAM market. Astro 5 SSR + React 18 islands architecture (envelope flap, stagger reveals, perspective tilt, scroll-driven dolly). Multi-tier experience system with builder-side picker. PostgreSQL + Drizzle, Better-Auth, R2 storage, per-invitation Open Graph share previews. 314 unit + 7 E2E tests. Self-hosted on Coolify with Traefik auto-TLS.',
 
     // Education
     'education.title': 'Education',
@@ -348,6 +350,8 @@ export const ui = {
       'Sitio web profesional para Rivera Refrigeración, un negocio familiar de reparación de electrodomésticos en Cali, Colombia con más de 30 años de experiencia. Construido con Astro y Tailwind CSS, con sistema de blog, optimización SEO e integración con WhatsApp. Desplegado en Netlify.',
     'projects.roperoDeSuenos.description':
       'Sitio web de comercio electrónico para Ropero de Sueños, mostrando closets artesanales de MDF para muñecas de moda. Incluye galería de productos, testimonios, sección de preguntas frecuentes, sistema de blog e integración con WhatsApp para pedidos. Construido con Astro, Tailwind CSS y Alpine.js.',
+    'projects.invitas.description':
+      'SaaS self-serve de invitaciones digitales para LATAM. Arquitectura Astro 5 SSR + islas React 18 (apertura de sobre, revelado en cascada, tilt en perspectiva, dolly por scroll). Sistema multi-tier de experiencia con selector en el builder. PostgreSQL + Drizzle, Better-Auth, almacenamiento en R2, Open Graph personalizado por invitación. 314 tests unitarios + 7 E2E. Self-hosted en Coolify con TLS automático vía Traefik.',
 
     // Education
     'education.title': 'Educación',
@@ -550,6 +554,8 @@ export const ui = {
       'Site profissional para Rivera Refrigeración, um negócio familiar de reparos de eletrodomésticos em Cali, Colômbia, com mais de 30 anos de experiência. Construído com Astro e Tailwind CSS, com sistema de blog, otimização de SEO e integração com WhatsApp. Implantado na Netlify.',
     'projects.roperoDeSuenos.description':
       'Site de e-commerce para Ropero de Sueños, apresentando closets artesanais de MDF para bonecas de moda. Inclui galeria de produtos, depoimentos, seção de FAQ, sistema de blog e integração com WhatsApp para pedidos. Construído com Astro, Tailwind CSS e Alpine.js.',
+    'projects.invitas.description':
+      'SaaS self-serve de convites digitais para o mercado da América Latina. Arquitetura Astro 5 SSR + ilhas React 18 (abertura de envelope, revelação em cascata, tilt em perspectiva, dolly por scroll). Sistema multi-tier de experiência com seletor no builder. PostgreSQL + Drizzle, Better-Auth, armazenamento em R2, Open Graph personalizado por convite. 314 testes unitários + 7 E2E. Self-hosted no Coolify com TLS automático via Traefik.',
 
     // Education
     'education.title': 'Educação',

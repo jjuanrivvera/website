@@ -640,11 +640,10 @@ export const ui = {
 export const experienceHighlights = {
   en: {
     acue: [
-      'Development, refactoring and management of PHP applications',
-      'GCP (Cloud SQL, Functions, Cloud Run, BigQuery)',
-      'Integration of Laravel and Symfony components',
-      'Development of frontend interfaces using Vue.js and Bootstrap 5',
-      'Development of Python serverless functions',
+      'Full-stack development across PHP, Go, Python/Django, and JavaScript for EdTech platform',
+      'Built internal CLIs, AI chatbots (Vertex AI + FastAPI), and monitoring infrastructure',
+      'GCP: Cloud Run, Cloud Functions, Cloud SQL, BigQuery, Secret Manager',
+      'CI/CD pipelines, automated testing, and developer tooling across 8+ repositories',
     ],
     hellobuild: [
       'Development of microservices using Node.js and Serverless',
@@ -669,11 +668,10 @@ export const experienceHighlights = {
   },
   es: {
     acue: [
-      'Desarrollo, refactorización y gestión de aplicaciones PHP',
-      'GCP (Cloud SQL, Functions, Cloud Run, BigQuery)',
-      'Integración de componentes Laravel y Symfony',
-      'Desarrollo de interfaces frontend usando Vue.js y Bootstrap 5',
-      'Desarrollo de funciones serverless en Python',
+      'Desarrollo full-stack en PHP, Go, Python/Django y JavaScript para una plataforma EdTech',
+      'Construcción de CLIs internas, chatbots de IA (Vertex AI + FastAPI) e infraestructura de monitoreo',
+      'GCP: Cloud Run, Cloud Functions, Cloud SQL, BigQuery, Secret Manager',
+      'Pipelines de CI/CD, pruebas automatizadas y herramientas para desarrolladores en más de 8 repositorios',
     ],
     hellobuild: [
       'Desarrollo de microservicios usando Node.js y Serverless',
@@ -698,11 +696,10 @@ export const experienceHighlights = {
   },
   pt: {
     acue: [
-      'Desenvolvimento, refatoração e gerenciamento de aplicações PHP',
-      'GCP (Cloud SQL, Functions, Cloud Run, BigQuery)',
-      'Integração de componentes Laravel e Symfony',
-      'Desenvolvimento de interfaces frontend com Vue.js e Bootstrap 5',
-      'Desenvolvimento de funções serverless em Python',
+      'Desenvolvimento full-stack em PHP, Go, Python/Django e JavaScript para uma plataforma EdTech',
+      'Construção de CLIs internas, chatbots de IA (Vertex AI + FastAPI) e infraestrutura de monitoramento',
+      'GCP: Cloud Run, Cloud Functions, Cloud SQL, BigQuery, Secret Manager',
+      'Pipelines de CI/CD, testes automatizados e ferramentas para desenvolvedores em mais de 8 repositórios',
     ],
     hellobuild: [
       'Desenvolvimento de microserviços com Node.js e Serverless',

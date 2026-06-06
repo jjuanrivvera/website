@@ -59,12 +59,13 @@ export const projects: Project[] = [
     demoUrl: 'https://jjuanrivvera.github.io/canvas-cli/',
   },
   {
-    key: 'canvasMcp',
-    title: 'Canvas LMS MCP Server',
+    key: 'alegraCli',
+    title: 'Alegra CLI',
     featured: true,
     showOnHomepage: false,
-    techTags: ['TypeScript', 'MCP', 'Zod', 'AI Tools'],
-    githubUrl: 'https://github.com/jjuanrivvera/canvas-lms-mcp',
+    techTags: ['Go', 'Cobra', 'Keyring', 'Homebrew'],
+    githubUrl: 'https://github.com/jjuanrivvera/alegra-cli',
+    demoUrl: 'https://jjuanrivvera.github.io/alegra-cli/',
   },
   {
     key: 'canvasKitLaravel',

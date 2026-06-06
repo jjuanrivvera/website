@@ -24,7 +24,7 @@ El arreglo es más viejo que los agentes. Un git worktree le da a cada rama su p
 
 `git worktree` te permite tener varias ramas del mismo repositorio en checkout, cada una en su propio directorio, sin clonar el repo por segunda vez. El historial `.git` por debajo es compartido: commits, ramas y remotes son un solo almacén. Los archivos de trabajo no.
 
-```
+```bash
 # Cambio de rama tradicional
 git stash
 git checkout hotfix-branch
@@ -68,7 +68,7 @@ El wrapper hace lo que el tipo de proyecto necesite y nada que no necesite. Un s
 
 Los conflictos de puertos de Docker son lo primero que se rompe cuando dos copias de un proyecto corren en la misma máquina. El wrapper asigna puertos de forma determinista:
 
-```
+```text
 my-api/                          # main: puerto 8000
 my-api/.worktrees/FEAT-101/      # worktree: puerto 8001
 my-api/.worktrees/BUG-204/       # worktree: puerto 8002

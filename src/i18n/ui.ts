@@ -108,8 +108,8 @@ export const ui = {
       'Enterprise-grade open-source PHP library for Canvas LMS API integration with 85% API coverage. Architected using Active Record + DTO patterns with PSR-12 compliance. Achieved 95%+ test coverage with 964 tests and 4,430 assertions.',
     'projects.canvasCli.description':
       'Powerful command-line interface for Canvas LMS built with Go. Features OAuth 2.0 with PKCE authentication, system keyring integration, multi-instance support, adaptive rate limiting, and 280+ commands covering all Canvas LMS resources. Includes interactive REPL mode with command history and completion.',
-    'projects.canvasMcp.description':
-      'TypeScript implementation of Model Context Protocol (MCP) server for Canvas LMS integration. Enables AI assistants to interact with educational platforms through 70+ type-safe workflow tools. Features Zod validation, neverthrow error handling, LRU caching, and intelligent rate limiting.',
+    'projects.alegraCli.description':
+      'Command-line interface for the Alegra accounting API, built with Go and the same architecture as Canvas CLI. Covers most of the API (contacts, items, invoices, payments, bills, reports, and DIAN/SAT electronic invoicing) with OS keyring credential storage and a --dry-run flag on every command. Destructive actions can be locked behind hooks so an AI agent cannot run them, and it ships with a Claude Code skill so agents use it correctly from the first try.',
     'projects.canvasKitLaravel.description':
       'Minimal Laravel integration package for Canvas LMS Kit with zero configuration. Features multi-tenant support for switching between Canvas instances, testing utilities for mocking API calls, and native Laravel integration with config, logging, and testing systems.',
     'projects.financeFlow.description':
@@ -316,8 +316,8 @@ export const ui = {
       'Biblioteca PHP de código abierto de nivel empresarial para integración con la API de Canvas LMS con 85% de cobertura de API. Arquitectura usando patrones Active Record + DTO con cumplimiento PSR-12. Logré más del 95% de cobertura de pruebas con 964 tests y 4,430 aserciones.',
     'projects.canvasCli.description':
       'Potente interfaz de línea de comandos para Canvas LMS construida con Go. Incluye autenticación OAuth 2.0 con PKCE, integración con keyring del sistema, soporte multi-instancia, limitación de tasa adaptativa y más de 280 comandos. Modo REPL interactivo con historial y autocompletado.',
-    'projects.canvasMcp.description':
-      'Implementación en TypeScript de servidor Model Context Protocol (MCP) para integración con Canvas LMS. Permite a asistentes de IA interactuar con plataformas educativas a través de más de 70 herramientas de flujo de trabajo con tipado seguro. Incluye validación Zod, manejo de errores con neverthrow y caché LRU.',
+    'projects.alegraCli.description':
+      'Interfaz de línea de comandos para la API de contabilidad de Alegra, construida con Go y la misma arquitectura de Canvas CLI. Cubre casi toda la API (contactos, productos, facturas, pagos, gastos, reportes y facturación electrónica DIAN/SAT) con credenciales cifradas en el keyring del sistema operativo y un flag --dry-run en cualquier comando. Las acciones destructivas se pueden restringir con hooks para que un agente de IA no pueda ejecutarlas, e incluye una skill de Claude Code para que los agentes la usen bien desde el primer intento.',
     'projects.canvasKitLaravel.description':
       'Paquete de integración Laravel mínimo para Canvas LMS Kit con configuración cero. Soporte multi-tenant para cambiar entre instancias de Canvas, utilidades de pruebas para simular llamadas API e integración nativa con config, logging y testing de Laravel.',
     'projects.financeFlow.description':
@@ -520,8 +520,8 @@ export const ui = {
       'Biblioteca PHP open source de nível empresarial para integração com a API do Canvas LMS com 85% de cobertura. Arquitetada com padrões Active Record + DTO e conformidade PSR-12. Alcançou mais de 95% de cobertura com 964 testes e 4.430 asserções.',
     'projects.canvasCli.description':
       'Poderosa interface de linha de comando para Canvas LMS construída com Go. Inclui autenticação OAuth 2.0 com PKCE, integração com keyring do sistema, suporte multi-instância, limitação de taxa adaptativa e mais de 280 comandos. Modo REPL interativo com histórico e autocompletar.',
-    'projects.canvasMcp.description':
-      'Implementação em TypeScript de servidor Model Context Protocol (MCP) para integração com Canvas LMS. Permite que assistentes de IA interajam com plataformas educacionais através de mais de 70 ferramentas de fluxo de trabalho com tipagem segura. Inclui validação Zod, tratamento de erros com neverthrow e cache LRU.',
+    'projects.alegraCli.description':
+      'Interface de linha de comando para a API de contabilidade da Alegra, construída com Go e a mesma arquitetura do Canvas CLI. Cobre quase toda a API (contatos, produtos, faturas, pagamentos, despesas, relatórios e faturamento eletrônico DIAN/SAT) com credenciais no keyring do sistema operacional e um flag --dry-run em qualquer comando. Ações destrutivas podem ser restringidas com hooks para que um agente de IA não consiga executá-las, e inclui uma skill do Claude Code para que os agentes a usem corretamente desde a primeira tentativa.',
     'projects.canvasKitLaravel.description':
       'Pacote de integração Laravel mínimo para Canvas LMS Kit com configuração zero. Suporte multi-tenant para alternar entre instâncias Canvas, utilitários de teste para simular chamadas de API e integração nativa com config, logging e testing do Laravel.',
     'projects.financeFlow.description':

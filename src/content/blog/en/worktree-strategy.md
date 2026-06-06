@@ -24,7 +24,7 @@ The fix is older than the agents. A git worktree gives each branch its own direc
 
 `git worktree` lets you check out multiple branches of the same repository, each in its own directory, without cloning the repo a second time. The underlying `.git` history is shared: commits, branches, and remotes are one store. Working files are not.
 
-```
+```bash
 # Traditional branch switch
 git stash
 git checkout hotfix-branch
@@ -68,7 +68,7 @@ The wrapper does whatever the project type needs and nothing it doesn't. A heavy
 
 Docker port conflicts are the first thing that breaks when two copies of a project run on the same machine. The wrapper assigns ports deterministically:
 
-```
+```text
 my-api/                          # main: port 8000
 my-api/.worktrees/FEAT-101/      # worktree: port 8001
 my-api/.worktrees/BUG-204/       # worktree: port 8002

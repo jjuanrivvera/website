@@ -140,7 +140,7 @@ website/
 | **Skills**     | Technical skills organized by category (Frontend, Backend, Database, Cloud)    |
 | **Projects**   | Featured projects with descriptions and technologies                           |
 | **Education**  | Academic background                                                            |
-| **Contact**    | Contact information with email, phone, and location                            |
+| **Contact**    | Contact information with email and location                                    |
 | **Blog**       | Blog post listings with pagination, tag filtering, and search                  |
 | **Post**       | Individual blog posts with reading time, table of contents, and social sharing |
 
@@ -367,7 +367,6 @@ Google Analytics 4 is integrated with privacy-focused configuration:
   - Page views
   - CV downloads
   - Email clicks
-  - Phone clicks
   - Social media clicks (LinkedIn, GitHub)
   - Section visibility (IntersectionObserver)
 

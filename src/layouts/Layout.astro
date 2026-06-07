@@ -169,7 +169,6 @@ const {
         url: canonicalUrl,
         image: profileImageUrl,
         email: 'jjuanrivvera@gmail.com',
-        telephone: '+573167290759',
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Cali',
@@ -331,7 +330,7 @@ const {
         }
       }
 
-      // Setup contact link tracking (email, phone, social)
+      // Setup contact link tracking (email, social)
       function setupContactTracking() {
         if (typeof gtag === 'undefined') return;
 
@@ -341,17 +340,6 @@ const {
             gtag('event', 'contact_email', {
               event_category: 'contact',
               event_label: 'Email Click',
-              value: 1,
-            });
-          });
-        });
-
-        // Phone click tracking
-        document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
-          link.addEventListener('click', () => {
-            gtag('event', 'contact_phone', {
-              event_category: 'contact',
-              event_label: 'Phone Click',
               value: 1,
             });
           });

@@ -18,7 +18,7 @@ It covers the whole Alegra v1 surface: around 40 resources (contacts, invoices, 
 
 The token lives in your OS keyring, the HTTP core has an adaptive rate limiter and idempotency-aware retries, and shell completion fills in your real invoice and contact IDs as you type. It's agent-first by design: `alegra mcp` exposes the whole command tree as MCP tools, there's an installable skill for Claude Code, Cursor, Codex and others, and `alegra agent guard` generates hooks that hard-block irreversible operations like `delete` or `emit`. Every request can be previewed with `--dry-run`, which prints the exact curl with the token redacted. The full command reference and guides are in [the docs](https://jjuanrivvera.github.io/alegra-cli/).
 
-The night got it working. Making it trustworthy was the next step: I validated the whole CLI against Alegra's entire OpenAPI and turned that spec into a hard requirement, so a contract test and a spec-drift guard fail CI the moment the code and the documented API disagree. Even though it came together in a night, it still has to match the documented API on every commit.
+The night got it working. Making it trustworthy was the next step: I validated the whole CLI against Alegra's entire OpenAPI and turned that spec into a hard requirement. A contract test and a spec-drift guard fail CI if the code stops matching it.
 
 The build ran as an agentic loop. I used `/goal` to set a target the agent works toward on its own, and `/code-review` to find what it got wrong. Set a goal, review the result, fold the review into the next goal. Around that loop I kept the quality bar high and wired the standards into CI so they got checked on every commit.
 

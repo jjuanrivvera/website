@@ -3,7 +3,7 @@ title: 'Cómo construí una CLI agent-first para un sistema contable'
 description: 'Construí alegra-cli en una semana con Claude Code. La velocidad vino de estándares altos, enforcement en CI y dos comandos: /goal y /code-review.'
 pubDate: 2026-06-21
 author: 'Juan Felipe Rivera González'
-tags: ['claude-code', 'go', 'agentes-de-ia', 'cli', 'alegra']
+tags: ['agentes-de-ia', 'cli', 'alegra', 'mcp', 'alegra-mcp']
 cover: '@assets/blog/covers/agent-first-cli-cover.jpg'
 coverAlt: 'Ilustración flat sobre fondo crema: una ventana de terminal al centro, rodeada por un bucle de dos flechas teal en sentido horario. Un ícono de diana y una lupa sobre una lista de chequeo están sobre el bucle, con pequeños glifos de una factura y una moneda cerca, esbozando un ciclo automatizado de construir y revisar.'
 lang: 'es'
@@ -16,7 +16,7 @@ Construí `alegra-cli` en una semana con Claude Code, la mayor parte en una sola
 
 Cubre toda la superficie de la v1 de Alegra: unos 40 recursos (contactos, facturas, ítems, pagos, impuestos, reportes, y el resto), cada uno con un `list / get / create / update / delete` uniforme más acciones propias del recurso como `invoices void` o `invoices emit`. Cada list filtra, acepta rangos de fecha naturales (`--since last-month`), pagina y cuenta. Puedes importar y exportar CSV en lote, correr el flujo de facturación electrónica con timbrado idempotente para que la misma factura nunca se emita dos veces, y traer catálogos de referencia por país (unidades, tipos de identificación, tipos de impuesto) totalmente offline para Colombia, México, Perú, Costa Rica y más.
 
-El token vive en el keyring del sistema operativo, el núcleo HTTP tiene un rate limiter adaptativo y reintentos conscientes de idempotencia, y el autocompletado del shell te llena los IDs reales de tus facturas y contactos mientras escribes. Es agent-first por diseño: `alegra mcp` expone todo el árbol de comandos como herramientas MCP, hay un skill instalable para Claude Code, Cursor, Codex y otros, y `alegra agent guard` genera hooks que bloquean en duro operaciones irreversibles como `delete` o `emit`. Cualquier request se puede previsualizar con `--dry-run`, que imprime el curl exacto con el token redactado.
+El token vive en el keyring del sistema operativo, el núcleo HTTP tiene un rate limiter adaptativo y reintentos conscientes de idempotencia, y el autocompletado del shell te llena los IDs reales de tus facturas y contactos mientras escribes. Es agent-first por diseño: `alegra mcp` expone todo el árbol de comandos como herramientas MCP, hay un skill instalable para Claude Code, Cursor, Codex y otros, y `alegra agent guard` genera hooks que bloquean en duro operaciones irreversibles como `delete` o `emit`. Cualquier request se puede previsualizar con `--dry-run`, que imprime el curl exacto con el token redactado. La referencia completa de comandos y las guías están en [la documentación](https://jjuanrivvera.github.io/alegra-cli/es/).
 
 La noche lo hizo funcionar. Lo que lo volvió confiable vino después: validé toda la CLI contra el OpenAPI completo de Alegra y convertí esa especificación en un requisito duro, así un test de contrato y un guard de spec-drift hacen fallar el CI en el momento en que el código y la API documentada no concuerdan. Aunque salió en una noche, igual tiene que coincidir con la API documentada en cada commit.
 

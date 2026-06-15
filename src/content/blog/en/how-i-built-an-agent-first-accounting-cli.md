@@ -12,7 +12,7 @@ draft: true
 featured: false
 ---
 
-I built `alegra-cli` in a week with Claude Code. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America; the CLI is a command-line client for its API. Most of it came together in a single night. The rest of the week went to tests, releases, docs, and hardening: 125 commits, 310 tests, and a CI suite that checks the code against Alegra's own OpenAPI.
+I built `alegra-cli` in a week with Claude Code. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America; the CLI is a command-line client for its API. Most of it came together in a single night. The crucial step came right after: I validated it against Alegra's entire OpenAPI, then made conformance to that spec mandatory in CI, so the code can't drift from the documented API. The rest of the week went to tests, releases, docs, and hardening: 125 commits, 310 tests, and a CI suite enforcing all of it.
 
 Most of it ran as an agentic loop. I used `/goal` to set a target the agent works toward on its own, and `/code-review` to find what it got wrong. Set a goal, review the result, fold the review into the next goal. Around that loop I kept the quality bar high and wired the standards into CI so they got checked on every commit.
 
@@ -24,7 +24,7 @@ I wrote before about [the enforcement layer](/blog/ship-fast-and-safe-with-ai-ag
 
 That keeps the agent fast without breaking things. When pagination, auth, retries, and output formatting all live in one place, the agent can't introduce a wrong variant on resource number twenty-seven. The architecture absorbs the mistakes.
 
-The Alegra API is also messy. Some IDs arrive as integers, others as strings. Some fields are an `{id, name}` object, sometimes just a number. A few flexible types soak up those inconsistencies before they reach any business logic, so the agent never had to deal with them.
+Alegra's API returns some values in more than one shape. Some IDs come as integers, others as strings; some fields are an `{id, name}` object, sometimes just a number. A few flexible Go types absorb those variations before they reach any business logic, so the agent never had to handle them case by case.
 
 From day one the CLI is also an MCP server: `alegra mcp` exposes every command as an agent tool. That was the goal the whole time, something agents could drive directly. (I make the broader case for CLIs over MCPs in [a separate post](/blog/clis-over-mcps/).)
 

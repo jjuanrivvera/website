@@ -1,7 +1,7 @@
 ---
 title: 'How I built an agent-first CLI for an accounting system'
 description: 'I built alegra-cli in a week with Claude Code. The speed came from high standards, enforcement in CI, and two workflows: /goal and /code-review.'
-pubDate: 2026-06-21
+pubDate: 2026-06-15
 author: 'Juan Felipe Rivera González'
 tags: ['ai-agents', 'cli', 'alegra', 'mcp', 'alegra-mcp']
 cover: '@assets/blog/covers/agent-first-cli-cover.jpg'

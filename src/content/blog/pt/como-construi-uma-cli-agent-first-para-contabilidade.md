@@ -12,7 +12,7 @@ draft: false
 featured: false
 ---
 
-Construí o `alegra-cli` em uma semana com Claude Code, boa parte em uma única noite: 125 commits e 310 tests. O [Alegra](https://alegra.com) é uma plataforma de contabilidade e faturamento muito usada na América Latina, e a CLI é um cliente de linha de comando para a API dele.
+Construí o `alegra-cli` em uma semana com Claude Code, a maior parte em uma única noite: 125 commits e 310 tests. O [Alegra](https://alegra.com) é uma plataforma de contabilidade e faturamento muito usada na América Latina, e a CLI é um cliente de linha de comando para a API dele.
 
 Ele cobre toda a superfície da v1 do Alegra: cerca de 40 recursos (contatos, faturas, itens, pagamentos, impostos, relatórios, e o resto), cada um com um `list / get / create / update / delete` uniforme mais ações próprias do recurso como `invoices void` ou `invoices emit`. Cada list filtra, aceita intervalos de data naturais (`--since last-month`), pagina e conta. Você pode importar e exportar CSV em lote, rodar o fluxo de faturamento eletrônico com stamping idempotente para que a mesma fatura nunca seja emitida duas vezes, e puxar catálogos de referência por país (unidades, tipos de identificação, tipos de imposto) totalmente offline para Colômbia, México, Peru, Costa Rica e mais.
 
@@ -20,7 +20,7 @@ O token mora no keyring do sistema operacional, o núcleo HTTP tem um rate limit
 
 A noite fez funcionar. O que tornou confiável veio depois: validei a CLI inteira contra todo o OpenAPI do Alegra e transformei essa especificação em um requisito duro, então um test de contrato e um guard de spec-drift quebram o CI no momento em que o código e a API documentada não batem. Mesmo tendo saído em uma noite, ele ainda tem que bater com a API documentada a cada commit.
 
-A maior parte rodou como um loop agêntico. Usei `/goal` para definir um alvo em direção ao qual o agente trabalha sozinho, e `/code-review` para encontrar o que ele errou. Defina um alvo, revise o resultado, jogue a revisão no próximo alvo. Em volta desse loop eu mantive a barra de qualidade alta e coloquei os padrões no CI para serem checados a cada commit.
+O desenvolvimento rodou como um loop agêntico. Usei `/goal` para definir um alvo em direção ao qual o agente trabalha sozinho, e `/code-review` para encontrar o que ele errou. Defina um alvo, revise o resultado, jogue a revisão no próximo alvo. Em volta desse loop eu mantive a barra de qualidade alta e coloquei os padrões no CI para serem checados a cada commit.
 
 Já escrevi antes sobre [a camada de enforcement](/pt/blog/rapido-e-seguro-com-agentes-de-ia), por que hooks e commits importam quando é um agente que digita. Este post é o caso prático: a arquitetura, os padrões, e esse loop, em um projeto inteiro.
 

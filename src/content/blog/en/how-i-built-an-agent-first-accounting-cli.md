@@ -12,7 +12,7 @@ draft: false
 featured: false
 ---
 
-I built `alegra-cli` in a week with Claude Code, the bulk of it in a single night: 125 commits and 310 tests. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America, and the CLI is a command-line client for its API.
+I built `alegra-cli` in a week with Claude Code, most of it in a single night: 125 commits and 310 tests. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America, and the CLI is a command-line client for its API.
 
 It covers the whole Alegra v1 surface: around 40 resources (contacts, invoices, items, payments, taxes, reports, and the rest), each with a uniform `list / get / create / update / delete` plus resource actions like `invoices void` or `invoices emit`. Every list filters, takes natural date ranges (`--since last-month`), paginates, and counts. You can bulk-import and export CSV, run the electronic-invoicing flow with idempotent stamping so the same invoice never gets emitted twice, and pull per-country reference catalogs (units, ID types, tax types) fully offline for Colombia, Mexico, Peru, Costa Rica and more.
 
@@ -20,7 +20,7 @@ The token lives in your OS keyring, the HTTP core has an adaptive rate limiter a
 
 The night got it working. Making it trustworthy was the next step: I validated the whole CLI against Alegra's entire OpenAPI and turned that spec into a hard requirement, so a contract test and a spec-drift guard fail CI the moment the code and the documented API disagree. Even though it came together in a night, it still has to match the documented API on every commit.
 
-Most of it ran as an agentic loop. I used `/goal` to set a target the agent works toward on its own, and `/code-review` to find what it got wrong. Set a goal, review the result, fold the review into the next goal. Around that loop I kept the quality bar high and wired the standards into CI so they got checked on every commit.
+The build ran as an agentic loop. I used `/goal` to set a target the agent works toward on its own, and `/code-review` to find what it got wrong. Set a goal, review the result, fold the review into the next goal. Around that loop I kept the quality bar high and wired the standards into CI so they got checked on every commit.
 
 I wrote before about [the enforcement layer](/blog/ship-fast-and-safe-with-ai-agents/), why hooks and commits matter when an agent does the typing. This post is the case study: the architecture, the standards, and that loop, across a whole project.
 

@@ -8,11 +8,17 @@ cover: '@assets/blog/covers/agent-first-cli-cover.jpg'
 coverAlt: 'Ilustração flat sobre fundo creme: uma janela de terminal no centro, cercada por um loop de duas setas teal no sentido horário. Um ícone de alvo e uma lupa sobre uma lista de verificação ficam sobre o loop, com pequenos glifos de uma fatura e uma moeda por perto, esboçando um ciclo automatizado de construir e revisar.'
 lang: 'pt'
 translationKey: 'alegra-cli-agent-first'
-draft: true
+draft: false
 featured: false
 ---
 
-Construí o `alegra-cli` em uma semana com Claude Code. O [Alegra](https://alegra.com) é uma plataforma de contabilidade e faturamento muito usada na América Latina; a CLI é um cliente de linha de comando para a API dele. A maior parte saiu em uma única noite. O passo crucial veio logo depois: validei contra todo o OpenAPI do Alegra, e depois tornei obrigatório seguir essa especificação no CI, para que o código não possa se desviar da API documentada. O resto da semana foi tests, releases, docs e polimento: 125 commits, 310 tests, e uma suíte de CI que garante tudo isso.
+Construí o `alegra-cli` em uma semana com Claude Code, boa parte em uma única noite: 125 commits e 310 tests. O [Alegra](https://alegra.com) é uma plataforma de contabilidade e faturamento muito usada na América Latina, e a CLI é um cliente de linha de comando para a API dele.
+
+Ele cobre toda a superfície da v1 do Alegra: cerca de 40 recursos (contatos, faturas, itens, pagamentos, impostos, relatórios, e o resto), cada um com um `list / get / create / update / delete` uniforme mais ações próprias do recurso como `invoices void` ou `invoices emit`. Cada list filtra, aceita intervalos de data naturais (`--since last-month`), pagina e conta. Você pode importar e exportar CSV em lote, rodar o fluxo de faturamento eletrônico com stamping idempotente para que a mesma fatura nunca seja emitida duas vezes, e puxar catálogos de referência por país (unidades, tipos de identificação, tipos de imposto) totalmente offline para Colômbia, México, Peru, Costa Rica e mais.
+
+O token mora no keyring do sistema operacional, o núcleo HTTP tem um rate limiter adaptativo e retries conscientes de idempotência, e o autocomplete do shell preenche os IDs reais das suas faturas e contatos enquanto você digita. É agent-first por design: `alegra mcp` expõe toda a árvore de comandos como ferramentas MCP, há um skill instalável para Claude Code, Cursor, Codex e outros, e `alegra agent guard` gera hooks que bloqueiam de forma dura operações irreversíveis como `delete` ou `emit`. Qualquer request pode ser pré-visualizado com `--dry-run`, que imprime o curl exato com o token redigido.
+
+A noite fez funcionar. O que tornou confiável veio depois: validei a CLI inteira contra todo o OpenAPI do Alegra e transformei essa especificação em um requisito duro, então um test de contrato e um guard de spec-drift quebram o CI no momento em que o código e a API documentada não batem. Mesmo tendo saído em uma noite, ele ainda tem que bater com a API documentada a cada commit.
 
 A maior parte rodou como um loop agêntico. Usei `/goal` para definir um alvo em direção ao qual o agente trabalha sozinho, e `/code-review` para encontrar o que ele errou. Defina um alvo, revise o resultado, jogue a revisão no próximo alvo. Em volta desse loop eu mantive a barra de qualidade alta e coloquei os padrões no CI para serem checados a cada commit.
 

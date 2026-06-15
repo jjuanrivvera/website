@@ -8,11 +8,17 @@ cover: '@assets/blog/covers/agent-first-cli-cover.jpg'
 coverAlt: 'A clean flat illustration on a cream background: a terminal window at the center, encircled by a clockwise loop of two teal arrows. A bullseye target icon and a magnifying glass over a checklist sit on the loop, with small invoice and coin glyphs nearby, sketching an automated build-and-review cycle.'
 lang: 'en'
 translationKey: 'alegra-cli-agent-first'
-draft: true
+draft: false
 featured: false
 ---
 
-I built `alegra-cli` in a week with Claude Code. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America; the CLI is a command-line client for its API. Most of it came together in a single night. The crucial step came right after: I validated it against Alegra's entire OpenAPI, then made conformance to that spec mandatory in CI, so the code can't drift from the documented API. The rest of the week went to tests, releases, docs, and hardening: 125 commits, 310 tests, and a CI suite enforcing all of it.
+I built `alegra-cli` in a week with Claude Code, the bulk of it in a single night: 125 commits and 310 tests. [Alegra](https://alegra.com) is a cloud accounting and invoicing platform used across Latin America, and the CLI is a command-line client for its API.
+
+It covers the whole Alegra v1 surface: around 40 resources (contacts, invoices, items, payments, taxes, reports, and the rest), each with a uniform `list / get / create / update / delete` plus resource actions like `invoices void` or `invoices emit`. Every list filters, takes natural date ranges (`--since last-month`), paginates, and counts. You can bulk-import and export CSV, run the electronic-invoicing flow with idempotent stamping so the same invoice never gets emitted twice, and pull per-country reference catalogs (units, ID types, tax types) fully offline for Colombia, Mexico, Peru, Costa Rica and more.
+
+The token lives in your OS keyring, the HTTP core has an adaptive rate limiter and idempotency-aware retries, and shell completion fills in your real invoice and contact IDs as you type. It's agent-first by design: `alegra mcp` exposes the whole command tree as MCP tools, there's an installable skill for Claude Code, Cursor, Codex and others, and `alegra agent guard` generates hooks that hard-block irreversible operations like `delete` or `emit`. Every request can be previewed with `--dry-run`, which prints the exact curl with the token redacted.
+
+The night got it working. Making it trustworthy was the next step: I validated the whole CLI against Alegra's entire OpenAPI and turned that spec into a hard requirement, so a contract test and a spec-drift guard fail CI the moment the code and the documented API disagree. Even though it came together in a night, it still has to match the documented API on every commit.
 
 Most of it ran as an agentic loop. I used `/goal` to set a target the agent works toward on its own, and `/code-review` to find what it got wrong. Set a goal, review the result, fold the review into the next goal. Around that loop I kept the quality bar high and wired the standards into CI so they got checked on every commit.
 

@@ -1,7 +1,7 @@
 ---
 title: 'Como construí uma CLI agent-first para um sistema contábil'
 description: 'Construí o alegra-cli em uma semana com Claude Code. A velocidade veio de padrões altos, enforcement no CI e dois comandos: /goal e /code-review.'
-pubDate: 2026-06-21
+pubDate: 2026-06-15
 author: 'Juan Felipe Rivera González'
 tags: ['agentes-de-ia', 'cli', 'alegra', 'mcp', 'alegra-mcp']
 cover: '@assets/blog/covers/agent-first-cli-cover.jpg'

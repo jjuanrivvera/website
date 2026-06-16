@@ -16,7 +16,9 @@ I built `alegra-cli` in a week with Claude Code, most of it in a single night: 1
 
 It covers the whole Alegra v1 surface: around 40 resources (contacts, invoices, items, payments, taxes, reports, and the rest), each with a uniform `list / get / create / update / delete` plus resource actions like `invoices void` or `invoices emit`. Every list filters, takes natural date ranges (`--since last-month`), paginates, and counts. You can bulk-import and export CSV, run the electronic-invoicing flow with idempotent stamping so the same invoice never gets emitted twice, and pull per-country reference catalogs (units, ID types, tax types) fully offline for Colombia, Mexico, Peru, Costa Rica and more.
 
-The token lives in your OS keyring, the HTTP core has an adaptive rate limiter and idempotency-aware retries, and shell completion fills in your real invoice and contact IDs as you type. It's agent-first by design: `alegra mcp` runs the whole command tree as an [Alegra MCP server](https://jjuanrivvera.github.io/alegra-cli/user-guide/mcp/), there's an installable skill for Claude Code, Cursor, Codex and others, and `alegra agent guard` generates hooks that hard-block irreversible operations like `delete` or `emit`. Every request can be previewed with `--dry-run`, which prints the exact curl with the token redacted. The full command reference and guides are in [the docs](https://jjuanrivvera.github.io/alegra-cli/).
+The token lives in your OS keyring, the HTTP core has an adaptive rate limiter and idempotency-aware retries, and shell completion fills in your real invoice and contact IDs as you type. It's agent-first by design: `alegra mcp` runs the whole command tree as an [Alegra MCP server](https://jjuanrivvera.github.io/alegra-cli/user-guide/mcp/), there's an installable skill for Claude Code, Cursor, Codex and others, and `alegra agent guard` generates hooks that hard-block irreversible operations like `delete` or `emit`. Every request can be previewed with `--dry-run`, which prints the exact curl with the token redacted.
+
+The whole thing is documented and packaged for every platform: [the docs](https://jjuanrivvera.github.io/alegra-cli/) cover every command and the common workflows in English and Spanish, and you install it from Homebrew, Scoop, Docker, deb/rpm/apk packages, or `go install`, with shell completions bundled in each.
 
 The night got it working. Making it trustworthy was the next step: I validated the whole CLI against Alegra's entire OpenAPI and turned that spec into a hard requirement. A contract test and a spec-drift guard fail CI if the code stops matching it.
 
@@ -85,4 +87,4 @@ If you've built with an agent and got mediocre output, the model probably wasn't
 
 ---
 
-`alegra-cli` is MIT and lives at [github.com/jjuanrivvera/alegra-cli](https://github.com/jjuanrivvera/alegra-cli). Install it with Homebrew, Scoop, Docker, or `go install`. If you use Alegra and work with agents, it's a starting point.
+`alegra-cli` is MIT and lives at [github.com/jjuanrivvera/alegra-cli](https://github.com/jjuanrivvera/alegra-cli). If you use Alegra and work with agents, it's a starting point.

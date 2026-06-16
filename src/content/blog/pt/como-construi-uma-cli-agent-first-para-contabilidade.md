@@ -16,7 +16,9 @@ Construí o `alegra-cli` em uma semana com Claude Code, a maior parte em uma ún
 
 Ele cobre toda a superfície da v1 do Alegra: cerca de 40 recursos (contatos, faturas, itens, pagamentos, impostos, relatórios, e o resto), cada um com um `list / get / create / update / delete` uniforme mais ações próprias do recurso como `invoices void` ou `invoices emit`. Cada list filtra, aceita intervalos de data naturais (`--since last-month`), pagina e conta. Você pode importar e exportar CSV em lote, rodar o fluxo de faturamento eletrônico com stamping idempotente para que a mesma fatura nunca seja emitida duas vezes, e puxar catálogos de referência por país (unidades, tipos de identificação, tipos de imposto) totalmente offline para Colômbia, México, Peru, Costa Rica e mais.
 
-O token mora no keyring do sistema operacional, o núcleo HTTP tem um rate limiter adaptativo e retries conscientes de idempotência, e o autocomplete do shell preenche os IDs reais das suas faturas e contatos enquanto você digita. É agent-first por design: `alegra mcp` roda toda a árvore de comandos como um [servidor MCP do Alegra](https://jjuanrivvera.github.io/alegra-cli/user-guide/mcp/), há um skill instalável para Claude Code, Cursor, Codex e outros, e `alegra agent guard` gera hooks que bloqueiam de forma dura operações irreversíveis como `delete` ou `emit`. Qualquer request pode ser pré-visualizado com `--dry-run`, que imprime o curl exato com o token redigido. A referência completa de comandos e os guias estão na [documentação](https://jjuanrivvera.github.io/alegra-cli/).
+O token mora no keyring do sistema operacional, o núcleo HTTP tem um rate limiter adaptativo e retries conscientes de idempotência, e o autocomplete do shell preenche os IDs reais das suas faturas e contatos enquanto você digita. É agent-first por design: `alegra mcp` roda toda a árvore de comandos como um [servidor MCP do Alegra](https://jjuanrivvera.github.io/alegra-cli/user-guide/mcp/), há um skill instalável para Claude Code, Cursor, Codex e outros, e `alegra agent guard` gera hooks que bloqueiam de forma dura operações irreversíveis como `delete` ou `emit`. Qualquer request pode ser pré-visualizado com `--dry-run`, que imprime o curl exato com o token redigido.
+
+Tudo está documentado e empacotado para cada plataforma: [a documentação](https://jjuanrivvera.github.io/alegra-cli/) cobre cada comando e os fluxos mais comuns, em inglês e espanhol, e você instala com Homebrew, Scoop, Docker, pacotes deb/rpm/apk, ou `go install`, com autocomplete do shell incluído em cada um.
 
 A noite fez funcionar. O que tornou confiável veio depois: validei a CLI inteira contra todo o OpenAPI do Alegra e transformei essa especificação em um requisito duro. Um test de contrato e um guard de spec-drift quebram o CI se o código deixa de bater com ela.
 
@@ -85,4 +87,4 @@ Se você construiu com um agente e o resultado foi mediano, o modelo provavelmen
 
 ---
 
-O `alegra-cli` é MIT e mora em [github.com/jjuanrivvera/alegra-cli](https://github.com/jjuanrivvera/alegra-cli). Instala com Homebrew, Scoop, Docker, ou `go install`. Se você usa o Alegra e trabalha com agentes, é um ponto de partida.
+O `alegra-cli` é MIT e mora em [github.com/jjuanrivvera/alegra-cli](https://github.com/jjuanrivvera/alegra-cli). Se você usa o Alegra e trabalha com agentes, é um ponto de partida.

@@ -68,6 +68,15 @@ export const projects: Project[] = [
     demoUrl: 'https://jjuanrivvera.github.io/alegra-cli/',
   },
   {
+    key: 'n8nctl',
+    title: 'n8nctl',
+    featured: true,
+    showOnHomepage: true,
+    techTags: ['Go', 'Cobra', 'MCP', 'GitOps', 'Homebrew'],
+    githubUrl: 'https://github.com/jjuanrivvera/n8n-cli',
+    demoUrl: 'https://jjuanrivvera.github.io/n8n-cli/',
+  },
+  {
     key: 'canvasKitLaravel',
     title: 'Canvas LMS Kit for Laravel',
     featured: false,

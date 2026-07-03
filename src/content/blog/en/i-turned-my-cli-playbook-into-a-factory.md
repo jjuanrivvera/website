@@ -12,13 +12,11 @@ draft: false
 featured: false
 ---
 
-I keep building CLIs for the APIs I use every day. After [alegra-cli](/blog/how-i-built-an-agent-first-accounting-cli/) I wanted the same tool for the Telegram Bot API and for Lemon Squeezy. The build loop itself was solved. What wasn't solved was doing it again without re-deciding a hundred things: which auth flows, how pagination walks, what the MCP server exposes, where tokens live, what "done" means.
+I keep building CLIs for the APIs I use every day. For a while my method was to ask the agent to build me another CLI like the last one it built, same architecture, same standards. That's how the family grew after [canvas-cli](https://github.com/jjuanrivvera/canvas-cli): [alegra-cli](/blog/how-i-built-an-agent-first-accounting-cli/), then [n8nctl](https://github.com/jjuanrivvera/n8n-cli).
 
-The obvious move is to reuse the last repo as a template and prompt the agent with "build me one like that". It works at first. The agent copies the shape, the commands look right, and the demo is convincing.
+Each one shipped, and each one cost me days after the build. APIs are not the same. Auth is different, pagination is different, the JSON has its own quirks, and the agent didn't know the new API's spec or how much of it the CLI covered. So I kept fixing things a "finished" build got wrong. And "done" was still whatever the agent asserted. I wrote in the alegra post that an agent will tell you the tests pass whether or not they do. Same for "the CLI is complete".
 
-It breaks in two places. First, the agent's memory of the API is not the API: it happily ships a CLI that covers the fraction of endpoints it remembered, and every command it did build looks consistent, so nothing smells wrong. Second, "done" is whatever the agent asserts. I wrote in the alegra post that an agent will tell you the tests pass whether or not they do. The same applies to "the CLI is complete".
-
-So I stopped treating the playbook as something I carry in my head. I wrote it down as a spec with a machine-checkable acceptance gate, and packaged both as [cliwright](https://github.com/jjuanrivvera/cliwright). Five days after the first commit, a stock `/goal` loop took the Telegram Bot API from nothing to a signed v0.1.0 release in about two hours.
+[cliwright](https://github.com/jjuanrivvera/cliwright) is what I built to stop doing that. I took the practices those CLIs already shared and wrote them down as one playbook that works for any REST API, with a definition of done a machine can measure. Instead of trusting what it remembers, it researches the specific API it's pointed at: the OpenAPI or Swagger spec when one exists, the docs when not. Five days after the first commit, a stock `/goal` loop took the Telegram Bot API from nothing to a signed v0.1.0 release in about two hours.
 
 ## Not a framework, not an agent loop
 
@@ -26,17 +24,17 @@ cliwright generates no code by itself and runs no loop of its own. Claude Code a
 
 That's the whole tool. A 900-line `GOAL.md` (the spec) plus a `Makefile` contract (the gate), shipped as a Claude Code plugin and a cross-tool skill. You fill in one block: API name, docs URL, module path. Everything else is fixed.
 
-The spec grew out of shipping [canvas-cli](https://github.com/jjuanrivvera/canvas-cli), alegra-cli, and [n8nctl](https://github.com/jjuanrivvera/n8n-cli) by hand with an agent. Each build taught the playbook something. Canvas forced multi-auth: a pasted personal token or OAuth2, behind one interface. Alegra forced flexible JSON types for IDs that arrive as string and number. From n8nctl came multi-instance profiles. cliwright is that experience made explicit.
+Every lesson in the spec came from one of those hand-built CLIs. Canvas forced multi-auth: a pasted personal token or OAuth2, behind one interface. Alegra forced flexible JSON types for IDs that arrive as string and number. From n8nctl came multi-instance profiles. cliwright is that experience made explicit.
 
-## The spec decides so the agent doesn't
+## What the spec decides
 
 Most of `GOAL.md` exists to remove decisions from the loop.
 
-Research comes first, and it's aimed at the API's own docs, not at me. Auth model, base URL, pagination style, rate-limit headers, JSON quirks: these are facts about the API, so the spec tells the agent to fetch the docs and determine them itself, and to state its assumption and keep going when the docs are ambiguous. The questions that reach me are the ones a web search can't answer.
+Research comes first, and it's aimed at the API's own material, not at me. Auth model, base URL, pagination style, rate-limit headers, JSON quirks: these are facts about the API, so the spec tells the agent to fetch whatever the API publishes (an OpenAPI or Swagger spec, an llms.txt, a Postman collection, the docs site) and determine them itself. When the docs are ambiguous it states its assumption and keeps going. The questions that reach me are the ones a web search can't answer.
 
 Then the standard is fixed. Generic typed core, thin per-resource files, tokens in the OS keyring, named profiles, `--dry-run` that prints the redacted curl, table/json/yaml/csv output, an MCP server derived from the command tree, an `agent guard` that generates host-side hooks for destructive commands. None of that is re-litigated per project. The spec even includes determinism rules: same API in, same CLI out.
 
-This is the same architecture bet as alegra-cli, applied one level up: the playbook absorbs the variance between projects the way the generic core absorbs the variance between resources.
+Same bet as alegra-cli's generic core, one level up: the playbook absorbs the differences between APIs.
 
 ## The gate is the definition of done
 
@@ -61,10 +59,10 @@ Then the real runs. [tgctl](https://github.com/jjuanrivvera/tgctl), a `gh`-style
 
 alegra-cli took a week, most of it one long night. tgctl took an afternoon, and I spent it reviewing, not typing.
 
-Two honest caveats. The adversarial review step still produces findings where about half are false positives, so the human pass survives: verify each finding against the code before acting on it, and refuting one with cited rationale is a valid outcome. And live-testing against a real instance stays gated behind an explicit opt-in, because mocks miss real-API behavior but live writes are irreversible.
+Two caveats. The adversarial review step still produces findings where about half are false positives, so the human pass survives: verify each finding against the code before acting on it, and refuting one with cited rationale is a valid outcome. And live-testing against a real instance stays behind an explicit opt-in, because mocks miss real-API behavior but live writes are irreversible.
 
 ## Where the effort goes now
 
-If you build with agents, the work that compounds is writing down your standard as a spec and turning your definition of done into a gate a machine can check. Do it once and every project after that starts at the quality bar instead of climbing toward it.
+If you build with agents, the work that compounds is writing down your standard as a spec and turning your definition of done into a gate a machine can check. I did it once, and now every CLI starts from that standard instead of from my memory of the last one.
 
-cliwright is MIT and lives at [github.com/jjuanrivvera/cliwright](https://github.com/jjuanrivvera/cliwright). Install it as a Claude Code plugin (`/plugin marketplace add jjuanrivvera/cliwright`) or as a cross-tool skill (`npx skills add jjuanrivvera/cliwright`), point it at an API you use, and let the gate tell you when it's done.
+cliwright is MIT and lives at [github.com/jjuanrivvera/cliwright](https://github.com/jjuanrivvera/cliwright). Install it as a Claude Code plugin (`/plugin marketplace add jjuanrivvera/cliwright`) or as a cross-tool skill (`npx skills add jjuanrivvera/cliwright`) and point it at an API you use.

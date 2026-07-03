@@ -12,13 +12,11 @@ draft: false
 featured: false
 ---
 
-Sigo construyendo CLIs para las APIs que uso todos los días. Después de [alegra-cli](/es/blog/como-construi-una-cli-agent-first-para-contabilidad/) quería la misma herramienta para la Bot API de Telegram y para Lemon Squeezy. El loop de construcción ya estaba resuelto. Lo que no estaba resuelto era hacerlo otra vez sin re-decidir cien cosas: qué flujos de auth, cómo camina la paginación, qué expone el servidor MCP, dónde viven los tokens, qué significa "terminado".
+Sigo construyendo CLIs para las APIs que uso todos los días. Durante un buen tiempo mi método fue pedirle al agente que me construyera otra CLI como la última que hizo, misma arquitectura, mismos estándares. Así creció la familia después de [canvas-cli](https://github.com/jjuanrivvera/canvas-cli): [alegra-cli](/es/blog/como-construi-una-cli-agent-first-para-contabilidad/), después [n8nctl](https://github.com/jjuanrivvera/n8n-cli).
 
-La jugada obvia es reusar el último repo como plantilla y pedirle al agente "constrúyeme uno como ese". Al principio funciona. El agente copia la forma, los comandos se ven bien y el demo convence.
+Cada una salió, y cada una me costó días después del build. Las APIs no son iguales. El auth es distinto, la paginación es distinta, el JSON tiene sus propias rarezas, y el agente no conocía el spec de la nueva API ni cuánto de ella cubría la CLI. Así que me la pasaba arreglando cosas que un build "terminado" dejó mal. Y "terminado" seguía siendo lo que el agente afirmara. En el post de alegra escribí que un agente te dice que los tests pasan, pasen o no. Lo mismo con "la CLI está completa".
 
-Se rompe en dos lugares. Primero, la memoria que el agente tiene de la API no es la API: entrega feliz una CLI que cubre la fracción de endpoints que recordaba, y cada comando que sí construyó se ve consistente, así que nada huele mal. Segundo, "terminado" es lo que el agente afirme. En el post de alegra escribí que un agente te dice que los tests pasan, pasen o no. Lo mismo aplica a "la CLI está completa".
-
-Así que dejé de tratar el playbook como algo que cargo en la cabeza. Lo escribí como un spec con un gate de aceptación verificable por máquina, y empaqueté ambos como [cliwright](https://github.com/jjuanrivvera/cliwright). Cinco días después del primer commit, un loop `/goal` de fábrica llevó la Bot API de Telegram de cero a un release v0.1.0 firmado en unas dos horas.
+[cliwright](https://github.com/jjuanrivvera/cliwright) es lo que construí para dejar de hacer eso. Tomé las prácticas que esas CLIs ya compartían y las escribí como un solo playbook que funciona para cualquier API REST, con una definición de terminado que una máquina puede medir. En vez de confiar en lo que recuerda, investiga la API específica a la que lo apuntas: el spec OpenAPI o Swagger cuando existe, la documentación cuando no. Cinco días después del primer commit, un loop `/goal` de fábrica llevó la Bot API de Telegram de cero a un release v0.1.0 firmado en unas dos horas.
 
 ## Ni framework, ni loop de agentes
 
@@ -26,17 +24,17 @@ cliwright no genera código por sí mismo y no corre ningún loop propio. Claude
 
 Esa es toda la herramienta. Un `GOAL.md` de 900 líneas (el spec) más un contrato en el `Makefile` (el gate), distribuidos como plugin de Claude Code y como skill multi-herramienta. Llenas un solo bloque: nombre de la API, URL de la documentación, module path. Todo lo demás es fijo.
 
-El spec salió de construir [canvas-cli](https://github.com/jjuanrivvera/canvas-cli), alegra-cli y [n8nctl](https://github.com/jjuanrivvera/n8n-cli) a mano con un agente. Cada build le enseñó algo al playbook. Canvas obligó a multi-auth: un token personal pegado u OAuth2, detrás de una sola interfaz. Alegra obligó a tipos JSON flexibles para IDs que llegan como string y como número. De n8nctl salieron los perfiles multi-instancia. cliwright es esa experiencia hecha explícita.
+Cada lección del spec salió de una de esas CLIs construidas a mano. Canvas obligó a multi-auth: un token personal pegado u OAuth2, detrás de una sola interfaz. Alegra obligó a tipos JSON flexibles para IDs que llegan como string y como número. De n8nctl salieron los perfiles multi-instancia. cliwright es esa experiencia hecha explícita.
 
-## El spec decide para que el agente no lo haga
+## Qué decide el spec
 
 La mayor parte de `GOAL.md` existe para sacar decisiones del loop.
 
-La investigación va primero, y apunta a la documentación de la API, no a mí. Modelo de auth, base URL, estilo de paginación, headers de rate limit, rarezas del JSON: son hechos de la API, así que el spec le dice al agente que baje la documentación y los determine solo, y que declare su supuesto y siga cuando la documentación sea ambigua. Las preguntas que me llegan son las que una búsqueda web no puede responder.
+La investigación va primero, y apunta al material de la propia API, no a mí. Modelo de auth, base URL, estilo de paginación, headers de rate limit, rarezas del JSON: son hechos de la API, así que el spec le dice al agente que baje lo que la API publique (un spec OpenAPI o Swagger, un llms.txt, una colección de Postman, el sitio de documentación) y los determine solo. Cuando la documentación es ambigua, declara su supuesto y sigue. Las preguntas que me llegan son las que una búsqueda web no puede responder.
 
 Después, el estándar es fijo. Core genérico tipado, archivos por recurso delgados, tokens en el keyring del sistema, perfiles con nombre, `--dry-run` que imprime el curl con el secreto tapado, salida en tabla/json/yaml/csv, un servidor MCP derivado del árbol de comandos, un `agent guard` que genera hooks del lado del host para comandos destructivos. Nada de eso se re-litiga por proyecto. El spec incluye hasta reglas de determinismo: misma API de entrada, misma CLI de salida.
 
-Es la misma apuesta de arquitectura de alegra-cli, un nivel más arriba: el playbook absorbe la varianza entre proyectos igual que el core genérico absorbe la varianza entre recursos.
+Es la misma apuesta del core genérico de alegra-cli, un nivel más arriba: el playbook absorbe las diferencias entre APIs.
 
 ## El gate es la definición de terminado
 
@@ -61,10 +59,10 @@ Después, las corridas reales. [tgctl](https://github.com/jjuanrivvera/tgctl), u
 
 alegra-cli tomó una semana, la mayor parte en una noche larga. tgctl tomó una tarde, y la pasé revisando, no escribiendo.
 
-Dos advertencias honestas. El paso de review adversarial todavía produce hallazgos donde cerca de la mitad son falsos positivos, así que el pase humano sobrevive: verifica cada hallazgo contra el código antes de actuar, y refutar uno con argumentos citados es un resultado válido. Y las pruebas en vivo contra una instancia real siguen detrás de un opt-in explícito, porque los mocks no ven el comportamiento de la API real pero las escrituras en vivo son irreversibles.
+Dos advertencias. El paso de review adversarial todavía produce hallazgos donde cerca de la mitad son falsos positivos, así que el pase humano sobrevive: verifica cada hallazgo contra el código antes de actuar, y refutar uno con argumentos citados es un resultado válido. Y las pruebas en vivo contra una instancia real siguen detrás de un opt-in explícito, porque los mocks no ven el comportamiento de la API real pero las escrituras en vivo son irreversibles.
 
 ## A dónde va el esfuerzo ahora
 
-Si construyes con agentes, el trabajo que se acumula es escribir tu estándar como spec y convertir tu definición de terminado en un gate que una máquina pueda verificar. Hazlo una vez y cada proyecto siguiente arranca en la barra de calidad en vez de escalar hacia ella.
+Si construyes con agentes, el trabajo que se acumula es escribir tu estándar como spec y convertir tu definición de terminado en un gate que una máquina pueda verificar. Yo lo hice una vez, y ahora cada CLI arranca desde ese estándar y no desde mi memoria de la anterior.
 
-cliwright es MIT y vive en [github.com/jjuanrivvera/cliwright](https://github.com/jjuanrivvera/cliwright). Instálalo como plugin de Claude Code (`/plugin marketplace add jjuanrivvera/cliwright`) o como skill multi-herramienta (`npx skills add jjuanrivvera/cliwright`), apúntalo a una API que uses, y deja que el gate te diga cuándo está terminado.
+cliwright es MIT y vive en [github.com/jjuanrivvera/cliwright](https://github.com/jjuanrivvera/cliwright). Instálalo como plugin de Claude Code (`/plugin marketplace add jjuanrivvera/cliwright`) o como skill multi-herramienta (`npx skills add jjuanrivvera/cliwright`) y apúntalo a una API que uses.

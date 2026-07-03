@@ -24,7 +24,7 @@ cliwright no genera código por sí mismo y no corre ningún loop propio. Claude
 
 Esa es toda la herramienta. Un `GOAL.md` de 900 líneas (el spec) más un contrato en el `Makefile` (el gate), distribuidos como plugin de Claude Code y como skill multi-herramienta. Llenas un solo bloque: nombre de la API, URL de la documentación, module path. Todo lo demás es fijo.
 
-Cada lección del spec salió de una de esas CLIs construidas a mano. Canvas obligó a multi-auth: un token personal pegado u OAuth2, detrás de una sola interfaz. Alegra obligó a tipos JSON flexibles para IDs que llegan como string y como número. De n8nctl salieron los perfiles multi-instancia. cliwright es esa experiencia hecha explícita.
+Las prácticas en sí no son nuevas; la mayoría ya estaba en canvas-cli, la primera de la familia: multi-auth detrás de una sola interfaz (un token personal pegado u OAuth2), tipos JSON flexibles para IDs que llegan como string y como número, perfiles multi-instancia. Las CLIs que siguieron las reusaron. cliwright es ese estándar escrito en vez de recordado.
 
 ## Qué decide el spec
 

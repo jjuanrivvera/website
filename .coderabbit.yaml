@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit config — TypeScript/JS web project.
+reviews:
+  profile: chill
+  poem: false
+  sequence_diagrams: false
+  auto_review:
+    ignore_title_keywords: ["WIP", "release:", "build(deps)"]
+  path_filters:
+    - "!**/dist/**"
+    - "!**/.next/**"
+    - "!**/build/**"
+    - "!**/*.min.*"
+  path_instructions:
+    - path: "**/*.{ts,tsx,js,jsx}"
+      instructions: |
+        Follow AGENTS.md. Comments explain WHY, not WHAT. No secrets/keys in client code.
+        Flag `any` that hides a real type, unhandled promise rejections, and user-facing strings that skip i18n.
+knowledge_base:
+  code_guidelines:
+    enabled: true

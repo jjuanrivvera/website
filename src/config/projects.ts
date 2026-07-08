@@ -58,6 +58,13 @@ export const projects: Project[] = [
     githubUrl: 'https://github.com/jjuanrivvera/cliwright',
   },
   {
+    key: 'edc',
+    title: 'event-driven-claude',
+    featured: true,
+    techTags: ['Go', 'MCP', 'Claude Code', 'Event-Driven', 'Agents'],
+    githubUrl: 'https://github.com/jjuanrivvera/event-driven-claude',
+  },
+  {
     key: 'canvasCli',
     title: 'Canvas CLI',
     featured: true,
@@ -87,9 +94,19 @@ export const projects: Project[] = [
     key: 'tgctl',
     title: 'tgctl',
     featured: true,
+    showOnHomepage: false,
     techTags: ['Go', 'Cobra', 'Telegram', 'MCP', 'Homebrew'],
     githubUrl: 'https://github.com/jjuanrivvera/tgctl',
     demoUrl: 'https://jjuanrivvera.github.io/tgctl/',
+  },
+  {
+    key: 'slackctl',
+    title: 'slackctl',
+    featured: true,
+    showOnHomepage: false,
+    techTags: ['Go', 'Cobra', 'Slack', 'MCP', 'Homebrew'],
+    githubUrl: 'https://github.com/jjuanrivvera/slackctl',
+    demoUrl: 'https://jjuanrivvera.github.io/slackctl/',
   },
   {
     key: 'tgctlClaudeChannel',

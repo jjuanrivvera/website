@@ -135,6 +135,15 @@ export const projects: Project[] = [
     demoUrl: 'https://jjuanrivvera.github.io/adguard-cli/',
   },
   {
+    key: 'garminctl',
+    title: 'garminctl — Garmin Connect CLI',
+    featured: false,
+    showOnHomepage: false,
+    techTags: ['Go', 'Cobra', 'OAuth', 'MCP', 'Homebrew'],
+    githubUrl: 'https://github.com/jjuanrivvera/garminctl',
+    demoUrl: 'https://jjuanrivvera.github.io/garminctl/',
+  },
+  {
     key: 'canvasKitLaravel',
     title: 'Canvas LMS Kit for Laravel',
     featured: false,

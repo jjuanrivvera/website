@@ -109,6 +109,15 @@ export const projects: Project[] = [
     demoUrl: 'https://jjuanrivvera.github.io/slackctl/',
   },
   {
+    key: 'wootctl',
+    title: 'wootctl — Chatwoot CLI',
+    featured: true,
+    showOnHomepage: false,
+    techTags: ['Go', 'Cobra', 'Chatwoot', 'MCP', 'Homebrew'],
+    githubUrl: 'https://github.com/jjuanrivvera/wootctl',
+    demoUrl: 'https://jjuanrivvera.github.io/wootctl/',
+  },
+  {
     key: 'tgctlClaudeChannel',
     title: 'tgctl-claude-channel',
     featured: true,

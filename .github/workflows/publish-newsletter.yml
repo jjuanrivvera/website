@@ -47,9 +47,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Need the previous commit so the script's git-diff fallback works
-          # if the push event payload is empty (rare but possible on rebases).
-          fetch-depth: 2
+          # Full history so the script can diff the pushed range (event.before
+          # .. event.after). Squash/merge-button pushes arrive with an empty
+          # commits[] payload, so the git-diff fallback is the real detector.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:

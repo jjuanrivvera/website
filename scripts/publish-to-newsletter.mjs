@@ -150,6 +150,7 @@ async function detectChangedPosts() {
       });
   }
   let changedFiles = [];
+  let pushRange = null;
   const eventPath = process.env.GITHUB_EVENT_PATH;
   if (eventPath && fs.existsSync(eventPath)) {
     const event = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
@@ -157,16 +158,22 @@ async function detectChangedPosts() {
     for (const c of commits) {
       changedFiles.push(...(c.added ?? []), ...(c.modified ?? []));
     }
-  } else {
-    // Local fallback — diff against HEAD~1.
+    // Squash- and merge-button pushes from the GitHub UI arrive with an empty
+    // commits[] array, so the loop above finds nothing. Remember the pushed
+    // range so the git-diff fallback below can recover the changed files.
+    if (event.before && event.after && !/^0+$/.test(event.before)) {
+      pushRange = `${event.before} ${event.after}`;
+    }
+  }
+  // Fallback whenever the event payload yielded no files (empty commits[], or
+  // a local run with no event). Diff the pushed range, else HEAD~1..HEAD.
+  if (changedFiles.length === 0) {
     const { execSync } = await import('node:child_process');
+    const range = pushRange ?? 'HEAD~1 HEAD';
     try {
-      const out = execSync(
-        'git diff --name-only --diff-filter=AM HEAD~1 HEAD',
-        {
-          encoding: 'utf8',
-        }
-      );
+      const out = execSync(`git diff --name-only --diff-filter=AM ${range}`, {
+        encoding: 'utf8',
+      });
       changedFiles = out.split('\n').filter(Boolean);
     } catch {
       changedFiles = [];

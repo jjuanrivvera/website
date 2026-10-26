@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-# CodeRabbit config — TypeScript/JS web project.
+# CodeRabbit config — Astro + TypeScript website.
 reviews:
   profile: chill
   poem: false
@@ -8,14 +8,14 @@ reviews:
     ignore_title_keywords: ["WIP", "release:", "build(deps)"]
   path_filters:
     - "!**/dist/**"
-    - "!**/.next/**"
+    - "!**/.astro/**"
     - "!**/build/**"
     - "!**/*.min.*"
   path_instructions:
-    - path: "**/*.{ts,tsx,js,jsx}"
+    - path: "**/*.{astro,ts,tsx,js,jsx}"
       instructions: |
         Follow AGENTS.md. Comments explain WHY, not WHAT. No secrets/keys in client code.
-        Flag `any` that hides a real type, unhandled promise rejections, and user-facing strings that skip i18n.
+        Flag `any` that hides a real type, unhandled promise rejections, and user-facing strings that skip i18n (UI copy lives in src/i18n for en/es/pt).
 knowledge_base:
   code_guidelines:
     enabled: true
